@@ -46,7 +46,7 @@ namespace VideoGameShowdown.Configuration
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                _logger.LogCritical($"{ex.Message} - {ex.StackTrace}");
                 throw;
             }
 
@@ -63,7 +63,7 @@ namespace VideoGameShowdown.Configuration
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                _logger.LogCritical($"{ex.Message} - {ex.StackTrace}");
                 throw;
             }
 

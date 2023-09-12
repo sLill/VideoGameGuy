@@ -21,6 +21,8 @@ namespace VideoGameShowdown
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();
             builder.Services.AddTransient<IRawgApiService, RawgApiService>();
+            builder.Services.AddHostedService<RawgBackgroundService>();
+            builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -85,7 +87,7 @@ namespace VideoGameShowdown
             if (app.Environment.IsDevelopment())
             {
                 // User-Secrets
-                rawgApiKey = secretService.GetUserSecretSettings().SyncfusionProductKey;
+                rawgApiKey = secretService.GetUserSecretSettings().RawgApiKey;
             }
             else
             {
