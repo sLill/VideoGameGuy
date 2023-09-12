@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VideoGameShowdown.Common\VideoGameShowdown.Common.csproj" />
+    <ProjectReference Include="..\VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj" />
+    <ProjectReference Include="..\VideoGameShowdown.Logging\VideoGameShowdown.Logging.csproj" />
+  </ItemGroup>
+
+</Project>

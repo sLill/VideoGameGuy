@@ -5,6 +5,14 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameShowdown", "VideoGameShowdown\VideoGameShowdown.csproj", "{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameShowdown.Core", "VideoGameShowdown.Core\VideoGameShowdown.Core.csproj", "{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameShowdown.Logging", "VideoGameShowdown.Logging\VideoGameShowdown.Logging.csproj", "{6811BE32-43CC-4000-A8D6-FD0286BC29AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameShowdown.Configuration", "VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj", "{7D8C780C-D136-4675-9117-5C3AD3968228}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoGameShowdown.Common", "VideoGameShowdown.Common\VideoGameShowdown.Common.csproj", "{065A49C9-4520-43C6-827D-24277198CF19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +23,22 @@ Global
 		{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6811BE32-43CC-4000-A8D6-FD0286BC29AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6811BE32-43CC-4000-A8D6-FD0286BC29AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6811BE32-43CC-4000-A8D6-FD0286BC29AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6811BE32-43CC-4000-A8D6-FD0286BC29AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D8C780C-D136-4675-9117-5C3AD3968228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D8C780C-D136-4675-9117-5C3AD3968228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D8C780C-D136-4675-9117-5C3AD3968228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D8C780C-D136-4675-9117-5C3AD3968228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{065A49C9-4520-43C6-827D-24277198CF19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{065A49C9-4520-43C6-827D-24277198CF19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{065A49C9-4520-43C6-827D-24277198CF19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{065A49C9-4520-43C6-827D-24277198CF19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

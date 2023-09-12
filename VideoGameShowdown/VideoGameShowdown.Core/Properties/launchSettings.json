@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "VideoGameShowdown.Core": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:30827;http://localhost:30828"
+    }
+  }
+}
