@@ -10,7 +10,6 @@
   <ItemGroup>
     <ProjectReference Include="..\VideoGameShowdown.Common\VideoGameShowdown.Common.csproj" />
     <ProjectReference Include="..\VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj" />
-    <ProjectReference Include="..\VideoGameShowdown.Logging\VideoGameShowdown.Logging.csproj" />
   </ItemGroup>
 
 </Project>
