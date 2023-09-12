@@ -3,22 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameShowdown.Models
 {
-    public class RAWG_Rating
+    public class Store_Game
     {
         #region Properties..
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Column(TypeName = "nvarchar(255)")]
-        public string Title { get; set; }
-
-        public int Count { get; set; }
-        public float Percent { get; set; }
+        [ForeignKey("Store")]
+        public string StoreId { get; set; }
+        public Store Store { get; set; }
 
         [ForeignKey("Game")]
-        public int GameId { get; set; }
-        public RAWG_Game RAWG_Game { get; set; }
+        public string GameId { get; set; }
+        public Game Game { get; set; }
         #endregion Properties..
     }
 }
-

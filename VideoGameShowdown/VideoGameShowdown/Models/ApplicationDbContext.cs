@@ -10,18 +10,19 @@ namespace VideoGameShowdown.Models
         #endregion Fields..
 
         #region Properties..
-        public DbSet<RAWG_Game> RAWG_Games { get; set; }
-        public DbSet<RAWG_Rating> RAWG_Ratings { get; set; }
-        public DbSet<RAWG_EsrbRating> RAWG_EsrbRatings { get; set; }
-        public DbSet<RAWG_ShortScreenshot> RAWG_ShortScreenshots { get; set; }
-        public DbSet<RAWG_Platform> RAWG_Platforms { get; set; }
-        public DbSet<RAWG_Genre> RAWG_Genres { get; set; }
-        public DbSet<RAWG_Store> RAWG_Stores { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<EsrbRating> EsrbRatings { get; set; }
+        public DbSet<ShortScreenshot> ShortScreenshots { get; set; }
+        public DbSet<Platform> Platforms { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<Store> Stores { get; set; }
 
-        public DbSet<PlatformGame> RAWG_PlatformGames { get; set; }
-        public DbSet<GenreGame> RAWG_GenreGames { get; set; }
-        public DbSet<StoreGame> RAWG_StoreGames { get; set; }
-        public DbSet<TagGame> RAWG_TagGames { get; set; }
+        // Relationship tables
+        public DbSet<Platform_Game> Platforms_Games { get; set; }
+        public DbSet<Genre_Game> Genres_Games { get; set; }
+        public DbSet<Store_Game> Stores_Games { get; set; }
+        public DbSet<Tag_Game> Tags_Games { get; set; }
         #endregion Properties..
 
         #region Constructors..
