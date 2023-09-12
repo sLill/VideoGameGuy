@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using VideoGameShowdown.Configuration;
 using VideoGameShowdown.Core;
 using VideoGameShowdown.Models;
@@ -32,6 +34,8 @@ namespace VideoGameShowdown
             ConfigureApplication(app);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
+
+            ImportGameData();
 
             app.Run();
         }
@@ -94,7 +98,22 @@ namespace VideoGameShowdown
             }
 
             rawgApiSettings.Value.ApiKey = rawgApiKey;
-        } 
+        }
+
+        private static void ImportGameData()
+        {
+            var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
+            dataFiles.ForEach(x =>
+            {
+                string fileRaw = File.ReadAllText(x);
+                JObject jsonObject = JsonConvert.DeserializeObject<JObject>(fileRaw);
+
+                var resultsToken = jsonObject.SelectToken("results");
+                var gameList = JsonConvert.DeserializeObject<List<RAWG_Game>>(resultsToken.ToString());
+
+
+            });
+        }
         #endregion Methods..
     }
 }

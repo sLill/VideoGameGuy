@@ -30,48 +30,6 @@ namespace VideoGameShowdown.Models
         #endregion Constructors..
 
         #region Methods..
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //modelBuilder.Entity<RAWG_Game>()
-            //    .HasKey(g => g.Id);
-
-            //modelBuilder.Entity<RAWG_Game>()
-            //    .HasOne(g => g.EsrbRating)
-            //    .WithMany()
-            //    .HasForeignKey(g => g.EsrbRatingId);
-
-            //modelBuilder.Entity<Rating>()
-            //    .HasKey(r => r.Id);
-
-            //modelBuilder.Entity<PlatformGame>()
-            //    .HasKey(pg => pg.Id);
-
-            //modelBuilder.Entity<GenreGame>()
-            //    .HasKey(gg => gg.Id);
-
-            //modelBuilder.Entity<StoreGame>()
-            //    .HasKey(sg => sg.Id);
-
-            //modelBuilder.Entity<TagGame>()
-            //    .HasKey(tg => tg.Id);
-
-            //modelBuilder.Entity<RAWG_EsrbRating>()
-            //    .HasKey(e => e.Id);
-
-            //modelBuilder.Entity<RAWG_ShortScreenshot>()
-            //    .HasKey(ss => ss.Id);
-
-            //modelBuilder.Entity<RAWG_Platform>()
-            //    .HasKey(p => p.Id);
-
-            //modelBuilder.Entity<RAWG_Genre>()
-            //    .HasKey(g => g.Id);
-
-            //modelBuilder.Entity<RAWG_Store>()
-            //    .HasKey(s => s.Id);
-
-            // Define relationships here if necessary, such as HasMany, HasOne, etc.
-        }
         #endregion Methods..
     }
 }
