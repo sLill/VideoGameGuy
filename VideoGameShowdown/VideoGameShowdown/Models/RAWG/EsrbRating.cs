@@ -14,8 +14,12 @@ namespace VideoGameShowdown.Models
         [JsonProperty(PropertyName = "Id")]
         [Key]
         public string EsrbRatingId { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
         public string Name { get; set; }
-        public string Slug { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
+        public string? Slug { get; set; }
         #endregion Properties..
     }
 }

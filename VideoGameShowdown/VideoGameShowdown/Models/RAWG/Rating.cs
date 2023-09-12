@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace VideoGameShowdown.Models
 {
     public class Rating
@@ -17,14 +16,11 @@ namespace VideoGameShowdown.Models
         public string RatingId { get; set; }
 
         [Column(TypeName = "NVARCHAR(255)")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public int Count { get; set; }
-        public float Percent { get; set; }
+        public int? Count { get; set; }
 
-        [ForeignKey("Game")]
-        public string GameId { get; set; }
-        public Game Game { get; set; }
+        public float? Percent { get; set; }
         #endregion Properties..
     }
 }

@@ -14,11 +14,20 @@ namespace VideoGameShowdown.Models
         [JsonProperty(PropertyName = "Id")]
         [Key]
         public string StoreId { get; set; }
-        public string Name { get; set; }
-        public string Slug { get; set; }
-        public string Domain { get; set; }
-        public int GamesCount { get; set; }
-        public string ImageBackground { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
+        public string? Name { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
+        public string? Slug { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
+        public string? Domain { get; set; }
+
+        public int? Games_Count { get; set; }
+
+        [Column(TypeName = "NVARCHAR(2048)")]
+        public string? Image_Background { get; set; }
         #endregion Properties..
     }
 }

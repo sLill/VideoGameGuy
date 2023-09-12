@@ -1,17 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
-namespace VideoGameShowdown.Models
+namespace VideoGameShowdown.Models.RAWG
 {
-    public class Genre_Game
+    public class Rating_Game
     {
         #region Properties..
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("GenreId")]
-        public Genre Genre { get; set; }
+        [ForeignKey("RatingdId")]
+        public Rating Rating { get; set; }
 
         [ForeignKey("GameId")]
         public Game Game { get; set; }

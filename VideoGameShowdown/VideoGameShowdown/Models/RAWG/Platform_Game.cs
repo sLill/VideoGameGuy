@@ -10,15 +10,11 @@ namespace VideoGameShowdown.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("Platform")]
-        public string PlatformId { get; set; }
+        [ForeignKey("PlatformId")]
         public Platform Platform { get; set; }
 
-        [ForeignKey("Game")]
-        public string GameId { get; set; }
+        [ForeignKey("GameId")]
         public Game Game { get; set; }
-
-        public DateTime? ReleasedAt { get; set; } 
         #endregion Properties..
     }
 }

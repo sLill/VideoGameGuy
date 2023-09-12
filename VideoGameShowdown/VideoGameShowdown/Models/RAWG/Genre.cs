@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
-
 
 namespace VideoGameShowdown.Models
 {
@@ -15,10 +14,17 @@ namespace VideoGameShowdown.Models
         [JsonProperty(PropertyName = "Id")]
         [Key]
         public string GenreId { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
         public string Name { get; set; }
-        public string Slug { get; set; }
-        public int GamesCount { get; set; }
-        public string ImageBackground { get; set; }
+
+        [Column(TypeName = "NVARCHAR(255)")]
+        public string? Slug { get; set; }
+
+        public int? Games_Count { get; set; }
+
+        [Column(TypeName = "NVARCHAR(2048)")]
+        public string? Image_Background { get; set; }
         #endregion Properties..
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameShowdown.Models
 {
@@ -16,11 +16,7 @@ namespace VideoGameShowdown.Models
         public string ShortScreenshotId { get; set; }
 
         [Column(TypeName = "NVARCHAR(2048)")]
-        public string Image { get; set; }
-
-        [ForeignKey("Game")]
-        public string GameId { get; set; }
-        public Game Game { get; set; }
+        public string? Image { get; set; }
         #endregion Properties..
     }
 }

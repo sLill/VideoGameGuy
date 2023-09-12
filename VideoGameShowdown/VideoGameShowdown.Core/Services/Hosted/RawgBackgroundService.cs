@@ -46,7 +46,7 @@ namespace VideoGameShowdown.Core
             _logger.LogInformation($"[RAWG] Beginning update..");
 
             await UpdateLocalGameDataAsync().ConfigureAwait(false);
-            
+
             _logger.LogInformation($"[RAWG] Update complete");
         }
 

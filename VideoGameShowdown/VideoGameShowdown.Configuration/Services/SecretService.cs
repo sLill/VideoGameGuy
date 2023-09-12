@@ -18,7 +18,7 @@ namespace VideoGameShowdown.Configuration
 
         #region Constructors..
         public SecretService(ILogger<SecretService> logger,
-                             IServiceProvider serviceProvider, 
+                             IServiceProvider serviceProvider,
                              IConfiguration configuration)
         {
             _logger = logger;
@@ -34,13 +34,13 @@ namespace VideoGameShowdown.Configuration
         public string GetAzureSecret(string key)
         {
             string secret = null;
-            
-            try 
-            { 
+
+            try
+            {
                 var azureSecretSettings = _serviceProvider.GetService<IOptions<AzureSecretSettings>>();
                 var azureCredentials = GetAzureCredentials();
                 var secretClient = new SecretClient(new Uri(azureSecretSettings.Value.KeyVaultBaseUrl), azureCredentials);
-              
+
                 var response = secretClient.GetSecret(key);
                 secret = response.Value.Value;
             }

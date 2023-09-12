@@ -19,16 +19,19 @@ namespace VideoGameShowdown.Models
         public string Name { get; set; }
 
         [Column(TypeName = "NVARCHAR(255)")]
-        public string Slug { get; set; }
+        public string? Slug { get; set; }
 
         [Column(TypeName = "NVARCHAR(2048)")]
-        public string Image { get; set; }
-        
-        public int YearStart { get; set; }
-        public int GamesCount { get; set; }
+        public string? Image { get; set; }
+
+        public DateTime? Year_End { get; set; }
+
+        public DateTime? Year_Start { get; set; }
+
+        public int? Games_Count { get; set; }
 
         [Column(TypeName = "NVARCHAR(2048)")]
-        public string ImageBackground { get; set; }
+        public string? Image_Background { get; set; }
         #endregion Properties..
     }
 }

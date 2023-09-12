@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Syncfusion.EJ2.Inputs;
-using Syncfusion.Licensing;
 
 namespace VideoGameShowdown.Models
 {
@@ -26,7 +24,7 @@ namespace VideoGameShowdown.Models
         #endregion Properties..
 
         #region Constructors..
-        public ApplicationDbContext(DbContextOptions options) 
+        public ApplicationDbContext(DbContextOptions options)
             : base(options) { }
         #endregion Constructors..
 

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VideoGameShowdown.Configuration;
 using VideoGameShowdown.Core;
 using VideoGameShowdown.Models;
@@ -108,7 +108,7 @@ namespace VideoGameShowdown
         {
             ApplicationDbContext context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
 
-            var bigList = new Dictionary<string, Game>();
+            var gamesList = new Dictionary<string, Game>();
 
             var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
             dataFiles.ForEach(x =>
@@ -125,18 +125,18 @@ namespace VideoGameShowdown
                     {
                         if (game.EsrbRating != null)
                         {
-                            var uniqueId = $"{game.EsrbRatingId}-{Guid.NewGuid()}";
+                            var uniqueId = $"{game.EsrbRating.EsrbRatingId}-{Guid.NewGuid()}";
 
                             game.EsrbRatingId = uniqueId;
                             game.EsrbRating.EsrbRatingId = uniqueId;
                         }
 
-                        bigList[game.GameId] = game;
+                        gamesList[game.GameId] = game;
                     });
                 }
             });
 
-            context.AddRange(bigList.Values);
+            context.AddRange(gamesList.Values);
             context.SaveChanges();
         }
         #endregion Methods..

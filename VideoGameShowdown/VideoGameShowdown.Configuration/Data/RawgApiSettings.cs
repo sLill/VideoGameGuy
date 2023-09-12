@@ -3,7 +3,7 @@
     public class RawgApiSettings
     {
         #region Properties..
-        public string ApiKey { get; set; } 
+        public string ApiKey { get; set; }
         public string ApiUrl { get; set; }
         public int RequestTimeout { get; set; }
         public int RetryLimit { get; set; }
