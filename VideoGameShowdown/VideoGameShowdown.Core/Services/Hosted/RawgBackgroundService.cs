@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Net;
 using VideoGameShowdown.Configuration;
 
@@ -116,6 +115,11 @@ namespace VideoGameShowdown.Core
                                     retries++;
                                 }
                             }
+
+                            // End of data
+                            else if (response.StatusCode == HttpStatusCode.BadGateway)
+                                break;
+
                             else
                                 throw new Exception($"Api request returned unexpected status code {response.StatusCode} for {requestUrlPaged}");
                         }
