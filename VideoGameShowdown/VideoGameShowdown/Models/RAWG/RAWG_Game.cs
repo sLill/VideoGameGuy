@@ -15,7 +15,7 @@ namespace VideoGameShowdown.Models
         public DateTime Released { get; set; }
         public bool Tba { get; set; }
         public string BackgroundImage { get; set; }
-        public double Rating { get; set; }
+        public float Rating { get; set; }
         public int RatingTop { get; set; }
         public int RatingsCount { get; set; }
         public int ReviewsTextCount { get; set; }
@@ -26,13 +26,6 @@ namespace VideoGameShowdown.Models
         [ForeignKey("EsrbRating")]
         public int EsrbRatingId { get; set; }
         public RAWG_EsrbRating EsrbRating { get; set; }
-
-        public List<Rating> Ratings { get; set; }
-        public List<PlatformGame> Platforms { get; set; }
-        public List<GenreGame> Genres { get; set; }
-        public List<StoreGame> Stores { get; set; }
-        public List<TagGame> Tags { get; set; }
-        public List<RAWG_ShortScreenshot> ShortScreenshots { get; set; }
         #endregion Properties..
     }
 }
