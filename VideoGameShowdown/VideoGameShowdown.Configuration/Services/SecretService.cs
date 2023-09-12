@@ -8,16 +8,18 @@ namespace VideoGameShowdown.Configuration
     public class SecretService : ISecretService
     {
         #region Fields..
-        private IOptions<SecretSettings> _settings;
+        private IServiceProvider _serviceProvider;
+        private IConfiguration _configuration;
         #endregion Fields..
 
         #region Properties..
         #endregion Properties..
 
         #region Constructors..
-        public SecretService(IOptions<SecretSettings> settings)
+        public SecretService(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            _settings = settings;
+            _serviceProvider = serviceProvider;
+            _configuration = configuration;
         }
         #endregion Constructors..
 
@@ -25,34 +27,15 @@ namespace VideoGameShowdown.Configuration
         private TokenCredential GetAzureCredentials()
             => new AzurePowerShellCredential();
 
-        public async Task<string> GetAzureSecretAsync(string key)
-        {
-            string secret = null;
-
-            try
-            {
-                var azureCredentials = GetAzureCredentials();
-                var secretClient = new SecretClient(new Uri(_settings.Value.Azure_KeyVaultBaseUrl), azureCredentials);
-
-                var response = await secretClient.GetSecretAsync(key);
-                secret = response.Value.Value;
-            }
-            catch (Exception ex) 
-            {
-                // TODO: Log
-            }
-
-            return secret;
-        }
-
         public string GetAzureSecret(string key)
         {
             string secret = null;
-
-            try
-            {
+            
+            try 
+            { 
+                var azureSecretSettings = _serviceProvider.GetService<IOptions<AzureSecretSettings>>();
                 var azureCredentials = GetAzureCredentials();
-                var secretClient = new SecretClient(new Uri(_settings.Value.Azure_KeyVaultBaseUrl), azureCredentials);
+                var secretClient = new SecretClient(new Uri(azureSecretSettings.Value.KeyVaultBaseUrl), azureCredentials);
               
                 var response = secretClient.GetSecret(key);
                 secret = response.Value.Value;
@@ -63,6 +46,22 @@ namespace VideoGameShowdown.Configuration
             }
 
             return secret;
+        }
+
+        public UserSecretSettings GetUserSecretSettings()
+        {
+            UserSecretSettings userSecretSettings = null;
+
+            try
+            {
+                userSecretSettings = _configuration.Get<UserSecretSettings>();
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log
+            }
+
+            return userSecretSettings;
         }
         #endregion Methods..
     }

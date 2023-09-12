@@ -10,11 +10,11 @@ namespace VideoGameShowdown
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Settings
             builder.Configuration.Sources.Clear();
             builder.Configuration.AddJsonFile("appsettings.json");
-
-            // Settings
-            builder.Services.Configure<SecretSettings>(builder.Configuration.GetSection("SecretSettings"));
+            builder.Configuration.AddUserSecrets<Program>();
+            builder.Services.Configure<AzureSecretSettings>(builder.Configuration.GetSection("SecretSettings").GetSection("Azure"));
             builder.Services.Configure<RawgApiSettings>(builder.Configuration.GetSection("RawgApiSettings"));
 
             // Services
@@ -23,9 +23,10 @@ namespace VideoGameShowdown
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
-            
-           ConfigureApplication(app);
-           ConfigureSyncfusion(app);
+
+            ConfigureApplication(app);
+            ConfigureSyncfusion(app);
+            ConfigureRawgApi(app);
 
             app.Run();
         }
@@ -55,12 +56,44 @@ namespace VideoGameShowdown
 
         private static void ConfigureSyncfusion(WebApplication app)
         {
-            // License
             var secretService = app.Services.GetService<ISecretService>();
-            var secretSettings = app.Services.GetRequiredService<IOptions<SecretSettings>>();
+            string syncfusionProductKey = null;
 
-            string syncfusionProductKey = secretService.GetAzureSecret(secretSettings.Value.Azure_SyncfusionProductKey);
+            if (app.Environment.IsDevelopment())
+            {
+                // User-Secrets
+                syncfusionProductKey = secretService.GetUserSecretSettings().SyncfusionProductKey;
+            }
+            else
+            {
+                // Azure
+                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+                syncfusionProductKey = secretService.GetAzureSecret(azureSecretSettings.Value.SyncfusionProductKeyId);
+            }
+
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncfusionProductKey);
+        }
+
+        private static void ConfigureRawgApi(WebApplication app)
+        {
+            var secretService = app.Services.GetService<ISecretService>();
+            var rawgApiSettings = app.Services.GetRequiredService<IOptions<RawgApiSettings>>();
+
+            string rawgApiKey = null;
+
+            if (app.Environment.IsDevelopment())
+            {
+                // User-Secrets
+                rawgApiKey = secretService.GetUserSecretSettings().SyncfusionProductKey;
+            }
+            else
+            {
+                // Azure
+                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+                rawgApiKey = secretService.GetAzureSecret(azureSecretSettings.Value.RawgApiKeyId);
+            }
+
+            rawgApiSettings.Value.ApiKey = rawgApiKey;
         }
     }
 }

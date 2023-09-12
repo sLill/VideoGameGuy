@@ -3,8 +3,8 @@
     public interface ISecretService
     {
         #region Methods..
-        Task<string> GetAzureSecretAsync(string key);
         string GetAzureSecret(string key);
+        UserSecretSettings GetUserSecretSettings();
         #endregion Methods..
     }
 }
