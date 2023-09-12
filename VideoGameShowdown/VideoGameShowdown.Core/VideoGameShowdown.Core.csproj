@@ -16,4 +16,8 @@
     <ProjectReference Include="..\VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
 </Project>

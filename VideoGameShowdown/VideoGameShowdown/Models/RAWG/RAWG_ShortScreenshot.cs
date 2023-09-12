@@ -7,12 +7,12 @@ namespace VideoGameShowdown.Models
     {
         #region Properties..
         [Key]
-        public int ShortScreenshotId { get; set; }
+        public int Id { get; set; }
+        public string Image { get; set; }
 
-        public int id { get; set; }
-
-        [Column(TypeName = "nvarchar(2048)")]
-        public string image { get; set; }
+        [ForeignKey("Game")]
+        public int GameId { get; set; }
+        public RAWG_Game Game { get; set; }
         #endregion Properties..
     }
 }

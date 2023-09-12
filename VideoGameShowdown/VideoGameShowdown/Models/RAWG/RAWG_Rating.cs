@@ -7,14 +7,14 @@ namespace VideoGameShowdown.Models
     {
         #region Properties..
         [Key]
-        public int RatingId { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public int Count { get; set; }
+        public double Percent { get; set; }
 
-        public int id { get; set; }
-
-        [Column(TypeName = "nvarchar(255)")] 
-        public string title { get; set; }
-        public int count { get; set; }
-        public double percent { get; set; }
+        [ForeignKey("Game")]
+        public int GameId { get; set; }
+        public RAWG_Game Game { get; set; }
         #endregion Properties..
     }
 }

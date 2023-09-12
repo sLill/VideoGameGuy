@@ -7,15 +7,9 @@ namespace VideoGameShowdown.Models
     {
         #region Properties..
         [Key]
-        public int EsrbRatingId { get; set; }
-
-        public int id { get; set; }
-
-        [Column(TypeName = "nvarchar(255)")] 
-        public string name { get; set; }
-
-        [Column(TypeName = "nvarchar(255)")] 
-        public string slug { get; set; } 
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Slug { get; set; }
         #endregion Properties..
     }
 }

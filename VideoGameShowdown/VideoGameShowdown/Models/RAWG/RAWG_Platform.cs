@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Syncfusion.Licensing;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameShowdown.Models
 {
@@ -6,12 +8,13 @@ namespace VideoGameShowdown.Models
     {
         #region Properties..
         [Key]
-        public int PlatformId { get;set; }
-
-        public RAWG_PlatformDetail platform { get; set; }
-        public DateTime released_at { get; set; }
-        public object requirements_en { get; set; }
-        public object requirements_ru { get; set; } 
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Slug { get; set; }
+        public string Image { get; set; }
+        public int YearStart { get; set; }
+        public int GamesCount { get; set; }
+        public string ImageBackground { get; set; }
         #endregion Properties..
     }
 }

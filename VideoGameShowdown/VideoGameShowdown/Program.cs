@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using VideoGameShowdown.Configuration;
 using VideoGameShowdown.Core;
+using VideoGameShowdown.Models;
 
 namespace VideoGameShowdown
 {
@@ -20,10 +22,10 @@ namespace VideoGameShowdown
 
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();
-            builder.Services.AddTransient<IRawgApiService, RawgApiService>();
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnectionString")));
 
             var app = builder.Build();
 
@@ -38,12 +40,7 @@ namespace VideoGameShowdown
         {
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
-            {
                 app.UseExceptionHandler("/Home/Error");
-
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
