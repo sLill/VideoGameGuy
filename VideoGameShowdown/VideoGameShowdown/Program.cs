@@ -6,6 +6,7 @@ namespace VideoGameShowdown
 {
     public class Program
     {
+        #region Methods..
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -94,6 +95,7 @@ namespace VideoGameShowdown
             }
 
             rawgApiSettings.Value.ApiKey = rawgApiKey;
-        }
+        } 
+        #endregion Methods..
     }
 }

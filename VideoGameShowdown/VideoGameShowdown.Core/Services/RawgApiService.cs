@@ -6,7 +6,7 @@ namespace VideoGameShowdown.Core
     public class RawgApiService : IRawgApiService
     {
         #region Fields..
-        private IOptionsSnapshot<RawgApiSettings> _settings;
+        private readonly IOptionsSnapshot<RawgApiSettings> _settings;
         #endregion Fields..
 
         #region Properties..

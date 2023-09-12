@@ -8,9 +8,9 @@ namespace VideoGameShowdown.Configuration
     public class SecretService : ISecretService
     {
         #region Fields.. 
-        private ILogger<SecretService> _logger;
-        private IServiceProvider _serviceProvider;
-        private IConfiguration _configuration;
+        private readonly ILogger<SecretService> _logger;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IConfiguration _configuration;
         #endregion Fields..
 
         #region Properties..
@@ -47,6 +47,7 @@ namespace VideoGameShowdown.Configuration
             catch (Exception ex)
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                throw;
             }
 
             return secret;
@@ -63,6 +64,7 @@ namespace VideoGameShowdown.Configuration
             catch (Exception ex)
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                throw;
             }
 
             return userSecretSettings;
