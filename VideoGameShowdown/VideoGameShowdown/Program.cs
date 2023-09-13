@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VideoGameShowdown.Configuration;
 using VideoGameShowdown.Core;
+using VideoGameShowdown.Data;
 
 namespace VideoGameShowdown
 {
@@ -29,16 +28,19 @@ namespace VideoGameShowdown
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnectionString"));
+#if DEBUG
                 options.EnableSensitiveDataLogging();
-            });
+#endif
+            }, ServiceLifetime.Singleton);
+
+            // Data
+            builder.Services.AddSingleton<IGamesRepository, GamesRepository>();
 
             var app = builder.Build();
 
             ConfigureApplication(app);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
-
-            ImportGameData(app);
 
             app.Run();
         }
@@ -101,42 +103,6 @@ namespace VideoGameShowdown
             }
 
             rawgApiSettings.Value.ApiKey = rawgApiKey;
-        }
-
-        private static void ImportGameData(WebApplication app)
-        {
-            ApplicationDbContext context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationDbContext>();
-
-            var gamesList = new Dictionary<string, Game>();
-
-            var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
-            dataFiles.ForEach(x =>
-            {
-                string fileRaw = File.ReadAllText(x);
-                JObject jsonObject = JsonConvert.DeserializeObject<JObject>(fileRaw);
-
-                var resultsToken = jsonObject.SelectToken("results");
-                var gameList = JsonConvert.DeserializeObject<List<Game>>(resultsToken.ToString());
-
-                if (gameList != null && gameList.Any())
-                {
-                    gameList.ForEach(game =>
-                    {
-                        if (game.EsrbRating != null)
-                        {
-                            var uniqueId = $"{game.EsrbRating.EsrbRatingId}-{Guid.NewGuid()}";
-
-                            game.EsrbRatingId = uniqueId;
-                            game.EsrbRating.EsrbRatingId = uniqueId;
-                        }
-
-                        gamesList[game.GameId] = game;
-                    });
-                }
-            });
-
-            context.AddRange(gamesList.Values);
-            context.SaveChanges();
         }
         #endregion Methods..
     }

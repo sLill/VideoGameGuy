@@ -25,6 +25,7 @@
     <ProjectReference Include="..\VideoGameShowdown.Common\VideoGameShowdown.Common.csproj" />
     <ProjectReference Include="..\VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj" />
     <ProjectReference Include="..\VideoGameShowdown.Core\VideoGameShowdown.Core.csproj" />
+    <ProjectReference Include="..\VideoGameShowdown.Data\VideoGameShowdown.Data.csproj" />
   </ItemGroup>
 
 </Project>

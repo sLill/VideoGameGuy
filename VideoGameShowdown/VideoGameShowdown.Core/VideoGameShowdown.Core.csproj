@@ -20,11 +20,11 @@
   <ItemGroup>
     <ProjectReference Include="..\VideoGameShowdown.Common\VideoGameShowdown.Common.csproj" />
     <ProjectReference Include="..\VideoGameShowdown.Configuration\VideoGameShowdown.Configuration.csproj" />
+    <ProjectReference Include="..\VideoGameShowdown.Data\VideoGameShowdown.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Interfaces\" />
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

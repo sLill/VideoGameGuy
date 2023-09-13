@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace VideoGameShowdown.Core
+namespace VideoGameShowdown.Data
 {
     public class ApplicationDbContext : DbContext
     {
@@ -9,18 +9,8 @@ namespace VideoGameShowdown.Core
 
         #region Properties..
         public DbSet<Game> Games { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
-        public DbSet<EsrbRating> EsrbRatings { get; set; }
-        public DbSet<ShortScreenshot> ShortScreenshots { get; set; }
-        public DbSet<Platform> Platforms { get; set; }
-        public DbSet<Genre> Genres { get; set; }
-        public DbSet<Store> Stores { get; set; }
-
-        // Relationship tables
-        public DbSet<Platform_Game> Platforms_Games { get; set; }
-        public DbSet<Genre_Game> Genres_Games { get; set; }
-        public DbSet<Store_Game> Stores_Games { get; set; }
-        public DbSet<Tag_Game> Tags_Games { get; set; }
+        public DbSet<Screenshot> Screenshots { get; set; }
+        public DbSet<PlayerbaseProgress> PlayerbaseProgress { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -29,6 +19,55 @@ namespace VideoGameShowdown.Core
         #endregion Constructors..
 
         #region Methods..
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // PlayerbaseProgress
+            modelBuilder.Entity<PlayerbaseProgress>()
+                .HasKey(x => x.PlayerbaseProgressId);
+
+            modelBuilder.Entity<PlayerbaseProgress>()
+                .Property(x => x.BeatTheGame_Percent)
+                .HasColumnType("DECIMAL")
+                .HasComputedColumnSql("CASE " +
+                                      "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL) " +
+                                      "     ELSE 0 " +
+                                      "END", true);
+
+            // Games
+            modelBuilder.Entity<Game>()
+                .HasKey(x => x.GameId);
+
+            modelBuilder.Entity<Game>()
+                .Property(x => x.Name)
+                .HasColumnType("NVARCHAR(255)")
+                .IsRequired();
+
+            modelBuilder.Entity<Game>()
+                .Property(x => x.ImageUri)
+                .HasColumnType("NVARCHAR(2048)");
+
+            modelBuilder.Entity<Game>()
+                .Property(x => x.ReviewScore_Percent)
+                .HasColumnType("DECIMAL")
+                .HasComputedColumnSql("CASE " +
+                                      "     WHEN [ReviewMaxScore] > 0 THEN CAST((([ReviewScore] / [ReviewMaxScore]) * 100.0) AS DECIMAL) " +
+                                      "     ELSE 0 " +
+                                      "END", true);
+
+            // Screenshots
+            modelBuilder.Entity<Screenshot>()
+                .HasKey(x => x.ScreenshotId);
+
+            modelBuilder.Entity<Screenshot>()
+                .Property(x => x.Source)
+                .HasColumnType("NVARCHAR(255)")
+                .IsRequired();
+
+            modelBuilder.Entity<Screenshot>()
+                .Property(x => x.Uri)
+                .HasColumnType("NVARCHAR(2048)")
+                .IsRequired();
+        }
         #endregion Methods..
     }
 }

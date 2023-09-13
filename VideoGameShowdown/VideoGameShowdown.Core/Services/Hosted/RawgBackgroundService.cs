@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
+using VideoGameShowdown.Common;
 using VideoGameShowdown.Configuration;
+using VideoGameShowdown.Data;
 
 namespace VideoGameShowdown.Core
 {
@@ -11,6 +13,8 @@ namespace VideoGameShowdown.Core
         #region Fields..
         private readonly ILogger<RawgBackgroundService> _logger;
         private readonly IOptions<RawgApiSettings> _settings;
+        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IGamesRepository _gamesRepository;
         private readonly IHttpClientFactory _httpClientFactory;
         #endregion Fields..
 
@@ -22,10 +26,14 @@ namespace VideoGameShowdown.Core
         #region Constructors..
         public RawgBackgroundService(ILogger<RawgBackgroundService> logger,
                                      IOptions<RawgApiSettings> settings,
+                                     ApplicationDbContext applicationDbContext,
+                                     IGamesRepository gamesRepository,
                                      IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _settings = settings;
+            _applicationDbContext = applicationDbContext;
+            _gamesRepository = gamesRepository;
             _httpClientFactory = httpClientFactory;
         }
         #endregion Constructors..
@@ -35,7 +43,8 @@ namespace VideoGameShowdown.Core
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await PollAndCacheAsync();
+                await ImportGameDataAsync();
+                //await PollAndCacheAsync();
 
                 await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
             }
@@ -133,6 +142,30 @@ namespace VideoGameShowdown.Core
             catch (Exception ex)
             {
                 _logger.LogError($"[RAWG] Update local game data failed. {ex.Message} - {ex.StackTrace}");
+            }
+        }
+
+        private async Task ImportGameDataAsync()
+        {
+            var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
+            foreach (string filepath in dataFiles)
+            {
+                string jsonRaw = File.ReadAllText(filepath);
+                JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
+
+                var resultTokens = responseObject.GetValue("results")?.ToList() ?? new List<JToken>();
+                foreach (JToken token in resultTokens)
+                {
+                    try
+                    {
+                        var rawgGame = token.ToObject<RawgGame>();
+                        await _gamesRepository.AddOrUpdateGameAsync(rawgGame);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                    }
+                }
             }
         }
         #endregion Methods..
