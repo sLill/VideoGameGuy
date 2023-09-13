@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace VideoGameShowdown.Models
+namespace VideoGameShowdown.Core
 {
     public class ApplicationDbContext : DbContext
     {

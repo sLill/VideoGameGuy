@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VideoGameShowdown.Configuration;
 using VideoGameShowdown.Core;
-using VideoGameShowdown.Models;
 
 namespace VideoGameShowdown
 {

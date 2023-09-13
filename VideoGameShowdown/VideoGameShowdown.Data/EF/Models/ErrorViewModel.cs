@@ -1,4 +1,4 @@
-namespace VideoGameShowdown.Models
+namespace VideoGameShowdown.Core
 {
     public class ErrorViewModel
     {

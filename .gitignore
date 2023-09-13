@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/VideoGameShowdown/VideoGameShowdown/Migrations

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using VideoGameShowdown.Models;
+using VideoGameShowdown.Core;
 
 namespace VideoGameShowdown.Controllers
 {

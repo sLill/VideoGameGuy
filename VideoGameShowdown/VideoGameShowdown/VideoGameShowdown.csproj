@@ -27,8 +27,4 @@
     <ProjectReference Include="..\VideoGameShowdown.Core\VideoGameShowdown.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>
