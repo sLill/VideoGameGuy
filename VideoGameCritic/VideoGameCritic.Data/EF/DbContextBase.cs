@@ -11,10 +11,30 @@ namespace VideoGameCritic.Data
         #endregion Properties..
 
         #region Constructors..
+        public DbContextBase(DbContextOptions options) 
+            : base(options) { }
         #endregion Constructors..
 
         #region Methods..
-        public override int SaveChanges()
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateBaseFields();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            UpdateBaseFields();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            UpdateBaseFields();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void UpdateBaseFields()
         {
             var modelEntries = ChangeTracker.Entries()
                 .Where(x => x.Entity is ModelBase && (x.State == EntityState.Added || x.State == EntityState.Modified));
@@ -26,8 +46,6 @@ namespace VideoGameCritic.Data
                 if (entry.State == EntityState.Added)
                     ((ModelBase)entry.Entity).CreatedOn = DateTime.UtcNow;
             }
-
-            return base.SaveChanges();
         }
         #endregion Methods..
     }

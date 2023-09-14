@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameCritic.Data
 {
-    public class MainDbContext : DbContext
+    public class MainDbContext : DbContextBase
     {
         #region Fields..
         #endregion Fields..

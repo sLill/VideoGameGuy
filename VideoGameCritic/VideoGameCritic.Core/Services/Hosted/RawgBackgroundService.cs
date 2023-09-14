@@ -44,10 +44,11 @@ namespace VideoGameCritic.Core
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var currentSystemStatus = _systemStatusRepository.GetCurrentStatusAsync();
-                double daysSinceUpdate = (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays;
-
-                if (daysSinceUpdate >= _settings.Value.LocalCache_UpdateInterval_Days)
+                var currentSystemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+                
+                // Pull and cache Rawg data if it has never been done before or if the polling period has elapsed
+                if (currentSystemStatus.Rawg_UpdatedOnUtc == default 
+                    || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
                     //await ImportGameDataAsync_DEBUG();
                     await PollAndCacheAsync();
