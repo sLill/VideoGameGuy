@@ -3,8 +3,8 @@
     public abstract class ModelBase
     {
         #region Properties..
-        public DateTime CreatedOn { get; set; }
-        public DateTime ModifiedOn { get; set; }
+        public DateTime CreatedOnUtc { get; set; }
+        public DateTime ModifiedOnUtc { get; set; }
         #endregion Properties..
 
         #region Constructors..

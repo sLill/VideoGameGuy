@@ -51,28 +51,28 @@ namespace VideoGameCritic.Core
                     || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
                     //await ImportGameDataAsync_DEBUG();
-                    await PollAndCacheAsync();
+                    await PollAndCacheAsync(currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date, DateTime.UtcNow.Date);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
                 }
 
-                await Task.Delay(TimeSpan.FromHours(2), cancellationToken);
+                await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
             }
         }
 
-        private async Task PollAndCacheAsync()
+        private async Task PollAndCacheAsync(DateTime? updatedOnStartDate, DateTime updatedOnEndDate)
         {
             _logger.LogInformation($"[RAWG] Beginning update..");
             var stopwatch = Stopwatch.StartNew();
 
-            await UpdateLocalGameDataAsync().ConfigureAwait(false);
+            await UpdateLocalGameDataAsync(updatedOnStartDate, updatedOnEndDate).ConfigureAwait(false);
 
             stopwatch.Stop();
             _logger.LogInformation($"[RAWG] Update complete. Total time: {stopwatch.ElapsedMilliseconds / 1000} seconds");
         }
 
-        private async Task UpdateLocalGameDataAsync()
+        private async Task UpdateLocalGameDataAsync(DateTime? updatedOnStartDate, DateTime updatedOnEndDate)
         {
             try
             {
@@ -90,6 +90,10 @@ namespace VideoGameCritic.Core
                     {
                         string baseUrl = Path.Combine(_settings.Value.ApiUrl, _settings.Value.Endpoints["Games"]);
                         string requestUrl = $"{baseUrl}?key={_settings.Value.ApiKey}&page={pageNumber}&page_size={_settings.Value.Response_PageSize}";
+
+                        // Filter by updated date
+                        if (updatedOnStartDate != null)
+                            requestUrl = $"{requestUrl}&updated={updatedOnStartDate.Value.ToString("yyyy-MM-dd")},{updatedOnEndDate.ToString("yyyy-MM-dd")}";   
 
                         // Request and cache file if it is old or does not exist
                         var response = await httpClient.GetAsync(requestUrl);

@@ -48,15 +48,17 @@ namespace VideoGameCritic
 
             var app = builder.Build();
 
-            ConfigureApplication(app);
+            ConfigureApplicationAsync(app);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
 
             app.Run();
         }
 
-        private static void ConfigureApplication(WebApplication app)
+        private static async Task ConfigureApplicationAsync(WebApplication app)
         {
+            await LogApplicationStartedAsync(app);
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
                 app.UseExceptionHandler("/Home/Error");
@@ -113,6 +115,18 @@ namespace VideoGameCritic
             }
 
             rawgApiSettings.Value.ApiKey = rawgApiKey;
+        }
+
+        private static async Task LogApplicationStartedAsync(WebApplication app)
+        {
+            var logger = app.Services.GetService<ILogger<Program>>();
+            var systemStatusRepository = app.Services.GetService<ISystemStatusRepository>();
+
+            logger.LogInformation("Application Started");
+         
+            var systemStatus = await systemStatusRepository.GetCurrentStatusAsync();
+            systemStatus.Application_StartedOnUtc = DateTime.UtcNow;
+            await systemStatusRepository.UpdateAsync(systemStatus);
         }
         #endregion Methods..
     }

@@ -41,10 +41,10 @@ namespace VideoGameCritic.Data
 
             foreach (var entry in modelEntries)
             {
-                ((ModelBase)entry.Entity).ModifiedOn = DateTime.UtcNow;
+                ((ModelBase)entry.Entity).ModifiedOnUtc = DateTime.UtcNow;
 
                 if (entry.State == EntityState.Added)
-                    ((ModelBase)entry.Entity).CreatedOn = DateTime.UtcNow;
+                    ((ModelBase)entry.Entity).CreatedOnUtc = DateTime.UtcNow;
             }
         }
         #endregion Methods..
