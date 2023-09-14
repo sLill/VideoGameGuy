@@ -3,7 +3,11 @@
     public interface IGamesRepository
     {
         #region Methods..
-        Task<bool> AddOrUpdateGameAsync(RawgGame rawgGame);
+        Task<Game> GetGameFromRawgIdAsync(int rawgId);
+
+        Task<bool> AddOrUpdateAsync(RawgGame rawgGame);
+
+        Task<bool> AddOrUpdateRangeAsync(IEnumerable<RawgGame> rawgGames);
         #endregion Methods..
     }
 }

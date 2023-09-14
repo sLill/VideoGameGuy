@@ -147,6 +147,11 @@ namespace VideoGameShowdown.Core
 
         private async Task ImportGameDataAsync()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var rawgGames = new List<RawgGame>();
+
+            int batchSize = 1000;
+
             var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
             foreach (string filepath in dataFiles)
             {
@@ -154,12 +159,19 @@ namespace VideoGameShowdown.Core
                 JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
 
                 var resultTokens = responseObject.GetValue("results")?.ToList() ?? new List<JToken>();
+
                 foreach (JToken token in resultTokens)
                 {
                     try
                     {
                         var rawgGame = token.ToObject<RawgGame>();
-                        await _gamesRepository.AddOrUpdateGameAsync(rawgGame);
+                        rawgGames.Add(rawgGame);
+
+                        if (rawgGames.Count >= batchSize)
+                        {
+                            await _gamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+                            rawgGames.Clear();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -167,6 +179,10 @@ namespace VideoGameShowdown.Core
                     }
                 }
             }
+
+            await _gamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+
+            stopwatch.Stop();
         }
         #endregion Methods..
     }
