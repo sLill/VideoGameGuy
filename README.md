@@ -1,4 +1,4 @@
-# VideoGameShowdown
+# VideoGameCritic
 
 ## Getting Started
 To build and run this application locally, the following are required:
@@ -8,10 +8,12 @@ To build and run this application locally, the following are required:
 * [RAWG Api Key](https://rawg.io/apidocs)
 
 Open the VS Developer Console, perform the following:
-1. dotnet user-secrets init --project VideoGameShowdown
+1. dotnet user-secrets init --project VideoGameCritic
 2. dotnet user-secrets set "SyncfusionProductKey" "PRODUCT-KEY-HERE"
 3. dotnet user-secrets set "RawgApiKey" "API-KEY-HERE"
 
 Open the Package Manager Console, perform the following:
-1. Add-Migration "[MIGRATION_NAME]"
-2. Update-Database
+1. Add-Migration "[MIGRATION_NAME]"-Context MainDbContext
+2. Add-Migration "[MIGRATION_NAME]"-Context RawgDbContext
+3. Update-Database -Context MainDbContext
+4. Update-Database -Context RawgDbContext 
