@@ -1,6 +1,6 @@
 namespace VideoGameCritic.Data
 {
-    public class SystemStatus
+    public class SystemStatus : ModelBase
     {
         #region Properties..
         public Guid SystemStatusId { get; set; }

@@ -1,6 +1,6 @@
 namespace VideoGameCritic.Data
 {
-    public class Screenshot
+    public class Screenshot : ModelBase
     {
         #region Properties..
         public Guid ScreenshotId { get; set; }

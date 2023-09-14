@@ -44,13 +44,13 @@ namespace VideoGameCritic.Core
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var currentSystemStatus = _systemStatusRepository.GetCurrentStatus();
+                var currentSystemStatus = _systemStatusRepository.GetCurrentStatusAsync();
                 double daysSinceUpdate = (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays;
 
                 if (daysSinceUpdate >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
-                    await ImportGameDataAsync_DEBUG();
-                    //await PollAndCacheAsync();
+                    //await ImportGameDataAsync_DEBUG();
+                    await PollAndCacheAsync();
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);

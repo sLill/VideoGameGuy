@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameCritic.Data
 {
-    public class PlayerbaseProgress
+    public class PlayerbaseProgress : ModelBase
     {
         #region Properties..
         public Guid PlayerbaseProgressId { get; set; }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameCritic.Data
 {
-    public class Game
+    public class Game : ModelBase
     {
         #region Properties..
         public Guid GameId { get; set; }

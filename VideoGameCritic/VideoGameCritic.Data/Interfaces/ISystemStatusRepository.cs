@@ -3,9 +3,9 @@ namespace VideoGameCritic.Data
     public interface ISystemStatusRepository
     {
         #region Methods..
-        SystemStatus GetCurrentStatus();
-
-        Task UpdateAsync(SystemStatus status);
+        Task<SystemStatus> GetCurrentStatusAsync();
+        Task<bool> AddAsync(SystemStatus systemStatus);
+        Task<bool> UpdateAsync(SystemStatus systemStatus);
         #endregion Methods..
     }
 }

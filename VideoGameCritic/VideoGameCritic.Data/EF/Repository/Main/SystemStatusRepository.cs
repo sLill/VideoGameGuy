@@ -19,13 +19,62 @@ namespace VideoGameCritic.Data
         #endregion Constructors..
 
         #region Methods..
-        public SystemStatus GetCurrentStatus()
-            => _mainDbContext.SystemStatus.FirstOrDefault();
+        public async Task<SystemStatus> GetCurrentStatusAsync()
+        {
+            SystemStatus systemStatus = null;
 
-        public async Task UpdateAsync(SystemStatus status)
-        { 
-            _mainDbContext.Update(status);
+            try
+            {
+                systemStatus = _mainDbContext.SystemStatus.FirstOrDefault();
+                if (systemStatus == default)
+                {
+                    systemStatus = new SystemStatus();
+                    await AddAsync(systemStatus).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return systemStatus;
+        }
+
+        public async Task<bool> AddAsync(SystemStatus systemStatus)
+        {
+            bool success = true;
+
+            try
+            {
+                await _mainDbContext.SystemStatus.AddAsync(systemStatus).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
             await _mainDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return success;
+        }
+
+        public async Task<bool> UpdateAsync(SystemStatus systemStatus)
+        {
+            bool success = true;
+
+            try
+            {
+                _mainDbContext.Update(systemStatus);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            await _mainDbContext.SaveChangesAsync().ConfigureAwait(false);
+            return success;
         }
         #endregion Methods..
     }

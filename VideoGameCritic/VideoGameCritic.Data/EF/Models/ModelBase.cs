@@ -1,14 +1,16 @@
-namespace VideoGameCritic.Data
+﻿namespace VideoGameCritic.Data
 {
-    public class ErrorLog : ModelBase
+    public abstract class ModelBase
     {
         #region Properties..
-        public Guid ErrorId { get; set; }
         public DateTime CreatedOn { get; set; }
-        public string Message { get; set; }
+        public DateTime ModifiedOn { get; set; }
         #endregion Properties..
 
         #region Constructors..
         #endregion Constructors..
+
+        #region Methods..
+        #endregion Methods..
     }
 }
