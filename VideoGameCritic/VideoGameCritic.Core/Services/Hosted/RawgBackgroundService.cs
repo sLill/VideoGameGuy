@@ -50,8 +50,8 @@ namespace VideoGameCritic.Core
                 if (currentSystemStatus.Rawg_UpdatedOnUtc == default 
                     || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
-                    //await ImportGameDataAsync_DEBUG();
-                    await PollAndCacheAsync(currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date, DateTime.UtcNow.Date);
+                    await ImportGameDataAsync_DEBUG();
+                    //await PollAndCacheAsync(currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date, DateTime.UtcNow.Date);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);

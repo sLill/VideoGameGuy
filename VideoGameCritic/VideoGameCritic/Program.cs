@@ -57,8 +57,6 @@ namespace VideoGameCritic
 
         private static async Task ConfigureApplicationAsync(WebApplication app)
         {
-            await LogApplicationStartedAsync(app);
-
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
                 app.UseExceptionHandler("/Home/Error");
@@ -73,6 +71,9 @@ namespace VideoGameCritic
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            await LogApplicationStartedAsync(app);
+            await CheckAndPerformDatabaseMigrationsAsync(app);
         }
 
         private static void ConfigureSyncfusion(WebApplication app)
@@ -115,6 +116,27 @@ namespace VideoGameCritic
             }
 
             rawgApiSettings.Value.ApiKey = rawgApiKey;
+        }
+
+        private static async Task CheckAndPerformDatabaseMigrationsAsync(WebApplication app)
+        {
+            var logger = app.Services.GetService<ILogger<Program>>();
+            var mainDbContext = app.Services.GetService<MainDbContext>();
+            var rawgDbContext = app.Services.GetService<RawgDbContext>();
+
+            var mainPendingMigrations = await mainDbContext.Database.GetPendingMigrationsAsync();
+            if (mainPendingMigrations?.Any() ?? false)
+            {
+                logger.LogInformation($"Performing db migrations for {mainDbContext.Database.GetDbConnection().Database}");
+                await mainDbContext.Database.MigrateAsync();
+            }
+
+            var rawgPendingMigrations = await rawgDbContext.Database.GetPendingMigrationsAsync();
+            if (rawgPendingMigrations?.Any() ?? false)
+            {
+                logger.LogInformation($"Performing db migrations for {rawgDbContext.Database.GetDbConnection().Database}");
+                await rawgDbContext.Database.MigrateAsync();
+            }
         }
 
         private static async Task LogApplicationStartedAsync(WebApplication app)
