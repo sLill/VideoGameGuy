@@ -5,14 +5,19 @@ namespace VideoGameShowdown.Data
     public class GamesRepository : RepositoryBase, IGamesRepository
     {
         #region Fields..
+        protected readonly RawgDbContext _rawgDbContext;
         #endregion Fields..
 
         #region Properties..
         #endregion Properties..
 
         #region Constructors..
-        public GamesRepository(ILogger<GamesRepository> logger, ApplicationDbContext applicationDbContext)
-            : base(logger, applicationDbContext) { }
+        public GamesRepository(ILogger<GamesRepository> logger, 
+                               RawgDbContext rawgDbContext)
+            : base(logger) 
+        { 
+            _rawgDbContext = rawgDbContext;
+        }
         #endregion Constructors..
 
         #region Methods..
@@ -22,7 +27,7 @@ namespace VideoGameShowdown.Data
 
             try
             {
-                game = await _applicationDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots")
+                game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots")
                     .FirstOrDefaultAsync(x => x.RawgId.HasValue && x.RawgId == rawgId).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -40,7 +45,7 @@ namespace VideoGameShowdown.Data
             try
             {
                 var game = new Game(rawgGame);
-                await _applicationDbContext.AddAsync(game).ConfigureAwait(false);
+                await _rawgDbContext.AddAsync(game).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -48,7 +53,7 @@ namespace VideoGameShowdown.Data
                 success = false;
             }
 
-            await _applicationDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             return success;
         }
@@ -60,7 +65,7 @@ namespace VideoGameShowdown.Data
             try
             {
                 gameData.UpdateFromRawgGame(rawgGame);
-                _applicationDbContext.Update(gameData);
+                _rawgDbContext.Update(gameData);
             }
             catch (Exception ex)
             {
@@ -68,7 +73,7 @@ namespace VideoGameShowdown.Data
                 success = false;
             }
 
-            await _applicationDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
 
             return success;
         }
@@ -111,17 +116,17 @@ namespace VideoGameShowdown.Data
 
                     // Add
                     if (gameData == default)
-                        _applicationDbContext.Games.Add(new Game(rawgGame));
+                        _rawgDbContext.Games.Add(new Game(rawgGame));
 
                     // Update
                     else
                     {
                         gameData.UpdateFromRawgGame(rawgGame);
-                        _applicationDbContext.Games.Update(gameData);
+                        _rawgDbContext.Games.Update(gameData);
                     }
                 }
 
-                await _applicationDbContext.SaveChangesAsync().ConfigureAwait(false);
+                await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

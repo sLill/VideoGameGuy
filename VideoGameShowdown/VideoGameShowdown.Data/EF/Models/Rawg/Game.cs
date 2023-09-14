@@ -1,4 +1,6 @@
-﻿namespace VideoGameShowdown.Data
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VideoGameShowdown.Data
 {
     public class Game
     {
@@ -16,12 +18,13 @@
         public double? ReviewScore {  get; set; }
 
         public double? ReviewMaxScore { get; set; }
-
+        
+        [NotMapped]
         public double? ReviewScore_Percent { get; set; }
 
         public int? MetacriticScore { get; set; }
 
-        public int? AveragePlaytime { get; set; }
+        public int? AveragePlaytime_Hours { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
 
@@ -45,7 +48,7 @@
             ReviewScore = rawgGame.rating;
             ReviewMaxScore = rawgGame.rating_top;
             MetacriticScore = rawgGame.metacritic;
-            AveragePlaytime = rawgGame.playtime;
+            AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
             ReviewCount = rawgGame.reviews_count;
             PlayerbaseProgress = rawgGame.added_by_status != null
@@ -64,7 +67,7 @@
             ReviewScore = rawgGame.rating;
             ReviewMaxScore = rawgGame.rating_top;
             MetacriticScore = rawgGame.metacritic;
-            AveragePlaytime = rawgGame.playtime;
+            AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
             ReviewCount = rawgGame.reviews_count;
 

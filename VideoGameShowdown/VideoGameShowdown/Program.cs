@@ -25,15 +25,25 @@ namespace VideoGameShowdown
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+
+            // Data
+            builder.Services.AddDbContext<MainDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnectionString"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Main"));
 #if DEBUG
                 options.EnableSensitiveDataLogging();
 #endif
             }, ServiceLifetime.Singleton);
 
-            // Data
+            builder.Services.AddDbContext<RawgDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Rawg"));
+#if DEBUG
+                options.EnableSensitiveDataLogging();
+#endif
+            }, ServiceLifetime.Singleton);
+
+            builder.Services.AddSingleton<ISystemStatusRepository, SystemStatusRepository>();
             builder.Services.AddSingleton<IGamesRepository, GamesRepository>();
 
             var app = builder.Build();

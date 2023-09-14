@@ -2,7 +2,7 @@
 
 namespace VideoGameShowdown.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class RawgDbContext : DbContext
     {
         #region Fields..
         #endregion Fields..
@@ -14,7 +14,7 @@ namespace VideoGameShowdown.Data
         #endregion Properties..
 
         #region Constructors..
-        public ApplicationDbContext(DbContextOptions options)
+        public RawgDbContext(DbContextOptions<RawgDbContext> options)
             : base(options) { }
         #endregion Constructors..
 
@@ -27,9 +27,9 @@ namespace VideoGameShowdown.Data
 
             modelBuilder.Entity<PlayerbaseProgress>()
                 .Property(x => x.BeatTheGame_Percent)
-                .HasColumnType("DECIMAL")
+                .HasColumnType("DECIMAL(9,2)")
                 .HasComputedColumnSql("CASE " +
-                                      "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL) " +
+                                      "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL(9,2)) " +
                                       "     ELSE 0 " +
                                       "END", true);
 
@@ -48,9 +48,9 @@ namespace VideoGameShowdown.Data
 
             modelBuilder.Entity<Game>()
                 .Property(x => x.ReviewScore_Percent)
-                .HasColumnType("DECIMAL")
+                .HasColumnType("DECIMAL(9,2)")
                 .HasComputedColumnSql("CASE " +
-                                      "     WHEN [ReviewMaxScore] > 0 THEN CAST((([ReviewScore] / [ReviewMaxScore]) * 100.0) AS DECIMAL) " +
+                                      "     WHEN [ReviewMaxScore] > 0 THEN CAST((([ReviewScore] / [ReviewMaxScore]) * 100.0) AS DECIMAL(9,2)) " +
                                       "     ELSE 0 " +
                                       "END", true);
 

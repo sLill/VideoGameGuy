@@ -4,17 +4,15 @@
     {
         #region Fields..
         protected readonly ILogger<RepositoryBase> _logger;
-        protected readonly ApplicationDbContext _applicationDbContext;
         #endregion Fields..
 
         #region Properties..
         #endregion Properties..
 
         #region Constructors..
-        public RepositoryBase(ILogger<RepositoryBase> logger, ApplicationDbContext applicationDbContext)
+        public RepositoryBase(ILogger<RepositoryBase> logger)
         {
             _logger = logger;
-            _applicationDbContext = applicationDbContext;
         }
         #endregion Constructors..
 

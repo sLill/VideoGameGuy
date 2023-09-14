@@ -1,4 +1,6 @@
-﻿namespace VideoGameShowdown.Data
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VideoGameShowdown.Data
 {
     public class PlayerbaseProgress
     {
@@ -8,10 +10,11 @@
         public Guid GameId { get; set; }
         public Game Game { get; set; }
 
-        public int? OwnTheGame {  get; set; }
+        public double? OwnTheGame {  get; set; }
 
-        public int? BeatTheGame {  get; set; }
+        public double? BeatTheGame {  get; set; }
 
+        [NotMapped]
         public double? BeatTheGame_Percent { get; set; }
         #endregion Properties..
     }
