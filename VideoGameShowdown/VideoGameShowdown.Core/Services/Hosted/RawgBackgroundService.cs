@@ -13,7 +13,6 @@ namespace VideoGameShowdown.Core
         #region Fields..
         private readonly ILogger<RawgBackgroundService> _logger;
         private readonly IOptions<RawgApiSettings> _settings;
-        private readonly ApplicationDbContext _applicationDbContext;
         private readonly IGamesRepository _gamesRepository;
         private readonly IHttpClientFactory _httpClientFactory;
         #endregion Fields..
@@ -26,13 +25,11 @@ namespace VideoGameShowdown.Core
         #region Constructors..
         public RawgBackgroundService(ILogger<RawgBackgroundService> logger,
                                      IOptions<RawgApiSettings> settings,
-                                     ApplicationDbContext applicationDbContext,
                                      IGamesRepository gamesRepository,
                                      IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _settings = settings;
-            _applicationDbContext = applicationDbContext;
             _gamesRepository = gamesRepository;
             _httpClientFactory = httpClientFactory;
         }

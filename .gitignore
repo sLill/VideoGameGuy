@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 /VideoGameShowdown/VideoGameShowdown/Migrations
 /VideoGameShowdown/VideoGameShowdown.Data/Migrations
+/VGS_UsefulQueries.sql
