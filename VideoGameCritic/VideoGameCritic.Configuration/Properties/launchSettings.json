@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "VideoGameCritic.Configuration": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:30824;http://localhost:30825"
+    }
+  }
+}
