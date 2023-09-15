@@ -30,17 +30,17 @@ namespace VideoGameCritic
             builder.Services.AddDbContext<MainDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Main"));
-#if DEBUG
-                options.EnableSensitiveDataLogging();
-#endif
+                if (builder.Environment.IsDevelopment())
+                    options.EnableSensitiveDataLogging();
+
             }, ServiceLifetime.Singleton);
 
             builder.Services.AddDbContext<RawgDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Rawg"));
-#if DEBUG
-                options.EnableSensitiveDataLogging();
-#endif
+                if (builder.Environment.IsDevelopment())
+                    options.EnableSensitiveDataLogging();
+
             }, ServiceLifetime.Singleton);
 
             builder.Services.AddSingleton<ISystemStatusRepository, SystemStatusRepository>();
