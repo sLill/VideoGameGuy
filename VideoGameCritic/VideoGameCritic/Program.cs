@@ -48,14 +48,14 @@ namespace VideoGameCritic
 
             var app = builder.Build();
 
-            ConfigureApplicationAsync(app);
+            ConfigureApplication(app);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
 
             app.Run();
         }
 
-        private static async Task ConfigureApplicationAsync(WebApplication app)
+        private static void ConfigureApplication(WebApplication app)
         {
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -75,8 +75,8 @@ namespace VideoGameCritic
             //app.MapControllerRoute(name: "ReviewScores",
             //                       pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
 
-            await LogApplicationStartedAsync(app);
-            await CheckAndPerformDatabaseMigrationsAsync(app);
+            CheckAndPerformDatabaseMigrations(app);
+            LogApplicationStarted(app);
         }
 
         private static void ConfigureSyncfusion(WebApplication app)
@@ -121,37 +121,37 @@ namespace VideoGameCritic
             rawgApiSettings.Value.ApiKey = rawgApiKey;
         }
 
-        private static async Task CheckAndPerformDatabaseMigrationsAsync(WebApplication app)
+        private static void CheckAndPerformDatabaseMigrations(WebApplication app)
         {
             var logger = app.Services.GetService<ILogger<Program>>();
             var mainDbContext = app.Services.GetService<MainDbContext>();
             var rawgDbContext = app.Services.GetService<RawgDbContext>();
 
-            var mainPendingMigrations = await mainDbContext.Database.GetPendingMigrationsAsync();
+            var mainPendingMigrations = mainDbContext.Database.GetPendingMigrations();
             if (mainPendingMigrations?.Any() ?? false)
             {
                 logger.LogInformation($"Performing db migrations for {mainDbContext.Database.GetDbConnection().Database}");
-                await mainDbContext.Database.MigrateAsync();
+                mainDbContext.Database.Migrate();
             }
 
-            var rawgPendingMigrations = await rawgDbContext.Database.GetPendingMigrationsAsync();
+            var rawgPendingMigrations = rawgDbContext.Database.GetPendingMigrations();
             if (rawgPendingMigrations?.Any() ?? false)
             {
                 logger.LogInformation($"Performing db migrations for {rawgDbContext.Database.GetDbConnection().Database}");
-                await rawgDbContext.Database.MigrateAsync();
+                rawgDbContext.Database.Migrate();
             }
         }
 
-        private static async Task LogApplicationStartedAsync(WebApplication app)
+        private static void LogApplicationStarted(WebApplication app)
         {
             var logger = app.Services.GetService<ILogger<Program>>();
             var systemStatusRepository = app.Services.GetService<ISystemStatusRepository>();
 
             logger.LogInformation("Application Started");
          
-            var systemStatus = await systemStatusRepository.GetCurrentStatusAsync();
+            var systemStatus = systemStatusRepository.GetCurrentStatusAsync().Result;
             systemStatus.Application_StartedOnUtc = DateTime.UtcNow;
-            await systemStatusRepository.UpdateAsync(systemStatus);
+            systemStatusRepository.UpdateAsync(systemStatus).Wait();
         }
         #endregion Methods..
     }

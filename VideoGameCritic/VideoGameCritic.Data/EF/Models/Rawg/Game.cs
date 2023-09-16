@@ -60,9 +60,9 @@ namespace VideoGameCritic.Data
         {
             int score = -1;
 
-            if (RatingsCount != null)
+            if (RatingsCount != null && RatingsCount > 0)
             {
-                double totalScore = Ratings?.Sum(x => (x.Score * 33.33) * x.Count) ?? -1;
+                double totalScore = Ratings?.Sum(x => ((x.Score - 1) * 25.0) * x.Count) ?? -1;
                 score = (int)(totalScore > -1 ? totalScore / RatingsCount : -1);
             }
 
