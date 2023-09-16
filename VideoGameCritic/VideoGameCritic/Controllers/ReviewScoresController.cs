@@ -4,28 +4,26 @@ using VideoGameCritic.Data;
 
 namespace VideoGameCritic.Controllers
 {
-    public class ReviewScoreController : Controller
+    public class ReviewScoresController : Controller
     {
         #region Fields..
         private readonly IGamesRepository _gamesRepository;
         #endregion Fields..
 
         #region Constructors..
-        public ReviewScoreController(IGamesRepository gamesRepository)
+        public ReviewScoresController(IGamesRepository gamesRepository)
         {
             _gamesRepository = gamesRepository;
         }
         #endregion Constructors..
 
         #region Methods..
-        // GET: ReviewScore
-        public async Task<IActionResult> Index()
+        // GET: GetModel
+        public async Task<IActionResult> ReviewScores()
         {
             List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
-
-
-            return View();
-        } 
+            return View(new ReviewScoresViewModel() { GameOne = games[0], GameTwo = games[1] });
+        }
         #endregion Methods..
     }
 }

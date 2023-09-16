@@ -15,13 +15,13 @@ namespace VideoGameCritic.Data
 
         public int? MetacriticScore { get; set; }
 
+        public int? AverageUserScore { get; set; }
+
         public int? AveragePlaytime_Hours { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
 
         public int? RatingsCount { get; set; }
-
-        public int AverageUserRating { get; set; } = -1;
 
         // Foreign Key Relationships
         public PlayerbaseProgress? PlayerbaseProgress { get; set; }
@@ -51,19 +51,19 @@ namespace VideoGameCritic.Data
             Screenshots = rawgGame.short_screenshots.Select(x => new Screenshot() { Source = "RAWG", SourceId = x.id, Uri = x.image })?.ToList();
 
             // Calculated
-            AverageUserRating = GetAverageUserRating();
+            AverageUserScore = GetAverageUserRating();
         }
         #endregion Constructors..
 
         #region Methods..
-        private int GetAverageUserRating()
+        private int? GetAverageUserRating()
         {
-            int score = -1;
+            int? score = null;
 
-            if (RatingsCount != null && RatingsCount > 0)
+            if (RatingsCount != null && RatingsCount > 0 && (Ratings?.Any() ?? false))
             {
-                double totalScore = Ratings?.Sum(x => ((x.Score - 1) * 25.0) * x.Count) ?? -1;
-                score = (int)(totalScore > -1 ? totalScore / RatingsCount : -1);
+                double totalScore = Ratings.Sum(x => ((x.Score - 1) * 25.0) * x.Count);
+                score = (int)(totalScore / RatingsCount);
             }
 
             return score;
@@ -113,7 +113,7 @@ namespace VideoGameCritic.Data
                 });
             }
 
-            AverageUserRating = GetAverageUserRating();
+            AverageUserScore = GetAverageUserRating();
         }
         #endregion Methods..
     }

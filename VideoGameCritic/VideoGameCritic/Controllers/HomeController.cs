@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using VideoGameCritic.Core;
 using VideoGameCritic.Data;
 
 namespace VideoGameCritic.Controllers

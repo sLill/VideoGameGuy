@@ -48,6 +48,7 @@ namespace VideoGameCritic.Data
             {
                 var eligibleGames = await (from x in _rawgDbContext.Games
                                            where x.MetacriticScore != null
+                                              && x.RatingsCount != null  
                                               && x.RatingsCount >= minimumNumberOfRatings
                                            select x).ToListAsync();
 
