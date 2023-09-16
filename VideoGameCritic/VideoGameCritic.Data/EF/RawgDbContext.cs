@@ -9,8 +9,9 @@ namespace VideoGameCritic.Data
 
         #region Properties..
         public DbSet<Game> Games { get; set; }
-        public DbSet<Screenshot> Screenshots { get; set; }
         public DbSet<PlayerbaseProgress> PlayerbaseProgress { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Screenshot> Screenshots { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -21,18 +22,6 @@ namespace VideoGameCritic.Data
         #region Methods..
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // PlayerbaseProgress
-            modelBuilder.Entity<PlayerbaseProgress>()
-                .HasKey(x => x.PlayerbaseProgressId);
-
-            modelBuilder.Entity<PlayerbaseProgress>()
-                .Property(x => x.BeatTheGame_Percent)
-                .HasColumnType("DECIMAL(9,2)")
-                .HasComputedColumnSql("CASE " +
-                                      "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL(9,2)) " +
-                                      "     ELSE 0 " +
-                                      "END", true);
-
             // Games
             modelBuilder.Entity<Game>()
                 .HasKey(x => x.GameId);
@@ -53,6 +42,27 @@ namespace VideoGameCritic.Data
                                       "     WHEN [ReviewMaxScore] > 0 THEN CAST((([ReviewScore] / [ReviewMaxScore]) * 100.0) AS DECIMAL(9,2)) " +
                                       "     ELSE 0 " +
                                       "END", true);
+
+            // PlayerbaseProgress
+            modelBuilder.Entity<PlayerbaseProgress>()
+                .HasKey(x => x.PlayerbaseProgressId);
+
+            modelBuilder.Entity<PlayerbaseProgress>()
+                .Property(x => x.BeatTheGame_Percent)
+                .HasColumnType("DECIMAL(9,2)")
+                .HasComputedColumnSql("CASE " +
+                                      "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL(9,2)) " +
+                                      "     ELSE 0 " +
+                                      "END", true);
+
+            // Ratings
+            modelBuilder.Entity<Rating>()
+                       .HasKey(x => x.RatingId);
+
+
+            modelBuilder.Entity<Rating>()
+                .Property(x => x.Description)
+                .HasColumnType("NVARCHAR(32)");
 
             // Screenshots
             modelBuilder.Entity<Screenshot>()

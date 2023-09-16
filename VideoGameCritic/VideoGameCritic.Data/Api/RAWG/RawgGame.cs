@@ -9,12 +9,23 @@ namespace VideoGameCritic.Data
         public string background_image { get; set; }
         public double? rating { get; set; }
         public double? rating_top { get; set; }
+        public List<rating>? ratings { get; set; }
         public added_by_status? added_by_status { get; set; }
         public int? metacritic { get; set; }
         public int? playtime { get; set; }
         public DateTime? updated { get; set; }
         public int? reviews_count {  get; set; }
         public List<screenshot>? short_screenshots { get; set; } 
+        #endregion Properties..
+    }
+
+    public class rating
+    {
+        #region Properties..
+        public int id { get; set; }
+        public string title { get; set; }
+        public int count { get; set; }
+        public double percent { get; set; }
         #endregion Properties..
     }
 

@@ -15,10 +15,6 @@ namespace VideoGameCritic.Data
 
         public string? ImageUri { get; set; }
 
-        public double? ReviewScore {  get; set; }
-
-        public double? ReviewMaxScore { get; set; }
-        
         [NotMapped]
         public double? ReviewScore_Percent { get; set; }
 
@@ -33,6 +29,8 @@ namespace VideoGameCritic.Data
         // Foreign Key Relationships
         public PlayerbaseProgress? PlayerbaseProgress { get; set; }
 
+        public List<Rating> Ratings { get; set; }
+
         public List<Screenshot>? Screenshots { get; set; }
         #endregion Properties..
 
@@ -45,14 +43,14 @@ namespace VideoGameCritic.Data
             Name = rawgGame.name;
             ReleaseDate = rawgGame.released;
             ImageUri = rawgGame.background_image;
-            ReviewScore = rawgGame.rating;
-            ReviewMaxScore = rawgGame.rating_top;
             MetacriticScore = rawgGame.metacritic;
             AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
             ReviewCount = rawgGame.reviews_count;
             PlayerbaseProgress = rawgGame.added_by_status != null
                    ? new PlayerbaseProgress() { OwnTheGame = rawgGame.added_by_status.owned, BeatTheGame = rawgGame.added_by_status.beaten } : null;
+
+            Ratings = rawgGame.ratings.Select(x => new Rating() { Score = x.id, Description = x.title, Count = x.count })?.ToList();
             Screenshots = rawgGame.short_screenshots.Select(x => new Screenshot() { Source = "RAWG", SourceId = x.id, Uri = x.image })?.ToList();
         }
         #endregion Constructors..
@@ -64,8 +62,6 @@ namespace VideoGameCritic.Data
             Name = rawgGame.name;
             ReleaseDate = rawgGame.released;
             ImageUri = rawgGame.background_image;
-            ReviewScore = rawgGame.rating;
-            ReviewMaxScore = rawgGame.rating_top;
             MetacriticScore = rawgGame.metacritic;
             AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
@@ -78,7 +74,20 @@ namespace VideoGameCritic.Data
                 PlayerbaseProgress.BeatTheGame = rawgGame.added_by_status.beaten;
             }
 
-            if (rawgGame.short_screenshots != null)
+            if (rawgGame.ratings != null)
+            {
+                Ratings = Ratings ?? new List<Rating>();
+                rawgGame.ratings.ForEach(rawgRating =>
+                {
+                    var rating = Ratings.FirstOrDefault(x => x.Score == rawgRating.id);
+                    if (rating == default)
+                        Ratings.Add(new Rating() { Score = rawgRating.id, Description = rawgRating.title, Count = rawgRating.count });
+                    else
+                        rating.Count = rawgRating.count;
+                });
+            }
+
+                if (rawgGame.short_screenshots != null)
             {
                 Screenshots = Screenshots ?? new List<Screenshot>();
                 rawgGame.short_screenshots.ForEach(rawgScreenshot =>
