@@ -13,7 +13,5 @@ Open the VS Developer Console, perform the following:
 3. dotnet user-secrets set "RawgApiKey" "API-KEY-HERE"
 
 Open the Package Manager Console, perform the following:
-1. Add-Migration "[MIGRATION_NAME]"-Context MainDbContext
-2. Add-Migration "[MIGRATION_NAME]"-Context RawgDbContext
-3. Update-Database -Context MainDbContext
-4. Update-Database -Context RawgDbContext 
+1. Add-Migration "[MIGRATION_NAME]" -Context MainDbContext
+2. Add-Migration "[MIGRATION_NAME]" -Context RawgDbContext

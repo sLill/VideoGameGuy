@@ -73,7 +73,7 @@ namespace VideoGameCritic
             //    pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllerRoute(name: "ReviewScores",
-                                   pattern: "{controller=ReviewScores}/{action=ReviewScores}/{id?}");
+                                   pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
 
             CheckAndPerformDatabaseMigrations(app);
             LogApplicationStarted(app);

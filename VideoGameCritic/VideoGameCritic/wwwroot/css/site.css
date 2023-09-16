@@ -46,18 +46,25 @@ main
 
 .img-container
 {
-    overflow: hidden; 
+    display:flex;
+    overflow: hidden;
     position: relative;
+    align-items: center;
+    justify-content: center;
 }
 
-    .img-container img
-    {
-        transform: translate(-25%,0);
-        position:relative;
-        align-self:center; 
-        align-items: center;
-        align-content: center;
-        width: 100vw;
-        min-height: 100%;
-        overflow: hidden;
-    }
+.img-game-title-header
+{
+    position: absolute;
+    height: 10%;
+    width: 50%;
+    z-index: 10;
+}
+
+.img-game-splash
+{
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+}
