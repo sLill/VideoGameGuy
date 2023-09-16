@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using VideoGameCritic.Common;
 
 namespace VideoGameCritic.Data
 {
@@ -36,6 +37,28 @@ namespace VideoGameCritic.Data
             }
 
             return game;
+        }
+
+        public async Task<List<Game>> GetRandomGamesAsync(int numberOfGames)
+        {
+            List<Game> games = default;
+            int minimumNumberOfRatings = 100;
+
+            try
+            {
+                var eligibleGames = await (from x in _rawgDbContext.Games
+                                           where x.MetacriticScore != null
+                                              && x.RatingsCount >= minimumNumberOfRatings
+                                           select x).ToListAsync();
+
+                games = eligibleGames.TakeRandom(numberOfGames);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return games;
         }
 
         private async Task<bool> AddAsync(RawgGame rawgGame)

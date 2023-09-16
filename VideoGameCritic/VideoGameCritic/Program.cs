@@ -68,12 +68,12 @@ namespace VideoGameCritic
 
             app.UseAuthorization();
 
-            //app.MapControllerRoute(
-            //    name: "default",
-            //    pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapControllerRoute(name: "MetaReview2",
-                                   pattern: "{controller=MetaReview}/{action=Index}/{id?}");
+            //app.MapControllerRoute(name: "ReviewScores",
+            //                       pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
 
             await LogApplicationStartedAsync(app);
             await CheckAndPerformDatabaseMigrationsAsync(app);

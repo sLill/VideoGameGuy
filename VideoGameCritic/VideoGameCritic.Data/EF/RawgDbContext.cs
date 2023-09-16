@@ -35,14 +35,6 @@ namespace VideoGameCritic.Data
                 .Property(x => x.ImageUri)
                 .HasColumnType("NVARCHAR(2048)");
 
-            modelBuilder.Entity<Game>()
-                .Property(x => x.ReviewScore_Percent)
-                .HasColumnType("DECIMAL(9,2)")
-                .HasComputedColumnSql("CASE " +
-                                      "     WHEN [ReviewMaxScore] > 0 THEN CAST((([ReviewScore] / [ReviewMaxScore]) * 100.0) AS DECIMAL(9,2)) " +
-                                      "     ELSE 0 " +
-                                      "END", true);
-
             // PlayerbaseProgress
             modelBuilder.Entity<PlayerbaseProgress>()
                 .HasKey(x => x.PlayerbaseProgressId);

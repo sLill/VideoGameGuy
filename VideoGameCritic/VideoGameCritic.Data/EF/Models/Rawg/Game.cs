@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace VideoGameCritic.Data
 {
     public class Game : ModelBase
@@ -15,16 +13,15 @@ namespace VideoGameCritic.Data
 
         public string? ImageUri { get; set; }
 
-        [NotMapped]
-        public double? ReviewScore_Percent { get; set; }
-
         public int? MetacriticScore { get; set; }
 
         public int? AveragePlaytime_Hours { get; set; }
 
         public DateTime? UpdatedOn { get; set; }
 
-        public int? ReviewCount { get; set; }
+        public int? RatingsCount { get; set; }
+
+        public int AverageUserRating { get; set; } = -1;
 
         // Foreign Key Relationships
         public PlayerbaseProgress? PlayerbaseProgress { get; set; }
@@ -46,16 +43,32 @@ namespace VideoGameCritic.Data
             MetacriticScore = rawgGame.metacritic;
             AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
-            ReviewCount = rawgGame.reviews_count;
+            RatingsCount = rawgGame.ratings_count;
             PlayerbaseProgress = rawgGame.added_by_status != null
                    ? new PlayerbaseProgress() { OwnTheGame = rawgGame.added_by_status.owned, BeatTheGame = rawgGame.added_by_status.beaten } : null;
 
             Ratings = rawgGame.ratings.Select(x => new Rating() { Score = x.id, Description = x.title, Count = x.count })?.ToList();
             Screenshots = rawgGame.short_screenshots.Select(x => new Screenshot() { Source = "RAWG", SourceId = x.id, Uri = x.image })?.ToList();
+
+            // Calculated
+            AverageUserRating = GetAverageUserRating();
         }
         #endregion Constructors..
 
         #region Methods..
+        private int GetAverageUserRating()
+        {
+            int score = -1;
+
+            if (RatingsCount != null)
+            {
+                double totalScore = Ratings?.Sum(x => (x.Score * 33.33) * x.Count) ?? -1;
+                score = (int)(totalScore > -1 ? totalScore / RatingsCount : -1);
+            }
+
+            return score;
+        }
+
         public void UpdateFromRawgGame(RawgGame rawgGame)
         {
             RawgId = rawgGame.id;
@@ -65,7 +78,7 @@ namespace VideoGameCritic.Data
             MetacriticScore = rawgGame.metacritic;
             AveragePlaytime_Hours = rawgGame.playtime;
             UpdatedOn = rawgGame.updated;
-            ReviewCount = rawgGame.reviews_count;
+            RatingsCount = rawgGame.ratings_count;
 
             if (rawgGame.added_by_status != null)
             {
@@ -87,7 +100,7 @@ namespace VideoGameCritic.Data
                 });
             }
 
-                if (rawgGame.short_screenshots != null)
+            if (rawgGame.short_screenshots != null)
             {
                 Screenshots = Screenshots ?? new List<Screenshot>();
                 rawgGame.short_screenshots.ForEach(rawgScreenshot =>
@@ -99,6 +112,8 @@ namespace VideoGameCritic.Data
                         screenshot.Uri = rawgScreenshot.image;
                 });
             }
+
+            AverageUserRating = GetAverageUserRating();
         }
         #endregion Methods..
     }

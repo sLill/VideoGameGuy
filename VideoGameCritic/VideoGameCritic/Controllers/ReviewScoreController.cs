@@ -4,14 +4,14 @@ using VideoGameCritic.Data;
 
 namespace VideoGameCritic.Controllers
 {
-    public class ReviewScore : Controller
+    public class ReviewScoreController : Controller
     {
         #region Fields..
         private readonly IGamesRepository _gamesRepository;
         #endregion Fields..
 
         #region Constructors..
-        public ReviewScore(IGamesRepository gamesRepository)
+        public ReviewScoreController(IGamesRepository gamesRepository)
         {
             _gamesRepository = gamesRepository;
         }
@@ -19,8 +19,11 @@ namespace VideoGameCritic.Controllers
 
         #region Methods..
         // GET: ReviewScore
-        public ActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
+
+
             return View();
         } 
         #endregion Methods..

@@ -10,11 +10,11 @@ namespace VideoGameCritic.Data
         public double? rating { get; set; }
         public double? rating_top { get; set; }
         public List<rating>? ratings { get; set; }
+        public int? ratings_count { get; set; }
         public added_by_status? added_by_status { get; set; }
         public int? metacritic { get; set; }
         public int? playtime { get; set; }
         public DateTime? updated { get; set; }
-        public int? reviews_count {  get; set; }
         public List<screenshot>? short_screenshots { get; set; } 
         #endregion Properties..
     }

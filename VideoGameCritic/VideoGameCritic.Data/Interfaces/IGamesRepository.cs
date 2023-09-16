@@ -4,6 +4,8 @@ namespace VideoGameCritic.Data
     {
         #region Methods..
         Task<Game> GetGameFromRawgIdAsync(int rawgId);
+        
+        Task<List<Game>> GetRandomGamesAsync(int numberOfGames);
 
         Task<bool> AddOrUpdateAsync(RawgGame rawgGame);
 
