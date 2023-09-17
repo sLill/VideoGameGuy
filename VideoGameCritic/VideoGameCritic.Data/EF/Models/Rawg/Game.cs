@@ -69,6 +69,29 @@ namespace VideoGameCritic.Data
             return score;
         }
 
+        public int? GetAverageOverallRating()
+        {
+            int totalRating = 0;
+            int ratingsCount = 0;
+
+            if (MetacriticScore.HasValue)
+            {
+                totalRating += MetacriticScore.Value;
+                ratingsCount++;
+            }
+
+            if (AverageUserScore.HasValue)
+            { 
+                totalRating += AverageUserScore.Value;
+                ratingsCount++;
+            }
+
+            if (ratingsCount > 0)
+                totalRating = totalRating / ratingsCount;
+
+            return totalRating;
+        }
+
         public void UpdateFromRawgGame(RawgGame rawgGame)
         {
             RawgId = rawgGame.id;

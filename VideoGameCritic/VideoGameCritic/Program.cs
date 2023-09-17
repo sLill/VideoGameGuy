@@ -22,6 +22,7 @@ namespace VideoGameCritic
 
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();
+            builder.Services.AddTransient<ISessionService, SessionService>();
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
