@@ -6,25 +6,30 @@
 
 <div class="container-fluid vh-100">
     <div class="row vh-100">
-        <div class="col-md-6">
-            <div class="img-container vh-100">
-              
+        <div class="dim-container col-md-6">
+            <div class="img-container non-highlightable vh-100">
+
                 @* Title Header *@
-                 <img class="img-game-title-header" src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
+                <div class="title-container">
+                    <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
+                    <div class="title-overlay-text">@Model.GameOne.Name</div>
+                </div>
 
                 @* Splash *@
-                <img class="img-game-splash" src="@Model.GameOne.ImageUri">
-
+                <button class="splash-button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="img-container vh-100">
+        <div class="dim-container col-md-6">
+            <div class="img-container non-highlightable vh-100">
 
                 @* Title Header *@
-                <img class="img-game-title-header" src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
+                <div class="title-container">
+                    <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
+                    <div class="title-overlay-text">@Model.GameTwo.Name</div>
+                </div>
 
                 @* Splash *@
-                <img class="img-game-splash" src="@Model.GameTwo.ImageUri">
+                <button class="splash-button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
 
             </div>
         </div>

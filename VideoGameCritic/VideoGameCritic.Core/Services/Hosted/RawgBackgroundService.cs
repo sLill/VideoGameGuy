@@ -57,7 +57,7 @@ namespace VideoGameCritic.Core
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
                 }
 
-                await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromHours(6), cancellationToken);
             }
         }
 

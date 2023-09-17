@@ -46,7 +46,7 @@ namespace VideoGameCritic.Data
 
             try
             {
-                var eligibleGames = await (from x in _rawgDbContext.Games
+                var eligibleGames = await (from x in _rawgDbContext.Games.Include("Screenshots")
                                            where x.MetacriticScore != null
                                               && x.RatingsCount != null  
                                               && x.RatingsCount >= minimumNumberOfRatings

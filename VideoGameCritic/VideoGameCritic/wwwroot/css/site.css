@@ -53,18 +53,77 @@ main
     justify-content: center;
 }
 
-.img-game-title-header
+
+/*Splash*/
+.splash-button
 {
-    position: absolute;
-    height: 10%;
-    width: 50%;
-    z-index: 10;
+    width: 100%;
+    height: 100%;
 }
 
-.img-game-splash
+/*Title Container*/
+.title-container
 {
-    position: relative;
-    width: 100%;
-    min-height: 100%;
-    object-fit: cover;
+    pointer-events: none;
+    position: absolute;
+    height: 10%;
+    width: 40%;
+    z-index: 10;
+    margin-bottom: 40%;
+}
+
+    .title-container img
+    {
+        width: 100%;
+        height: 100%;
+    }
+
+.title-overlay-text
+{
+    font-family: "Inter";
+    font-size: 1.1vw;
+    font-weight: 600;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #12161d;
+    text-align: center;
+}
+
+/*Container Dim Effect*/
+.dim-container
+{
+    transition: all 0.3s ease; 
+    position: relative; 
+}
+
+    /* pseudo-element dimming effect */
+    .dim-container::after
+    {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0);
+        pointer-events: none; 
+        transition: all 0.3s ease; 
+        z-index: 50; 
+    }
+
+    .dim-container:hover::after
+    {
+        background-color: rgba(0, 0, 0, 0.3); 
+    }
+
+/*Non-Highlightable*/
+.non-highlightable
+{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none; 
+    user-select: none; 
 }
