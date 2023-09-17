@@ -22,13 +22,30 @@ namespace VideoGameCritic.Data
         #endregion Constructors..
 
         #region Methods..
+        public async Task<Game> GetGameFromGameIdAsync(Guid gameId)
+        {
+            Game game = default;
+
+            try
+            {
+                game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots").Include("Ratings")
+                    .FirstOrDefaultAsync(x => x.GameId == gameId).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return game;
+        }
+
         public async Task<Game> GetGameFromRawgIdAsync(int rawgId)
         {
             Game game = default;
 
             try
             {
-                game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots")
+                game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots").Include("Ratings")
                     .FirstOrDefaultAsync(x => x.RawgId.HasValue && x.RawgId == rawgId).ConfigureAwait(false);
             }
             catch (Exception ex)

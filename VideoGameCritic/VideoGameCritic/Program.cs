@@ -25,6 +25,7 @@ namespace VideoGameCritic
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSession(sessionOptions => sessionOptions.IdleTimeout = TimeSpan.FromMinutes(30));
 
             // Data
             builder.Services.AddDbContext<MainDbContext>(options =>
@@ -67,6 +68,7 @@ namespace VideoGameCritic
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();
 
             //app.MapControllerRoute(
             //    name: "default",

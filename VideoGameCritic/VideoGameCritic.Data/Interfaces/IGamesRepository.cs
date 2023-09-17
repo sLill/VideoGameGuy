@@ -3,6 +3,8 @@ namespace VideoGameCritic.Data
     public interface IGamesRepository
     {
         #region Methods..
+        Task<Game> GetGameFromGameIdAsync(Guid gameId);
+
         Task<Game> GetGameFromRawgIdAsync(int rawgId);
         
         Task<List<Game>> GetRandomGamesAsync(int numberOfGames);

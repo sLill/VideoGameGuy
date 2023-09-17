@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VideoGameCritic.Data;
+using Newtonsoft.Json;
 
 namespace VideoGameCritic.Controllers
 {
@@ -21,11 +22,42 @@ namespace VideoGameCritic.Controllers
         #endregion Constructors..
 
         #region Methods..
+        [ValidateAntiForgeryToken]
+        public IActionResult btnGameOne_Click(Game GameOne)
+        {
+            return Redirect("http://google.com");
+        }
+
+        [ValidateAntiForgeryToken]
+        public IActionResult btnGameTwo_Click(Game GameTwo)
+        {
+            return Redirect("http://google.com");
+        }
+
         // GET: Index
         public async Task<IActionResult> Index()
         {
-            List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
-            return View(new ReviewScoresViewModel() { GameOne = games[0], GameTwo = games[1] });
+            ReviewScoresViewModel reviewScoresViewModel = null;
+
+            var sessionDataString = HttpContext.Session.GetString(nameof(ReviewScoresSessionData));
+            if (!string.IsNullOrEmpty(sessionDataString))
+            {
+                var reviewScoresSessionData = JsonConvert.DeserializeObject<ReviewScoresSessionData>(sessionDataString);
+
+                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.GameOneId);
+                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.GameTwoId);
+
+                reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = gameOneData, GameTwo = gameTwoData };
+            }
+            else
+            {
+                List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
+
+                reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = games[0], GameTwo = games[1] };
+                HttpContext.Session.SetString(nameof(ReviewScoresSessionData), JsonConvert.SerializeObject(new ReviewScoresSessionData() { GameOneId = reviewScoresViewModel.GameOne.GameId, GameTwoId = reviewScoresViewModel.GameTwo.GameId }));
+            }
+
+            return View(reviewScoresViewModel);
         }
 
         public IActionResult GetImage(string imageName)
