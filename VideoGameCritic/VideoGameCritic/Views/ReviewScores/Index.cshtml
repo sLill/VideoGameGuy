@@ -67,7 +67,7 @@
             data: { userChoiceId: gameOneId },
             success: function (data) {
                 if (data !== null) {
-                    if (data.IsCorrect) {
+                    if (data.isCorrect == true) {
                         $('#gameOne_CorrectIcon').css('display', 'block');
                     }
                     else {
@@ -89,7 +89,7 @@
             data: { userChoiceId: gameTwoId },
             success: function (data) {
                 if (data !== null) {
-                    if (data.IsCorrect) {
+                    if (data.isCorrect == true) {
                         $('#gameTwo_CorrectIcon').css('display', 'block');
                     }
                     else {

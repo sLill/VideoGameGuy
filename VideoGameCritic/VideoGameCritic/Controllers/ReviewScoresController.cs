@@ -24,12 +24,12 @@ namespace VideoGameCritic.Controllers
         #endregion Constructors..
 
         #region Methods..
-        //[ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<ActionResult> UserVote(Guid userChoiceId)
         {
             object? result = null;
 
+            // Ignore vote if user has already voted for this set of games before
             var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
             if (reviewScoresSessionData.CurrentRound != null)
             {
@@ -51,25 +51,19 @@ namespace VideoGameCritic.Controllers
         {
             // Try load existing session data
             var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
-            ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
-
-            // Create and store new session data
-            if (reviewScoresViewModel == null)
+            if (reviewScoresSessionData == null)
             {
-                List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
-
-                reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = games[0], GameTwo = games[1] };
-
+                // Create new session
                 reviewScoresSessionData = new ReviewScoresSessionData();
-                reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound() 
-                { 
-                    GameOneId = reviewScoresViewModel.GameOne.GameId, 
-                    GameTwoId = reviewScoresViewModel.GameTwo.GameId 
-                });
-
-                _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
+                await StartNewRoundAsync(reviewScoresSessionData);
+            }
+            else if (reviewScoresSessionData.CurrentRound == null)
+            {
+                // Start a new round if the previous session ended on a complete round
+                await StartNewRoundAsync(reviewScoresSessionData);
             }
 
+            ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
             return View(reviewScoresViewModel);
         }
 
@@ -87,18 +81,24 @@ namespace VideoGameCritic.Controllers
 
         public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
-            ReviewScoresViewModel reviewScoresViewModel = null;
-
-            if (reviewScoresSessionData != null)
-            {
-                // Get the game ids from the most recent game round that the user has not voted on
-                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameOneId);
-                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameTwoId);
-
-                reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = gameOneData, GameTwo = gameTwoData };
-            }
-
+            // Load viewmodel from existing session data
+            var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameOneId);
+            var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameTwoId);
+            
+            ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = gameOneData, GameTwo = gameTwoData };
             return reviewScoresViewModel;
+        }
+
+        private async Task StartNewRoundAsync(ReviewScoresSessionData reviewScoresSessionData)
+        {
+            List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
+            reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound()
+            {
+                GameOneId = games[0].GameId,
+                GameTwoId = games[1].GameId
+            });
+
+            _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
         }
 
         private async Task<Guid?> GetWinningGameIdAsync(ReviewScoresViewModel reviewScoresViewModel)

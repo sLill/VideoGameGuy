@@ -7,7 +7,6 @@ namespace VideoGameCritic.Data
         #region Properties..
         public Game GameOne { get; set; }
         public Game GameTwo { get; set; }
-        public Guid UserChoiceId { get; set; }
         #endregion Properties..
     }
 }
