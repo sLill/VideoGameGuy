@@ -81,6 +81,23 @@ main
         height: 100%;
     }
 
+/*Result Container*/
+.result-container
+{
+    pointer-events: none;
+    position: relative;
+    margin-top: 70%;
+    transform: translate(30%, 0%);
+    z-index: 10;
+}
+
+    .result-container img
+    {
+        width: 100%;
+        height: 100%;
+    }
+
+
 .title-overlay-text
 {
     font-family: "Inter";

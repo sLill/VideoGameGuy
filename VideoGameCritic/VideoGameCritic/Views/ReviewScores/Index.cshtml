@@ -15,13 +15,17 @@
                 <div class="title-container">
                     <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
                     <div class="title-overlay-text">@Model.GameOne.Name</div>
+
+                    @* Result Icon *@
+                    <div class="result-container">
+                        <i id="gameOne_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
+                        <i id="gameOne_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
+                    </div>
                 </div>
 
                 @* Splash *@
-                <form class="splash-button" asp-controller="ReviewScores" asp-action="btnGameOne_Click" method="post">
-                    <button class="splash-button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
-                    <input type="hidden" name="gameOneId" value="@Model.GameOne.GameId" />
-                </form>
+                <button id="btnGameOne" class="splash-button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
+                <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.GameOne.GameId" />
 
             </div>
         </div>
@@ -34,15 +38,66 @@
                 <div class="title-container">
                     <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
                     <div class="title-overlay-text">@Model.GameTwo.Name</div>
+
+                    @* Result Icon *@
+                    <div class="result-container">
+                        <i id="gameTwo_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
+                        <i id="gameTwo_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
+                    </div>
                 </div>
 
                 @* Splash *@
-                <form class="splash-button" asp-controller="ReviewScores" asp-action="btnGameTwo_Click" method="post">
-                    <button class="splash-button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
-                    <input type="hidden" name="gameTwoId" value="@Model.GameTwo.GameId" />
-                </form>
+                <button id="btnGameTwo" class="splash-button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
+                <input type="hidden" name="gameTwoId" value="@Model.GameTwo.GameId" />
 
             </div>
         </div>
     </div>
 </div>
+
+@* JS *@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#btnGameOne').click(function () {
+        let gameOneId = $('#gameOneId').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/ReviewScores/UserVote',
+            data: { userChoiceId: gameOneId },
+            success: function (data) {
+                if (data !== null) {
+                    if (data.IsCorrect) {
+                        $('#gameOne_CorrectIcon').css('display', 'block');
+                    }
+                    else {
+                        $('#gameOne_IncorrectIcon').css('display', 'block');
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    $('#btnGameTwo').click(function () {
+        let gameTwoId = $('#gameTwoId').val();
+
+        $.ajax({
+            type: 'POST',
+            url: '/ReviewScores/UserVote',
+            data: { userChoiceId: gameTwoId },
+            success: function (data) {
+                if (data !== null) {
+                    if (data.IsCorrect) {
+                        $('#gameTwo_CorrectIcon').css('display', 'block');
+                    }
+                    else {
+                        $('#gameTwo_IncorrectIcon').css('display', 'block');
+                    }
+                }
+            }
+        });
+    });
+</script>
+

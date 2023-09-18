@@ -5,9 +5,20 @@
         #region Fields..
         #endregion Fields..
 
+        #region Records..
+        public record GameRound
+        {
+            public Guid GameOneId { get; init; }
+            public Guid GameTwoId { get; init; }
+            public Guid UserChoiceId { get; set; }
+        }
+        #endregion Records..
+
         #region Properties..
-        public Guid GameOneId { get; set; }
-        public Guid GameTwoId { get; set; }
+        public List<GameRound> GameRounds { get; set; } = new List<GameRound>();
+
+        public GameRound CurrentRound
+            => GameRounds.FirstOrDefault(x => x.UserChoiceId == Guid.Empty);
         #endregion Properties..
 
         #region Constructors..

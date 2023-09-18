@@ -24,45 +24,48 @@ namespace VideoGameCritic.Controllers
         #endregion Constructors..
 
         #region Methods..
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> btnGameOne_Click(Guid gameOneId)
+        //[ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<ActionResult> UserVote(Guid userChoiceId)
         {
-            Guid? winningGameId = await GetWinningGameIdAsync();
+            object? result = null;
 
-            if (winningGameId == null)
-                return Redirect("http://youtube.com");
-            if (winningGameId == gameOneId)
-                return Redirect("http://google.com");
-            else
-                return Redirect("http://github.com");
-        }
+            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
+            if (reviewScoresSessionData.CurrentRound != null)
+            {
+                var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
+                Guid? winningGameId = await GetWinningGameIdAsync(reviewScoresViewModel);
 
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> btnGameTwo_Click(Guid gameTwoId)
-        {
-            Guid? winningGameId = await GetWinningGameIdAsync();
+                reviewScoresSessionData.CurrentRound.UserChoiceId = userChoiceId;
+                _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
 
-            if (winningGameId == null)
-                return Redirect("http://youtube.com");
-            if (winningGameId == gameTwoId)
-                return Redirect("http://google.com");
-            else
-                return Redirect("http://github.com");
+                // A null winningGameId indicates a tie (which counts as correct)
+                result = new { IsCorrect = (winningGameId == null || userChoiceId == winningGameId) };
+            }
+
+            return Json(result);
         }
 
         // GET: Index
         public async Task<IActionResult> Index()
         {
-            // Try load existing
-            ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync();
+            // Try load existing session data
+            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
+            ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
 
-            // Create new
+            // Create and store new session data
             if (reviewScoresViewModel == null)
             {
                 List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
 
                 reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = games[0], GameTwo = games[1] };
-                var reviewScoresSessionData = new ReviewScoresSessionData() { GameOneId = reviewScoresViewModel.GameOne.GameId, GameTwoId = reviewScoresViewModel.GameTwo.GameId };
+
+                reviewScoresSessionData = new ReviewScoresSessionData();
+                reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound() 
+                { 
+                    GameOneId = reviewScoresViewModel.GameOne.GameId, 
+                    GameTwoId = reviewScoresViewModel.GameTwo.GameId 
+                });
 
                 _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
             }
@@ -82,15 +85,15 @@ namespace VideoGameCritic.Controllers
                 return NotFound();
         }
 
-        public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync()
+        public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
             ReviewScoresViewModel reviewScoresViewModel = null;
 
-            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
             if (reviewScoresSessionData != null)
             {
-                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.GameOneId);
-                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.GameTwoId);
+                // Get the game ids from the most recent game round that the user has not voted on
+                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameOneId);
+                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameTwoId);
 
                 reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = gameOneData, GameTwo = gameTwoData };
             }
@@ -98,11 +101,9 @@ namespace VideoGameCritic.Controllers
             return reviewScoresViewModel;
         }
 
-        private async Task<Guid?> GetWinningGameIdAsync()
+        private async Task<Guid?> GetWinningGameIdAsync(ReviewScoresViewModel reviewScoresViewModel)
         {
             Guid? result = null;
-
-            var reviewScoresViewModel = await GetViewModelFromSessionDataAsync();
 
             var gameOneAverageTotalRating = reviewScoresViewModel.GameOne.GetAverageOverallRating();
             var gameTwoAverageTotalRating = reviewScoresViewModel.GameTwo.GetAverageOverallRating();
