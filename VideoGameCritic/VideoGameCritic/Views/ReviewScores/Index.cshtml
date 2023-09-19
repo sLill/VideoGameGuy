@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <button id="centerButton">
+        <button id="centerButton" class="color_gray_flat">
             OR
         </button> 
 
@@ -93,8 +93,9 @@
                     }
 
                     $('#centerButton').text("NEXT");
-                    $('#centerButton').css('background', 'linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 136));');
                     $('#centerButton').css('pointer-events', 'auto');
+                    $('#centerButton').removeClass('color_gray_flat');
+                    $('#centerButton').addClass('color_purple');
                 }
             }
         });
@@ -119,8 +120,9 @@
                     }
 
                     $('#centerButton').text("NEXT");
-                    $('#centerButton').css('background', 'linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 136));');
                     $('#centerButton').css('pointer-events', 'auto');
+                    $('#centerButton').removeClass('color_gray_flat');
+                    $('#centerButton').addClass('color_purple');
                 }
             }
         });

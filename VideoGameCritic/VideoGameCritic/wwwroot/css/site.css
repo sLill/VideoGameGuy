@@ -82,6 +82,23 @@ main
     -ms-user-select: none;
     user-select: none;
 }
+
+/*Colors*/
+.color_gray_flat
+{
+    background: #5a5b5b
+}
+
+.color_gray
+{
+    background: linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 102));
+}
+
+.color_purple
+{
+    background: linear-gradient(to bottom, rgba(34, 34, 54), rgba(102, 102, 136));
+}
+
 /*#endregion Global*/
 
 /*#region Review Scores
@@ -115,10 +132,9 @@ main
     text-align: center;
     align-self: center;
 
-    background: linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 102));
     color: white;
     font-family: "Inter";
-    font-size: 1.1vw;
+    font-size: 1.5vw;
     font-weight: 600;
     padding: 40px;
 
