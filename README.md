@@ -5,7 +5,7 @@ A *Higher or Lower* style web game based on video game review scores. Build with
 * Regulary updated data. Sourced from the RAWG.io api
 * Session tracking
 * Mobile friendly
-* Multiple Game Modes (COMING SOON)
+* Multiple game modes (COMING SOON)
 * Twitch integration (COMING SOON)
 
 ## To Run Locally
