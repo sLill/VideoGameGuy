@@ -99,17 +99,38 @@ main
 
 #games_Grid
 {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 10px;
-
     grid-row: 2 / -2;
     grid-column: 2 / -2;
+    display: grid;
+    grid-template-rows: 1fr 8%;
+    grid-template-columns: 1fr 1fr 6% 8px 6% 1fr 1fr;
+}
+
+#games_OR
+{
+    grid-row: 1;
+    grid-column: 3 / 6;
+    z-index: 11;
+
+    text-align: center;
+    align-self: center;
+
+    background-color: #444;
+    color: white;
+    font-family: "Inter";
+    font-size: 1.1vw;
+    font-weight: 600;
+    padding: 40px;
+
+    shape-outside: circle();
+    clip-path: circle();
 }
 
 #gameOne_Grid
 {
+    grid-row: 1;
+    grid-column: 1 / 4;
+
     display: grid;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
@@ -117,11 +138,12 @@ main
 
 #gameTwo_Grid
 {
+    grid-row: 1;
+    grid-column: 5 / 8;
     display: grid;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
 }
-
 
 .gameSplash_Container
 {
@@ -156,6 +178,27 @@ main
     box-shadow: rgba(0, 0, 0, 0.8) 0px 14px 28px, rgba(0, 0, 0, 0.65) 0px 10px 10px;
 }
 
+.gameScore
+{
+    grid-row: 3;
+    grid-column: 2;
+    z-index: 10;
+
+    text-align: center;
+    align-self: center;
+    pointer-events: none;
+    background-color: #307a2d;
+    color: #fff;
+    padding: 40px;
+
+    font-family: "Inter";
+    font-size: 2vw;
+    font-weight: 500;
+
+    shape-outside: circle();
+    clip-path: circle();
+}
+
 .choiceResult_Container
 {
     grid-row: 1;
@@ -164,5 +207,18 @@ main
 
     text-align: center;
     align-self: center;
+}
+
+#footerText
+{
+    grid-row: -1;
+    grid-column: 4;
+
+    text-align: center;
+
+    font-family: "Inter";
+    font-size: 14px;
+    font-weight:400;
+    opacity:0.5;
 }
 /*#endregion */

@@ -23,13 +23,19 @@
                 @Model.GameOne.Name
             </div>
 
+            @* Game Score *@
+            <div class="gameScore">
+                @Model.GameOne.AverageUserScore
+            </div>
+
             @* Result Icon *@
             <div class="choiceResult_Container">
                 <i id="gameOne_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
                 <i id="gameOne_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
             </div>
-
         </div>
+
+        <div id="games_OR">OR</div> 
 
         @* Game Two *@
         <div id="gameTwo_Grid" class="dim-container">
@@ -45,6 +51,11 @@
                 @Model.GameTwo.Name
             </div>
 
+            @* Game Score *@
+            <div class="gameScore">
+                @Model.GameTwo.AverageUserScore
+            </div>
+
             @* Result Icon *@
             <div class="choiceResult_Container">
                 <i id="gameTwo_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
@@ -52,6 +63,11 @@
             </div>
 
         </div>
+    </div>
+
+    @* Footer *@
+    <div id="footerText">
+        Last updated [DATE]
     </div>
 </div>
 
