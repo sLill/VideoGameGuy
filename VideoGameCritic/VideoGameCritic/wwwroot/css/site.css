@@ -136,6 +136,7 @@ main
     font-family: "Inter";
     font-size: 1.5vw;
     font-weight: 600;
+    text-decoration: none;
     padding: 40px;
 
     shape-outside: circle();

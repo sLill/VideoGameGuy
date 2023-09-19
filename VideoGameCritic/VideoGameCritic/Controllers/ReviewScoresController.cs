@@ -49,19 +49,13 @@ namespace VideoGameCritic.Controllers
         // GET: Index
         public async Task<IActionResult> Index()
         {
-            // Try load existing session data
+            // Try load existing session data or create a new one
             var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
             if (reviewScoresSessionData == null)
-            {
-                // Create new session
                 reviewScoresSessionData = new ReviewScoresSessionData();
+
+            if (reviewScoresSessionData.CurrentRound == null)
                 await StartNewRoundAsync(reviewScoresSessionData);
-            }
-            else if (reviewScoresSessionData.CurrentRound == null)
-            {
-                // Start a new round if the previous session ended on a complete round
-                await StartNewRoundAsync(reviewScoresSessionData);
-            }
 
             ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
             return View(reviewScoresViewModel);
