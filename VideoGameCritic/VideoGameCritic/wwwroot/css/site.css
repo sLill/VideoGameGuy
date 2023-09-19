@@ -66,12 +66,12 @@ main
         background-color: rgba(0, 0, 0, 0);
         pointer-events: none;
         transition: all 0.3s ease;
-        z-index: 50;
+        z-index: 20;
     }
 
     .dim-container:hover::after
     {
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.25);
     }
 
 /*Non-Highlightable*/
@@ -82,7 +82,7 @@ main
     -ms-user-select: none;
     user-select: none;
 }
-/*#endregion */
+/*#endregion Global*/
 
 /*#region Review Scores
 */
@@ -106,16 +106,16 @@ main
     grid-template-columns: 1fr 1fr 6% 8px 6% 1fr 1fr;
 }
 
-#games_OR
+#centerButton
 {
     grid-row: 1;
     grid-column: 3 / 6;
-    z-index: 11;
+    z-index: 30;
 
     text-align: center;
     align-self: center;
 
-    background-color: #444;
+    background: linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 102));
     color: white;
     font-family: "Inter";
     font-size: 1.1vw;
@@ -124,6 +124,20 @@ main
 
     shape-outside: circle();
     clip-path: circle();
+
+    pointer-events: none;
+
+    border: none;
+}
+
+#centerButton:hover
+{
+    background:  linear-gradient(to bottom, rgba(40, 40, 55), rgba(102, 102, 136));
+}
+
+#centerButton:active
+{
+    background:   linear-gradient(to bottom, rgba(55, 55, 75), rgba(122, 122, 156));
 }
 
 #gameOne_Grid
@@ -187,7 +201,7 @@ main
     text-align: center;
     align-self: center;
     pointer-events: none;
-    background-color: #307a2d;
+    background: linear-gradient(to bottom, #333333, #307a2d);
     color: #fff;
     padding: 40px;
 
@@ -221,4 +235,4 @@ main
     font-weight:400;
     opacity:0.5;
 }
-/*#endregion */
+/*#endregion Review Scores*/

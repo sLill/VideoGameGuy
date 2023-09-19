@@ -14,7 +14,7 @@
 
             @* Splash *@
             <div class="gameSplash_Container">
-                <button id="btnGameOne" class="gameSplash_Button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
+                <button id="gameOneButton" class="gameSplash_Button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
                 <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.GameOne.GameId" />
             </div>
 
@@ -35,14 +35,16 @@
             </div>
         </div>
 
-        <div id="games_OR">OR</div> 
+        <button id="centerButton">
+            OR
+        </button> 
 
         @* Game Two *@
         <div id="gameTwo_Grid" class="dim-container">
 
             @* Splash *@
             <div class="gameSplash_Container">
-                <button id="btnGameTwo" class="gameSplash_Button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
+                <button id="gameTwoButton" class="gameSplash_Button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
                 <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.GameTwo.GameId" />
             </div>
 
@@ -74,7 +76,7 @@
 @* JS *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $('#btnGameOne').click(function () {
+    $('#gameOneButton').click(function () {
         let gameOneId = $('#gameOneId').val();
 
         $.ajax({
@@ -89,6 +91,10 @@
                     else {
                         $('#gameOne_IncorrectIcon').css('display', 'block');
                     }
+
+                    $('#centerButton').text("NEXT");
+                    $('#centerButton').css('background', 'linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 136));');
+                    $('#centerButton').css('pointer-events', 'auto');
                 }
             }
         });
@@ -96,7 +102,7 @@
 </script>
 
 <script>
-    $('#btnGameTwo').click(function () {
+    $('#gameTwoButton').click(function () {
         let gameTwoId = $('#gameTwoId').val();
 
         $.ajax({
@@ -111,6 +117,10 @@
                     else {
                         $('#gameTwo_IncorrectIcon').css('display', 'block');
                     }
+
+                    $('#centerButton').text("NEXT");
+                    $('#centerButton').css('background', 'linear-gradient(to bottom, rgba(34, 34, 34), rgba(102, 102, 136));');
+                    $('#centerButton').css('pointer-events', 'auto');
                 }
             }
         });
