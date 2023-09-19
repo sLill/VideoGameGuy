@@ -14,18 +14,18 @@
 
             @* Splash *@
             <div class="gameSplash_Container">
-                <button id="gameOneButton" class="gameSplash_Button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
-                <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.GameOne.GameId" />
+                <button id="gameOneButton" class="gameSplash_Button" style="background-image: url('@Model.CurrentRound?.GameOne.ImageUri');"></button>
+                <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.CurrentRound?.GameOne.GameId" />
             </div>
 
             @* Title *@
             <div class="gameTitle">
-                @Model.GameOne.Name
+                @Model.CurrentRound?.GameOne.Name
             </div>
 
             @* Game Score *@
             <div class="gameScore">
-                @Model.GameOne.AverageUserScore
+                @Model.CurrentRound?.GameOne.AverageUserScore
             </div>
 
             @* Result Icon *@
@@ -44,18 +44,18 @@
 
             @* Splash *@
             <div class="gameSplash_Container">
-                <button id="gameTwoButton" class="gameSplash_Button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
-                <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.GameTwo.GameId" />
+                <button id="gameTwoButton" class="gameSplash_Button" style="background-image: url('@Model.CurrentRound?.GameTwo.ImageUri');"></button>
+                <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.CurrentRound?.GameTwo.GameId" />
             </div>
 
             @* Title *@
             <div class="gameTitle">
-                @Model.GameTwo.Name
+                @Model.CurrentRound?.GameTwo.Name
             </div>
 
             @* Game Score *@
             <div class="gameScore">
-                @Model.GameTwo.AverageUserScore
+                @Model.CurrentRound?.GameTwo.AverageUserScore
             </div>
 
             @* Result Icon *@
@@ -64,6 +64,12 @@
                 <i id="gameTwo_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
             </div>
 
+        </div>
+
+        @* Round Carousel *@
+        <div id="roundCarousel_Container">
+@*             <ejs-carousel id="defaultCarousel" dataSource="@Model.GameTwo" itemTemplate='<div class="slide-content">${Title}</div>'>
+            </ejs-carousel> *@
         </div>
     </div>
 
@@ -100,9 +106,7 @@
             }
         });
     });
-</script>
 
-<script>
     $('#gameTwoButton').click(function () {
         let gameTwoId = $('#gameTwoId').val();
 
@@ -127,5 +131,15 @@
             }
         });
     });
+
+    $('prev').onclick = function () {
+        var carouselObj = document.querySelector(".e-carousel").ej2_instances[0];
+        carouselObj.prev();
+    }
+
+    $('next').onclick = function () {
+        var carouselObj = document.querySelector(".e-carousel").ej2_instances[0];
+        carouselObj.next();
+    }
 </script>
 

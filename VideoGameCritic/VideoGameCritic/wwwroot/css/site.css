@@ -106,18 +106,18 @@ main
 #reviewScores_Grid
 {
     display: grid;
-    grid-template-rows: 6% 1fr 1fr 1fr 1fr 6%;
-    grid-template-columns: 6% 1fr 1fr 1fr 1fr 6%;
+    grid-template-rows: 6% 1fr 6%;
+    grid-template-columns: 6% 1fr 1fr 1fr 1fr 1fr 6%;
     
-    height: 100%;
+    height: 100vh;
     width: 100%;
-    display: grid;
 }
 
 #games_Grid
 {
     grid-row: 2 / -2;
     grid-column: 2 / -2;
+
     display: grid;
     grid-template-rows: 1fr 8%;
     grid-template-columns: 1fr 1fr 6% 8px 6% 1fr 1fr;
@@ -239,11 +239,36 @@ main
     align-self: center;
 }
 
+ #roundCarousel_Container 
+ {
+    grid-row: -2;
+    grid-column: 2 / 7;
+
+    align-self: center;
+    justify-self: center;
+    vertical-align: central;
+
+    background-color: none;
+    /*margin: 0 auto;*/
+}
+
+    .e-carousel .slide-content 
+    {
+        align-items: center;
+        display: flex;
+        font-size: 1.25rem;
+        height: 100%;
+        width: stretch;
+        justify-content: center;
+    }
+
 #footerText
 {
-    grid-row: -1;
+    grid-row: 3;
     grid-column: 4;
 
+    align-self: center;
+    vertical-align: central;
     text-align: center;
 
     font-family: "Inter";

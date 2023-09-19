@@ -1,12 +1,12 @@
-﻿using VideoGameCritic.Common;
-
-namespace VideoGameCritic.Data
+﻿namespace VideoGameCritic.Data
 {
     public class ReviewScoresViewModel
     {
         #region Properties..
-        public Game GameOne { get; set; }
-        public Game GameTwo { get; set; }
+        public List<GameRoundViewModel> GameRounds {  get; set; } = new List<GameRoundViewModel>();
+
+        public GameRoundViewModel CurrentRound
+            => GameRounds.LastOrDefault();
         #endregion Properties..
     }
 }

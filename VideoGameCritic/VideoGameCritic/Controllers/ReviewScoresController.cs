@@ -82,10 +82,21 @@ namespace VideoGameCritic.Controllers
         public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
             // Load viewmodel from existing session data
-            var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameOneId);
-            var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(reviewScoresSessionData.CurrentRound.GameTwoId);
-            
-            ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel() { GameOne = gameOneData, GameTwo = gameTwoData };
+            ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel();
+
+            foreach (var gameRound in reviewScoresSessionData.GameRounds)
+            {
+                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(gameRound.GameOneId);
+                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(gameRound.GameTwoId);
+
+                reviewScoresViewModel.GameRounds.Add(new GameRoundViewModel()
+                {
+                    GameOne = gameOneData,
+                    GameTwo = gameTwoData,
+                    UserChoice = gameRound.UserChoiceId
+                });
+            }
+
             return reviewScoresViewModel;
         }
 
@@ -105,13 +116,13 @@ namespace VideoGameCritic.Controllers
         {
             Guid? result = null;
 
-            var gameOneAverageTotalRating = reviewScoresViewModel.GameOne.GetAverageOverallRating();
-            var gameTwoAverageTotalRating = reviewScoresViewModel.GameTwo.GetAverageOverallRating();
+            var gameOneAverageTotalRating = reviewScoresViewModel.CurrentRound.GameOne.GetAverageOverallRating();
+            var gameTwoAverageTotalRating = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating();
 
             if (gameOneAverageTotalRating > gameTwoAverageTotalRating)
-                result = reviewScoresViewModel.GameOne.GameId;
+                result = reviewScoresViewModel.CurrentRound.GameOne.GameId;
             else if (gameTwoAverageTotalRating > gameOneAverageTotalRating)
-                result = reviewScoresViewModel.GameTwo.GameId;
+                result = reviewScoresViewModel.CurrentRound.GameTwo.GameId;
 
             return result;
         }
