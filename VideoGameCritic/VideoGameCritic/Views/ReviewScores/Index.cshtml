@@ -33,6 +33,21 @@
                 <i id="gameOne_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
                 <i id="gameOne_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
             </div>
+
+            @* Outlet Scores *@
+            <div id="gameOneOutletScores_Container">
+
+                @* Metacritic Score *@
+                <div id="gameOne_Metacritic_Score" class="gameOutletScore">
+                    [Metacritic Score]
+                </div>
+
+                @* User Score *@
+                <div id="gameOne_User_Score" class="gameOutletScore">
+                    [User Score]
+                </div>
+
+            </div>
         </div>
 
         <a id="centerButton" class="color_gray_flat" href="/">
@@ -62,6 +77,21 @@
             <div class="choiceResult_Container">
                 <i id="gameTwo_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
                 <i id="gameTwo_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
+            </div>
+
+            @* Outlet Scores *@
+            <div id="gameTwoOutletScores_Container">
+
+            @* Metacritic Score *@
+                <div id="gameTwo_Metacritic_Score" class="gameOutletScore">
+                    [Metacritic Score]
+                </div>
+
+                @* User Score *@
+                <div id="gameTwo_User_Score" class="gameOutletScore">
+                    [User Score]
+                </div>
+
             </div>
 
         </div>
@@ -101,11 +131,17 @@
                         $('#gameOne_IncorrectIcon').css('display', 'block');
                     }
 
-                    $('#gameOne_Score').text(data.gameOneScore)
+                    $('#gameOne_Score').text(data.gameOneScore);
+                    $('#gameOne_Metacritic_Score').text('Metacritic Score: ' + data.gameOneMetacriticScore);
+                    $('#gameOne_User_Score').text('User Score: ' + data.gameOneUserScore);
                     $('#gameOne_Score').css('display', 'block');
-                    
+                    $('#gameOneOutletScores_Container').css('display', 'block');
+
                     $('#gameTwo_Score').text(data.gameTwoScore);
+                    $('#gameTwo_Metacritic_Score').text('Metacritic Score: ' + data.gameTwoMetacriticScore);
+                    $('#gameTwo_User_Score').text('User Score: ' + data.gameTwoUserScore);
                     $('#gameTwo_Score').css('display', 'block');
+                    $('#gameTwoOutletScores_Container').css('display', 'block');
 
                     $('#centerButton').text("NEXT");
                     $('#centerButton').css('pointer-events', 'auto');
@@ -132,11 +168,17 @@
                         $('#gameTwo_IncorrectIcon').css('display', 'block');
                     }
 
-                    $('#gameOne_Score').text(data.gameOneScore)
+                    $('#gameOne_Score').text(data.gameOneScore);
+                    $('#gameOne_Metacritic_Score').text('Metacritic Score: ' + data.gameOneMetacriticScore);
+                    $('#gameOne_User_Score').text('User Score: ' + data.gameOneUserScore);
                     $('#gameOne_Score').css('display', 'block');
-                    
+                    $('#gameOneOutletScores_Container').css('display', 'block');
+
                     $('#gameTwo_Score').text(data.gameTwoScore);
+                    $('#gameTwo_Metacritic_Score').text('Metacritic Score: ' + data.gameTwoMetacriticScore);
+                    $('#gameTwo_User_Score').text('User Score: ' + data.gameTwoUserScore);
                     $('#gameTwo_Score').css('display', 'block');
+                    $('#gameTwoOutletScores_Container').css('display', 'block');
 
                     $('#centerButton').text("NEXT");
                     $('#centerButton').css('pointer-events', 'auto');

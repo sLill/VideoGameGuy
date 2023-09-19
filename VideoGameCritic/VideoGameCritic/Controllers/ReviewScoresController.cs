@@ -43,7 +43,13 @@ namespace VideoGameCritic.Controllers
                 result = new
                 {
                     isCorrect = (winningGameId == null || userChoiceId == winningGameId),
+
+                    gameOneMetacriticScore = reviewScoresViewModel.CurrentRound.GameOne.MetacriticScore,
+                    gameOneUserScore = reviewScoresViewModel.CurrentRound.GameOne.AverageUserScore,
                     gameOneScore = reviewScoresViewModel.CurrentRound.GameOne.GetAverageOverallRating(),
+
+                    gameTwoMetacriticScore = reviewScoresViewModel.CurrentRound.GameTwo.MetacriticScore,
+                    gameTwoUserScore = reviewScoresViewModel.CurrentRound.GameTwo.AverageUserScore,
                     gameTwoScore = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating()
                 };
             }
