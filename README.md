@@ -1,6 +1,14 @@
 # VideoGameCritic
+A *Higher or Lower* style web game based on video game review scores. Built with ASP.NET Core and EF Core.
 
-## Getting Started
+## Features
+* Regulary updated data. Sourced from the RAWG.io api
+* Session tracking
+* Mobile friendly
+* Multiple game modes (COMING SOON)
+* Twitch integration (COMING SOON)
+
+## To Run Locally
 To build and run this application locally, the following are required:
 * [.NET7 SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
 * [SqlServer Express](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
