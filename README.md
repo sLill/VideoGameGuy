@@ -1,5 +1,5 @@
 # VideoGameCritic
-A *Higher or Lower* style web game based on video game review scores. Build with ASP.NET Core and EF Core.
+A *Higher or Lower* style web game based on video game review scores. Built with ASP.NET Core and EF Core.
 
 ## Features
 * Regulary updated data. Sourced from the RAWG.io api
