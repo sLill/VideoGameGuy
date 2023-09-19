@@ -43,79 +43,14 @@ body
 
 main
 {
-}
 
-/*#endregion */
-
-.img-container
-{
-    display:flex;
-    overflow: hidden;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-}
-
-
-/*Splash*/
-.splash-button
-{
-    width: 100%;
-    height: 100%;
-}
-
-/*Title Container*/
-.title-container
-{
-    pointer-events: none;
-    position: absolute;
-    height: 10%;
-    width: 40%;
-    z-index: 10;
-    margin-bottom: 40%;
-}
-
-    .title-container img
-    {
-        width: 100%;
-        height: 100%;
-    }
-
-/*Result Container*/
-.result-container
-{
-    pointer-events: none;
-    position: relative;
-    margin-top: 70%;
-    transform: translate(30%, 0%);
-    z-index: 10;
-}
-
-    .result-container img
-    {
-        width: 100%;
-        height: 100%;
-    }
-
-
-.title-overlay-text
-{
-    font-family: "Inter";
-    font-size: 1.1vw;
-    font-weight: 600;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #12161d;
-    text-align: center;
 }
 
 /*Container Dim Effect*/
 .dim-container
 {
-    transition: all 0.3s ease; 
-    position: relative; 
+    transition: all 0.3s ease;
+    position: relative;
 }
 
     /* pseudo-element dimming effect */
@@ -129,14 +64,14 @@ main
         right: 0;
         bottom: 0;
         background-color: rgba(0, 0, 0, 0);
-        pointer-events: none; 
-        transition: all 0.3s ease; 
-        z-index: 50; 
+        pointer-events: none;
+        transition: all 0.3s ease;
+        z-index: 50;
     }
 
     .dim-container:hover::after
     {
-        background-color: rgba(0, 0, 0, 0.3); 
+        background-color: rgba(0, 0, 0, 0.3);
     }
 
 /*Non-Highlightable*/
@@ -144,6 +79,90 @@ main
 {
     -webkit-user-select: none;
     -moz-user-select: none;
-    -ms-user-select: none; 
-    user-select: none; 
+    -ms-user-select: none;
+    user-select: none;
 }
+/*#endregion */
+
+/*#region Review Scores
+*/
+#reviewScores_Grid
+{
+    display: grid;
+    grid-template-rows: 6% 1fr 1fr 1fr 1fr 6%;
+    grid-template-columns: 6% 1fr 1fr 1fr 1fr 6%;
+    
+    height: 100%;
+    width: 100%;
+    display: grid;
+}
+
+#games_Grid
+{
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 10px;
+
+    grid-row: 2 / -2;
+    grid-column: 2 / -2;
+}
+
+#gameOne_Grid
+{
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#gameTwo_Grid
+{
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+
+.gameSplash_Container
+{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+}
+
+.gameSplash_Button
+{
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+}
+
+.gameTitle
+{
+    grid-row: 2;
+    grid-column: 2;
+    z-index: 10;
+
+    text-align: center;
+    align-self: center;
+    pointer-events: none;
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    padding: 18px;
+    font-family: "Inter";
+    font-size: 1.1vw;
+    font-weight: 500;
+    box-shadow: rgba(0, 0, 0, 0.8) 0px 14px 28px, rgba(0, 0, 0, 0.65) 0px 10px 10px;
+}
+
+.choiceResult_Container
+{
+    grid-row: 1;
+    grid-column: 2;
+    z-index: 10;
+
+    text-align: center;
+    align-self: center;
+}
+/*#endregion */

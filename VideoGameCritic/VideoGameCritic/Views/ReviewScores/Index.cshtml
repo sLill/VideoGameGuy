@@ -1,56 +1,56 @@
 ﻿@model VideoGameCritic.Data.ReviewScoresViewModel
 
 @{
-    ViewData["Title"] = "Main Page";
+    ViewData["Title"] = "Review Scores";
 }
 
-<div class="container-fluid vh-100">
-    <div class="row vh-100">
-        
-        @* Game One  *@
-        <div class="dim-container col-md-6">
-            <div class="img-container non-highlightable vh-100">
+<div id="reviewScores_Grid" class="non-highlightable">
 
-                @* Title Header *@
-                <div class="title-container">
-                    <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
-                    <div class="title-overlay-text">@Model.GameOne.Name</div>
+    @* Games *@
+    <div id="games_Grid">
 
-                    @* Result Icon *@
-                    <div class="result-container">
-                        <i id="gameOne_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
-                        <i id="gameOne_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
-                    </div>
-                </div>
+        @* Game One *@
+        <div id="gameOne_Grid" class="dim-container">
 
-                @* Splash *@
-                <button id="btnGameOne" class="splash-button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
+            @* Splash *@
+            <div class="gameSplash_Container">
+                <button id="btnGameOne" class="gameSplash_Button" style="background-image: url('@Model.GameOne.ImageUri');"></button>
                 <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.GameOne.GameId" />
-
             </div>
+
+            @* Title *@
+            <div class="gameTitle">
+                @Model.GameOne.Name
+            </div>
+
+            @* Result Icon *@
+            <div class="choiceResult_Container">
+                <i id="gameOne_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
+                <i id="gameOne_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
+            </div>
+
         </div>
 
         @* Game Two *@
-        <div class="dim-container col-md-6">
-            <div class="img-container non-highlightable vh-100">
+        <div id="gameTwo_Grid" class="dim-container">
 
-                @* Title Header *@
-                <div class="title-container">
-                    <img src="@Url.Action("GetImage", "ReviewScores", new { imageName = "GameTitleHeader.png" })">
-                    <div class="title-overlay-text">@Model.GameTwo.Name</div>
-
-                    @* Result Icon *@
-                    <div class="result-container">
-                        <i id="gameTwo_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
-                        <i id="gameTwo_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
-                    </div>
-                </div>
-
-                @* Splash *@
-                <button id="btnGameTwo" class="splash-button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
+            @* Splash *@
+            <div class="gameSplash_Container">
+                <button id="btnGameTwo" class="gameSplash_Button" style="background-image: url('@Model.GameTwo.ImageUri');"></button>
                 <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.GameTwo.GameId" />
-
             </div>
+
+            @* Title *@
+            <div class="gameTitle">
+                @Model.GameTwo.Name
+            </div>
+
+            @* Result Icon *@
+            <div class="choiceResult_Container">
+                <i id="gameTwo_CorrectIcon" class="fa-solid fa-check fa-8x" style="color: #33ff55; display: none;"></i>
+                <i id="gameTwo_IncorrectIcon" class="fa-solid fa-x fa-8x" style="color: #e82626; display: none;"></i>
+            </div>
+
         </div>
     </div>
 </div>
