@@ -24,8 +24,8 @@
             </div>
 
             @* Game Score *@
-            <div class="gameScore">
-                @Model.CurrentRound?.GameOne.AverageUserScore
+            <div id="gameOne_Score" class="gameScore">
+                [Score]
             </div>
 
             @* Result Icon *@
@@ -54,8 +54,8 @@
             </div>
 
             @* Game Score *@
-            <div class="gameScore">
-                @Model.CurrentRound?.GameTwo.AverageUserScore
+            <div id="gameTwo_Score" class="gameScore">
+                [Score]
             </div>
 
             @* Result Icon *@
@@ -68,7 +68,10 @@
 
         @* Round Carousel *@
         <div id="roundCarousel_Container">
-@*             <ejs-carousel id="defaultCarousel" dataSource="@Model.GameTwo" itemTemplate='<div class="slide-content">${Title}</div>'>
+@*             <ejs-carousel id="defaultCarousel" dataSource="@Model.GameRounds" itemTemplate='<div class="slide-content">${GameOne.Name}</div>'>
+            </ejs-carousel> *@
+@* 
+            <ejs-carousel id="defaultCarousel" dataSource="@Model.GameRounds" itemTemplate='<div class="slide-content">Hey</div>'>
             </ejs-carousel> *@
         </div>
     </div>
@@ -98,6 +101,12 @@
                         $('#gameOne_IncorrectIcon').css('display', 'block');
                     }
 
+                    $('#gameOne_Score').text(data.gameOneScore)
+                    $('#gameOne_Score').css('display', 'block');
+                    
+                    $('#gameTwo_Score').text(data.gameTwoScore);
+                    $('#gameTwo_Score').css('display', 'block');
+
                     $('#centerButton').text("NEXT");
                     $('#centerButton').css('pointer-events', 'auto');
                     $('#centerButton').removeClass('color_gray_flat');
@@ -122,6 +131,12 @@
                     else {
                         $('#gameTwo_IncorrectIcon').css('display', 'block');
                     }
+
+                    $('#gameOne_Score').text(data.gameOneScore)
+                    $('#gameOne_Score').css('display', 'block');
+                    
+                    $('#gameTwo_Score').text(data.gameTwoScore);
+                    $('#gameTwo_Score').css('display', 'block');
 
                     $('#centerButton').text("NEXT");
                     $('#centerButton').css('pointer-events', 'auto');

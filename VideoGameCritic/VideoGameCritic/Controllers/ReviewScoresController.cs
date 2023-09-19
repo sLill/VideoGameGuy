@@ -40,7 +40,12 @@ namespace VideoGameCritic.Controllers
                 _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
 
                 // A null winningGameId indicates a tie (which counts as correct)
-                result = new { IsCorrect = (winningGameId == null || userChoiceId == winningGameId) };
+                result = new
+                {
+                    isCorrect = (winningGameId == null || userChoiceId == winningGameId),
+                    gameOneScore = reviewScoresViewModel.CurrentRound.GameOne.GetAverageOverallRating(),
+                    gameTwoScore = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating()
+                };
             }
 
             return Json(result);

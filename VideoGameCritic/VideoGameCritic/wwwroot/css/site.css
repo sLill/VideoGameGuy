@@ -138,13 +138,12 @@ main
     font-weight: 600;
     text-decoration: none;
     padding: 40px;
+    border: none;
 
     shape-outside: circle();
     clip-path: circle();
 
     pointer-events: none;
-
-    border: none;
 }
 
 #centerButton:hover
@@ -214,6 +213,8 @@ main
     grid-row: 3;
     grid-column: 2;
     z-index: 10;
+
+    display: none;
 
     text-align: center;
     align-self: center;
