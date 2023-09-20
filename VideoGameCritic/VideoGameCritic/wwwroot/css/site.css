@@ -123,15 +123,24 @@ main
     grid-template-columns: 1fr 1fr 6% 8px 6% 1fr 1fr;
 }
 
-#centerButton
+#centerModule_Container
 {
     grid-row: 1;
     grid-column: 3 / 6;
+
+    display: grid;
+
+    width: 100%;
     z-index: 30;
 
     text-align: center;
     align-self: center;
 
+    pointer-events: none;
+}
+
+#centerButton
+{
     color: white;
     font-family: "Inter";
     font-size: 1.5vw;
@@ -142,8 +151,23 @@ main
 
     shape-outside: circle();
     clip-path: circle();
+}
 
-    pointer-events: none;
+#playerScore_Container
+{
+    background-color:  #444;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 10px;
+    opacity: 0.6;
+}
+
+.playerScore
+{
+    color: white;
+    font-family: "Inter";
+    font-size: 0.9vw;
+    font-weight: 400;
 }
 
 #centerButton:hover
@@ -288,7 +312,7 @@ main
     justify-self: end;
 }
 
-.gameOutletScore
+.outletScore
 {
     color: #fff;
     font-family: "Inter";
@@ -316,8 +340,10 @@ main
     justify-self: center;
     vertical-align: central;
 
+    height: 100%;
+    width: 100%;
+
     background-color: none;
-    /*margin: 0 auto;*/
 }
 
     .e-carousel .slide-content 
@@ -330,10 +356,15 @@ main
         justify-content: center;
     }
 
+#roundCarousel
+{
+
+}
+
 #footer
 {
     grid-row: 3;
-    grid-column: 6;
+    grid-column: 7;
 }
 
 #dataSource
