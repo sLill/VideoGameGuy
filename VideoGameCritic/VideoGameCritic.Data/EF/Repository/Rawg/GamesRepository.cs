@@ -59,7 +59,7 @@ namespace VideoGameCritic.Data
         public async Task<List<Game>> GetRandomGamesAsync(int numberOfGames)
         {
             List<Game> games = default;
-            int minimumNumberOfRatings = 100;
+            int minimumNumberOfRatings = 750;
 
             try
             {

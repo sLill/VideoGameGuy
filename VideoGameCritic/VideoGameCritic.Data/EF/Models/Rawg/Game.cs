@@ -64,6 +64,7 @@ namespace VideoGameCritic.Data
             {
                 double totalScore = Ratings.Sum(x => ((x.Score - 1) * 25.0) * x.Count);
                 score = (int)(totalScore / RatingsCount);
+                score += 5;
             }
 
             return score;

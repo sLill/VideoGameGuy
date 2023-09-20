@@ -48,6 +48,9 @@
                 </div>
 
             </div>
+
+            @* Shadow *@
+            <div id="gameOne_gridShadow"></div>
         </div>
 
         <a id="centerButton" class="color_gray_flat" href="/">
@@ -82,7 +85,7 @@
             @* Outlet Scores *@
             <div id="gameTwoOutletScores_Container">
 
-            @* Metacritic Score *@
+                @* Metacritic Score *@
                 <div id="gameTwo_Metacritic_Score" class="gameOutletScore">
                     [Metacritic Score]
                 </div>
@@ -94,6 +97,8 @@
 
             </div>
 
+            @* Shadow *@
+            <div id="gameTwo_gridShadow"></div>
         </div>
 
         @* Round Carousel *@
@@ -107,8 +112,14 @@
     </div>
 
     @* Footer *@
-    <div id="footerText">
-        Last updated [DATE]
+    <div id="footer">
+        <div id="updatedOn">
+            Last updated @Model.LastUpdateOn.ToShortDateString()
+        </div>
+
+        <div id="dataSource">
+            Data made available by <a href="http://Rawg.io">Rawg.io</a>
+        </div>
     </div>
 </div>
 
@@ -126,10 +137,18 @@
                 if (data !== null) {
                     if (data.isCorrect == true) {
                         $('#gameOne_CorrectIcon').css('display', 'block');
+                        $('#gameOne_gridShadow').addClass('gridShadow_Green');
                     }
                     else {
                         $('#gameOne_IncorrectIcon').css('display', 'block');
+                        $('#gameOne_gridShadow').addClass('gridShadow_Red');
                     }
+
+                    $('#gameOne_Grid').removeClass('dim-container');
+                    $('#gameTwo_Grid').removeClass('dim-container');
+
+                    $('#gameOneButton').prop('disabled', true);
+                    $('#gameTwoButton').prop('disabled', true);
 
                     $('#gameOne_Score').text(data.gameOneScore);
                     $('#gameOne_Metacritic_Score').text('Metacritic Score: ' + data.gameOneMetacriticScore);
@@ -163,10 +182,18 @@
                 if (data !== null) {
                     if (data.isCorrect == true) {
                         $('#gameTwo_CorrectIcon').css('display', 'block');
+                        $('#gameTwo_gridShadow').addClass('gridShadow_Green');
                     }
                     else {
                         $('#gameTwo_IncorrectIcon').css('display', 'block');
+                        $('#gameTwo_gridShadow').addClass('gridShadow_Red');
                     }
+
+                    $('#gameOne_Grid').removeClass('dim-container');
+                    $('#gameTwo_Grid').removeClass('dim-container');
+
+                    $('#gameOneButton').prop('disabled', true);
+                    $('#gameTwoButton').prop('disabled', true);
 
                     $('#gameOne_Score').text(data.gameOneScore);
                     $('#gameOne_Metacritic_Score').text('Metacritic Score: ' + data.gameOneMetacriticScore);

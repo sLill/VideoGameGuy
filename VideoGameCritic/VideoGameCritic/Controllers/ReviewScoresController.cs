@@ -10,16 +10,19 @@ namespace VideoGameCritic.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ISessionService _sessionService;
         private readonly IGamesRepository _gamesRepository;
+        private readonly ISystemStatusRepository _systemStatusRepository;
         #endregion Fields..
 
         #region Constructors..
         public ReviewScoresController(IWebHostEnvironment webHostEnvironment,
                                       ISessionService sessionService,
-                                      IGamesRepository gamesRepository)
+                                      IGamesRepository gamesRepository,
+                                      ISystemStatusRepository systemStatusRepository)
         {
             _webHostEnvironment = webHostEnvironment;
             _sessionService = sessionService;
             _gamesRepository = gamesRepository;
+            _systemStatusRepository = systemStatusRepository;
         }
         #endregion Constructors..
 
@@ -88,6 +91,9 @@ namespace VideoGameCritic.Controllers
         {
             // Load viewmodel from existing session data
             ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel();
+
+            var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+            reviewScoresViewModel.LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue;
 
             foreach (var gameRound in reviewScoresSessionData.GameRounds)
             {
