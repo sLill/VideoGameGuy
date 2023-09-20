@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using VideoGameCritic.Configuration;
 using VideoGameCritic.Core;
@@ -20,6 +19,12 @@ namespace VideoGameCritic
             builder.Configuration.AddUserSecrets<Program>();
             builder.Services.Configure<AzureSecretSettings>(builder.Configuration.GetSection("SecretSettings").GetSection("Azure"));
             builder.Services.Configure<RawgApiSettings>(builder.Configuration.GetSection("RawgApiSettings"));
+
+            // Logging
+            builder.Services.AddLogging(loggingBuilder => 
+            {
+                loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, builder.Configuration.GetConnectionString("ConnectionString_Dev_Main")));
+            });
 
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();

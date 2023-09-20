@@ -29,13 +29,17 @@ namespace VideoGameCritic.Data
                 .HasKey(x => x.ErrorId);
 
             modelBuilder.Entity<ErrorLog>()
+                .Property(x => x.Category)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<ErrorLog>()
                 .Property(x => x.Message)
                 .HasColumnType("NVARCHAR(MAX)")
                 .IsRequired();
 
             modelBuilder.Entity<ErrorLog>()
-                .Property(x => x.CreatedOn)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .Property(x => x.Exception)
+                .HasColumnType("NVARCHAR(MAX)");
         }
         #endregion Methods..
     }
