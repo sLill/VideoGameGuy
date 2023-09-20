@@ -56,7 +56,12 @@ namespace VideoGameCritic.Core
                     || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
                     //await ImportGameDataAsync_DEBUG();
-                    //await PollAndCacheAsync(currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date, DateTime.UtcNow.Date);
+
+                    // It's difficult to tell what timezone RAWG uses. To avoid any overlap issues, move the start date a day back
+                    DateTime startDate = currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1);
+                    DateTime endDate = DateTime.UtcNow.Date;
+
+                    await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
