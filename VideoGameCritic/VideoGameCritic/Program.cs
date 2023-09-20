@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using VideoGameCritic.Configuration;
 using VideoGameCritic.Core;
@@ -35,7 +36,7 @@ namespace VideoGameCritic
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 
-            }, ServiceLifetime.Singleton);
+            });
 
             builder.Services.AddDbContext<RawgDbContext>(options =>
             {
@@ -43,21 +44,21 @@ namespace VideoGameCritic
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 
-            }, ServiceLifetime.Singleton);
+            });
 
-            builder.Services.AddSingleton<ISystemStatusRepository, SystemStatusRepository>();
-            builder.Services.AddSingleton<IGamesRepository, GamesRepository>();
+            builder.Services.AddScoped<ISystemStatusRepository, SystemStatusRepository>();
+            builder.Services.AddScoped<IGamesRepository, GamesRepository>();
 
             var app = builder.Build();
+            var serviceScope = app.Services.CreateScope();
 
-            ConfigureApplication(app);
+            ConfigureApplication(app, serviceScope);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
-
             app.Run();
         }
 
-        private static void ConfigureApplication(WebApplication app)
+        private static void ConfigureApplication(WebApplication app, IServiceScope serviceScope)
         {
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -78,8 +79,8 @@ namespace VideoGameCritic
             app.MapControllerRoute(name: "ReviewScores",
                                    pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
 
-            CheckAndPerformDatabaseMigrations(app);
-            LogApplicationStarted(app);
+            CheckAndPerformDatabaseMigrations(app, serviceScope);
+            LogApplicationStarted(app, serviceScope);
         }
 
         private static void ConfigureSyncfusion(WebApplication app)
@@ -124,11 +125,11 @@ namespace VideoGameCritic
             rawgApiSettings.Value.ApiKey = rawgApiKey;
         }
 
-        private static void CheckAndPerformDatabaseMigrations(WebApplication app)
+        private static void CheckAndPerformDatabaseMigrations(WebApplication app, IServiceScope serviceScope)
         {
             var logger = app.Services.GetService<ILogger<Program>>();
-            var mainDbContext = app.Services.GetService<MainDbContext>();
-            var rawgDbContext = app.Services.GetService<RawgDbContext>();
+            var mainDbContext = serviceScope.ServiceProvider.GetRequiredService<MainDbContext>();
+            var rawgDbContext = serviceScope.ServiceProvider.GetRequiredService<RawgDbContext>();
 
             var mainPendingMigrations = mainDbContext.Database.GetPendingMigrations();
             if (mainPendingMigrations?.Any() ?? false)
@@ -145,10 +146,10 @@ namespace VideoGameCritic
             }
         }
 
-        private static void LogApplicationStarted(WebApplication app)
+        private static void LogApplicationStarted(WebApplication app, IServiceScope serviceScope)
         {
             var logger = app.Services.GetService<ILogger<Program>>();
-            var systemStatusRepository = app.Services.GetService<ISystemStatusRepository>();
+            var systemStatusRepository = serviceScope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
 
             logger.LogInformation("Application Started");
          

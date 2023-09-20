@@ -11,11 +11,13 @@ namespace VideoGameCritic.Core
     public class RawgBackgroundService : BackgroundService
     {
         #region Fields..
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<RawgBackgroundService> _logger;
         private readonly IOptions<RawgApiSettings> _settings;
+        private readonly IHttpClientFactory _httpClientFactory;
+
         private readonly ISystemStatusRepository _systemStatusRepository;
         private readonly IGamesRepository _gamesRepository;
-        private readonly IHttpClientFactory _httpClientFactory;
         #endregion Fields..
 
         #region Properties..
@@ -24,18 +26,21 @@ namespace VideoGameCritic.Core
         #endregion Properties..
 
         #region Constructors..
-        public RawgBackgroundService(ILogger<RawgBackgroundService> logger,
+        public RawgBackgroundService(IServiceProvider serviceProvider,
+                                     ILogger<RawgBackgroundService> logger,
                                      IOptions<RawgApiSettings> settings,
-                                     ISystemStatusRepository systemStatusRepository,
-                                     IGamesRepository gamesRepository,
                                      IHttpClientFactory httpClientFactory)
         {
+
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _settings = settings;
-            _systemStatusRepository = systemStatusRepository;
-            _systemStatusRepository = systemStatusRepository;
-            _gamesRepository = gamesRepository;
             _httpClientFactory = httpClientFactory;
+
+            var serviceScrope = _serviceProvider.CreateScope();
+            _systemStatusRepository = serviceScrope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
+            _gamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IGamesRepository>();
+
         }
         #endregion Constructors..
 

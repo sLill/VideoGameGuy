@@ -57,10 +57,13 @@
         <div id="centerModule_Container">
             <a id="centerButton" class="color_gray_flat" href="/">
                 OR
-            </a> 
+            </a>
 
-            <div id="playerScore_Container">
-                <div id="playerScore" class="playerScore">[Score]</div>
+            <div id="streak_Container">
+                <input id="currentStreakVal" type="hidden" name="streak" value="@Model.Streak" />
+                <input id="highestStreakVal" type="hidden" name="highest" value="@Model.HighestStreak" />
+                <div id="currentStreak" class="currentStreak">Streak: @Model.Streak</div>
+                <div id="highestStreak" class="highestStreak">Highest: @Model.HighestStreak</div>
             </div>
         </div>
 
@@ -141,6 +144,8 @@
 <script>
         $('#gameOneButton').click(function () {
             let gameOneId = $('#gameOneId').val();
+            let currentStreak = parseInt($('#currentStreakVal').val());
+            let highestStreak = parseInt($('#highestStreakVal').val());
 
             $.ajax({
                 type: 'POST',
@@ -148,13 +153,23 @@
                 data: { userChoiceId: gameOneId },
                 success: function (data) {
                     if (data !== null) {
-                        if (data.isCorrect == true) {
+                        if (data.winningGameId == gameOneId) {
                             $('#gameOne_CorrectIcon').css('display', 'block');
                             $('#gameOne_gridShadow').addClass('gridShadow_Green');
+                          
+                            currentStreak = currentStreak + 1;
+                            $('#currentStreak').text("Streak: " + currentStreak);
+
+                            if (currentStreak > highestStreak) {
+                                $('#highestStreak').text("Highest: " + currentStreak);
+                            }
                         }
                         else {
                             $('#gameOne_IncorrectIcon').css('display', 'block');
                             $('#gameOne_gridShadow').addClass('gridShadow_Red');
+
+                            currentStreak = 0;
+                            $('#currentStreak').text("Streak: " + currentStreak);
                         }
 
                         $('#gameOne_Grid').removeClass('dim-container');
@@ -186,6 +201,8 @@
 
         $('#gameTwoButton').click(function () {
             let gameTwoId = $('#gameTwoId').val();
+            let currentStreak = parseInt($('#currentStreakVal').val());
+            let highestStreak = parseInt($('#highestStreakVal').val());
 
             $.ajax({
                 type: 'POST',
@@ -193,13 +210,23 @@
                 data: { userChoiceId: gameTwoId },
                 success: function (data) {
                     if (data !== null) {
-                        if (data.isCorrect == true) {
+                        if (data.winningGameId == gameTwoId) {
                             $('#gameTwo_CorrectIcon').css('display', 'block');
                             $('#gameTwo_gridShadow').addClass('gridShadow_Green');
+
+                            currentStreak = currentStreak + 1;
+                            $('#currentStreak').text("Streak: " + currentStreak);
+                            
+                            if (currentStreak > highestStreak) {
+                                $('#highestStreak').text("Highest: " + currentStreak);
+                            }
                         }
                         else {
                             $('#gameTwo_IncorrectIcon').css('display', 'block');
                             $('#gameTwo_gridShadow').addClass('gridShadow_Red');
+
+                            currentStreak = 0;
+                            $('#currentStreak').text("Streak: " + currentStreak);
                         }
 
                         $('#gameOne_Grid').removeClass('dim-container');

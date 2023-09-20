@@ -39,13 +39,11 @@ namespace VideoGameCritic.Controllers
                 var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
                 Guid? winningGameId = await GetWinningGameIdAsync(reviewScoresViewModel);
 
-                reviewScoresSessionData.CurrentRound.UserChoiceId = userChoiceId;
-                _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
+                reviewScoresViewModel.CurrentRound.WinningGameId = winningGameId;
 
-                // A null winningGameId indicates a tie (which counts as correct)
                 result = new
                 {
-                    isCorrect = (winningGameId == null || userChoiceId == winningGameId),
+                    winningGameId = reviewScoresViewModel.CurrentRound.WinningGameId,
 
                     gameOneMetacriticScore = reviewScoresViewModel.CurrentRound.GameOne.MetacriticScore,
                     gameOneUserScore = reviewScoresViewModel.CurrentRound.GameOne.AverageUserScore,
@@ -55,6 +53,29 @@ namespace VideoGameCritic.Controllers
                     gameTwoUserScore = reviewScoresViewModel.CurrentRound.GameTwo.AverageUserScore,
                     gameTwoScore = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating()
                 };
+
+                // Update Session and ViewModel data
+                reviewScoresSessionData.CurrentRound.WinningGameId = winningGameId;
+                reviewScoresSessionData.CurrentRound.UserChoiceId = userChoiceId;
+                reviewScoresViewModel.CurrentRound.UserChoice = userChoiceId;
+
+                // Highest streak 
+                if (reviewScoresViewModel.Streak > reviewScoresViewModel.HighestStreak)
+                {
+                    reviewScoresViewModel.HighestStreak = reviewScoresViewModel.Streak;
+                    reviewScoresSessionData.HighestStreak = reviewScoresViewModel.Streak;
+                }
+
+                // Streak
+                bool isCorrect = winningGameId == null || winningGameId == userChoiceId;
+                if (!isCorrect)
+                {
+                    // Reset on incorrect
+                    reviewScoresViewModel.GameRounds.Clear();
+                    reviewScoresSessionData.GameRounds.Clear();
+                }
+
+                _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
             }
 
             return Json(result);
@@ -90,7 +111,10 @@ namespace VideoGameCritic.Controllers
         public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
             // Load viewmodel from existing session data
-            ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel();
+            ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel()
+            {
+                HighestStreak = reviewScoresSessionData.HighestStreak
+            };
 
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
             reviewScoresViewModel.LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue;
@@ -104,7 +128,8 @@ namespace VideoGameCritic.Controllers
                 {
                     GameOne = gameOneData,
                     GameTwo = gameTwoData,
-                    UserChoice = gameRound.UserChoiceId
+                    UserChoice = gameRound.UserChoiceId,
+                    WinningGameId = gameRound.WinningGameId
                 });
             }
 
