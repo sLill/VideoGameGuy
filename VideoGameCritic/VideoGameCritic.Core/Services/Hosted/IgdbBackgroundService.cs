@@ -47,7 +47,7 @@ namespace VideoGameCritic.Core
             {
                 var currentSystemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
 
-                // Pull and cache Rawg data if it has never been done before or if the polling period has elapsed
+                // Pull and cache data if it has never been done before or if the polling period has elapsed
                 if (currentSystemStatus.Igdb_UpdatedOnUtc == default
                     || (DateTime.UtcNow - currentSystemStatus.Igdb_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {

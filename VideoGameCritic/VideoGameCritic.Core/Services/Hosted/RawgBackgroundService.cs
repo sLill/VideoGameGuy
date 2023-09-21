@@ -50,11 +50,11 @@ namespace VideoGameCritic.Core
             {
                 var currentSystemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
                 
-                // Pull and cache Rawg data if it has never been done before or if the polling period has elapsed
+                // Pull and cache data if it has never been done before or if the polling period has elapsed
                 if (currentSystemStatus.Rawg_UpdatedOnUtc == default 
                     || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
-                    // It's difficult to tell what timezone RAWG uses. To avoid any overlap issues, move the start date a day back
+                    // To avoid any overlap issues, move the start date a day back
                     DateTime startDate = currentSystemStatus.Rawg_UpdatedOnUtc == default
                         ? DateTime.MinValue : (currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
 
