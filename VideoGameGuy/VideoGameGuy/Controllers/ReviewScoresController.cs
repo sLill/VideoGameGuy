@@ -9,19 +9,19 @@ namespace VideoGameGuy.Controllers
         #region Fields..
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ISessionService _sessionService;
-        private readonly IRawgGamesRepository _gamesRepository;
+        private readonly IRawgGamesRepository _rawgGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
         #endregion Fields..
 
         #region Constructors..
         public ReviewScoresController(IWebHostEnvironment webHostEnvironment,
                                       ISessionService sessionService,
-                                      IRawgGamesRepository gamesRepository,
+                                      IRawgGamesRepository rawgGamesRepository,
                                       ISystemStatusRepository systemStatusRepository)
         {
             _webHostEnvironment = webHostEnvironment;
             _sessionService = sessionService;
-            _gamesRepository = gamesRepository;
+            _rawgGamesRepository = rawgGamesRepository;
             _systemStatusRepository = systemStatusRepository;
         }
         #endregion Constructors..
@@ -121,8 +121,8 @@ namespace VideoGameGuy.Controllers
 
             foreach (var gameRound in reviewScoresSessionData.GameRounds)
             {
-                var gameOneData = await _gamesRepository.GetGameFromGameIdAsync(gameRound.GameOneId);
-                var gameTwoData = await _gamesRepository.GetGameFromGameIdAsync(gameRound.GameTwoId);
+                var gameOneData = await _rawgGamesRepository.GetGameFromGameIdAsync(gameRound.GameOneId);
+                var gameTwoData = await _rawgGamesRepository.GetGameFromGameIdAsync(gameRound.GameTwoId);
 
                 reviewScoresViewModel.GameRounds.Add(new GameRoundViewModel()
                 {
@@ -138,12 +138,16 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
-            List<Game> games = await _gamesRepository.GetRandomGamesAsync(2);
-            reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound()
+            List<Game> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
+
+            if (games?.Any() ?? false)
             {
-                GameOneId = games[0].GameId,
-                GameTwoId = games[1].GameId
-            });
+                reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound()
+                {
+                    GameOneId = games[0].GameId,
+                    GameTwoId = games[1].GameId
+                });
+            }
 
             _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
         }

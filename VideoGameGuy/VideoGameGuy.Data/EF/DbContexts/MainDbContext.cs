@@ -9,7 +9,7 @@ namespace VideoGameGuy.Data
 
         #region Properties..
         public DbSet<SystemStatus> SystemStatus { get; set; }
-        public DbSet<ErrorLog> ErrorLog { get; set; }
+        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -24,20 +24,20 @@ namespace VideoGameGuy.Data
             modelBuilder.Entity<SystemStatus>()
                  .HasKey(x => x.SystemStatusId);
 
-            // ErrorLog
-            modelBuilder.Entity<ErrorLog>()
-                .HasKey(x => x.ErrorId);
+            // ApplicationLogs
+            modelBuilder.Entity<ApplicationLog>()
+                .HasKey(x => x.LogId);
 
-            modelBuilder.Entity<ErrorLog>()
+            modelBuilder.Entity<ApplicationLog>()
                 .Property(x => x.Category)
                 .HasColumnType("NVARCHAR(255)");
 
-            modelBuilder.Entity<ErrorLog>()
+            modelBuilder.Entity<ApplicationLog>()
                 .Property(x => x.Message)
                 .HasColumnType("NVARCHAR(MAX)")
                 .IsRequired();
 
-            modelBuilder.Entity<ErrorLog>()
+            modelBuilder.Entity<ApplicationLog>()
                 .Property(x => x.Exception)
                 .HasColumnType("NVARCHAR(MAX)");
         }

@@ -17,7 +17,7 @@ namespace VideoGameGuy.Core
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly ISystemStatusRepository _systemStatusRepository;
-        private readonly IRawgGamesRepository _gamesRepository;
+        private readonly IRawgGamesRepository _rawgGamesRepository;
         #endregion Fields..
 
         #region Properties..
@@ -38,7 +38,7 @@ namespace VideoGameGuy.Core
 
             var serviceScrope = _serviceProvider.CreateScope();
             _systemStatusRepository = serviceScrope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
-            _gamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IRawgGamesRepository>();
+            _rawgGamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IRawgGamesRepository>();
 
         }
         #endregion Constructors..
@@ -60,7 +60,7 @@ namespace VideoGameGuy.Core
 
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    //await ImportGameDataAsync_DEBUG();
+                    await ImportGameDataAsync_DEBUG();
                     //await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
@@ -177,7 +177,7 @@ namespace VideoGameGuy.Core
 
                     if (batch.Count >= batchSize)
                     {
-                        await _gamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
+                        await _rawgGamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
                         batch.Clear();
                     }
                 }
@@ -188,7 +188,7 @@ namespace VideoGameGuy.Core
             }
 
             if (batch.Any())
-                await _gamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
+                await _rawgGamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
         }
 
         private async Task ImportGameDataAsync_DEBUG()
@@ -215,7 +215,7 @@ namespace VideoGameGuy.Core
 
                         if (rawgGames.Count >= batchSize)
                         {
-                            await _gamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+                            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
                             rawgGames.Clear();
                         }
                     }
@@ -226,7 +226,7 @@ namespace VideoGameGuy.Core
                 }
             }
 
-            await _gamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
 
             stopwatch.Stop();
         }

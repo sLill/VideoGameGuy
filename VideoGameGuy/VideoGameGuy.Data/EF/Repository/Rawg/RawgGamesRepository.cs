@@ -63,13 +63,16 @@ namespace VideoGameGuy.Data
 
             try
             {
-                var eligibleGames = await (from x in _rawgDbContext.Games.Include("Screenshots")
-                                           where x.MetacriticScore != null
-                                              && x.RatingsCount != null  
-                                              && x.RatingsCount >= minimumNumberOfRatings
-                                           select x).ToListAsync();
+                if (_rawgDbContext.Games.Count() >= numberOfGames)
+                {
+                    var eligibleGames = await (from x in _rawgDbContext.Games.Include("Screenshots")
+                                               where x.MetacriticScore != null
+                                                  && x.RatingsCount != null
+                                                  && x.RatingsCount >= minimumNumberOfRatings
+                                               select x).ToListAsync();
 
-                games = eligibleGames.TakeRandom(numberOfGames);
+                    games = eligibleGames.TakeRandom(numberOfGames);
+                }
             }
             catch (Exception ex)
             {

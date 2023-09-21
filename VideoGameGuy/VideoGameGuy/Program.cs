@@ -22,7 +22,7 @@ namespace VideoGameGuy
             builder.Services.Configure<IgdbApiSettings>(builder.Configuration.GetSection("IgdbApiSettings"));
 
             // Logging
-            builder.Services.AddLogging(loggingBuilder => 
+            builder.Services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, builder.Configuration.GetConnectionString("ConnectionString_Dev_Main")));
             });

@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using VideoGameGuy.Data;
 
 namespace VideoGameGuy.Core
 {
@@ -15,7 +16,7 @@ namespace VideoGameGuy.Core
         {
             _categoryName = categoryName;
             _filter = filter ?? throw new ArgumentNullException(nameof(filter));
-            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _connectionString = connectionString;
         }
         #endregion Constructors..
 
@@ -38,20 +39,35 @@ namespace VideoGameGuy.Core
             if (string.IsNullOrEmpty(message) && exception == null)
                 return;
 
-            WriteLogToDatabase(logLevel, eventId, _categoryName, message, exception);
+            var applicationLog = new ApplicationLog()
+            {
+                LogId = Guid.NewGuid(),
+                LogLevel = logLevel.ToString(),
+                EventId = eventId.Id,
+                Category = _categoryName,
+                Message = message,
+                Exception = exception?.ToString() ?? string.Empty,
+                CreatedOnUtc = DateTime.UtcNow,
+                ModifiedOnUtc = DateTime.UtcNow
+            };
+
+            WriteApplicationLog(applicationLog);
         }
 
-        private void WriteLogToDatabase(LogLevel logLevel, EventId eventId, string category, string message, Exception exception)
+        private void WriteApplicationLog(ApplicationLog applicationLog)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = new SqlCommand("INSERT INTO YourLogTable (LogLevel, EventId, Category, Message, Exception) VALUES (@logLevel, @eventId, @category, @message, @exception)", connection);
+                var command = new SqlCommand("INSERT INTO ApplicationLogs (LogLevel, EventId, Category, Message, Exception, CreatedOnUtc, ModifiedOnUtc) " +
+                                             "VALUES (@logLevel, @eventId, @category, @message, @exception, @createdOnUtc, @modifiedOnUtc)", connection);
 
-                command.Parameters.AddWithValue("@logLevel", logLevel.ToString());
-                command.Parameters.AddWithValue("@eventId", eventId.Id);
-                command.Parameters.AddWithValue("@category", category);
-                command.Parameters.AddWithValue("@message", message);
-                command.Parameters.AddWithValue("@exception", exception?.ToString() ?? "");
+                command.Parameters.AddWithValue("@logLevel", applicationLog.LogLevel);
+                command.Parameters.AddWithValue("@eventId", applicationLog.EventId);
+                command.Parameters.AddWithValue("@category", applicationLog.Category);
+                command.Parameters.AddWithValue("@message", applicationLog.Message);
+                command.Parameters.AddWithValue("@exception", applicationLog.Exception);
+                command.Parameters.AddWithValue("@createdOnUtc", applicationLog.CreatedOnUtc);
+                command.Parameters.AddWithValue("@modifiedOnUtc", applicationLog.ModifiedOnUtc);
 
                 connection.Open();
                 command.ExecuteNonQuery();
