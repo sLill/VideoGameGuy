@@ -3,7 +3,7 @@ using VideoGameCritic.Common;
 
 namespace VideoGameCritic.Data
 {
-    public class GamesRepository : RepositoryBase, IGamesRepository
+    public class RawgGamesRepository : RepositoryBase, IRawgGamesRepository
     {
         #region Fields..
         protected readonly RawgDbContext _rawgDbContext;
@@ -13,8 +13,8 @@ namespace VideoGameCritic.Data
         #endregion Properties..
 
         #region Constructors..
-        public GamesRepository(ILogger<GamesRepository> logger, 
-                               RawgDbContext rawgDbContext)
+        public RawgGamesRepository(ILogger<RawgGamesRepository> logger, 
+                                   RawgDbContext rawgDbContext)
             : base(logger) 
         { 
             _rawgDbContext = rawgDbContext;

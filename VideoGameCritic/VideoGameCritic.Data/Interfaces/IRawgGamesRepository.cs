@@ -1,6 +1,6 @@
 namespace VideoGameCritic.Data
 {
-    public interface IGamesRepository
+    public interface IRawgGamesRepository
     {
         #region Methods..
         Task<Game> GetGameFromGameIdAsync(Guid gameId);

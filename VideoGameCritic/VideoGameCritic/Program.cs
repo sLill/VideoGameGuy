@@ -19,6 +19,7 @@ namespace VideoGameCritic
             builder.Configuration.AddUserSecrets<Program>();
             builder.Services.Configure<AzureSecretSettings>(builder.Configuration.GetSection("SecretSettings").GetSection("Azure"));
             builder.Services.Configure<RawgApiSettings>(builder.Configuration.GetSection("RawgApiSettings"));
+            builder.Services.Configure<IgdbApiSettings>(builder.Configuration.GetSection("IgdbApiSettings"));
 
             // Logging
             builder.Services.AddLogging(loggingBuilder => 
@@ -30,6 +31,7 @@ namespace VideoGameCritic
             builder.Services.AddTransient<ISecretService, SecretService>();
             builder.Services.AddTransient<ISessionService, SessionService>();
             builder.Services.AddHostedService<RawgBackgroundService>();
+            builder.Services.AddHostedService<IgdbBackgroundService>();
             builder.Services.AddHttpClient();
             builder.Services.AddControllersWithViews();
             builder.Services.AddSession(sessionOptions => sessionOptions.IdleTimeout = TimeSpan.FromMinutes(30));
@@ -51,8 +53,17 @@ namespace VideoGameCritic
 
             });
 
+            builder.Services.AddDbContext<IgdbDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Igdb"));
+                if (builder.Environment.IsDevelopment())
+                    options.EnableSensitiveDataLogging();
+
+            });
+
             builder.Services.AddScoped<ISystemStatusRepository, SystemStatusRepository>();
-            builder.Services.AddScoped<IGamesRepository, GamesRepository>();
+            builder.Services.AddScoped<IRawgGamesRepository, RawgGamesRepository>();
+            builder.Services.AddScoped<IIgdbGamesRepository, IgdbGamesRepository>();
 
             var app = builder.Build();
             var serviceScope = app.Services.CreateScope();
@@ -60,6 +71,8 @@ namespace VideoGameCritic
             ConfigureApplication(app, serviceScope);
             ConfigureSyncfusion(app);
             ConfigureRawgApi(app);
+            ConfigureIgdbApi(app);
+
             app.Run();
         }
 
@@ -113,21 +126,47 @@ namespace VideoGameCritic
             var secretService = app.Services.GetService<ISecretService>();
             var rawgApiSettings = app.Services.GetRequiredService<IOptions<RawgApiSettings>>();
 
-            string rawgApiKey = null;
+            string apiKey = null;
 
             if (app.Environment.IsDevelopment())
             {
                 // User-Secrets
-                rawgApiKey = secretService.GetUserSecretSettings().RawgApiKey;
+                apiKey = secretService.GetUserSecretSettings().RawgApiKey;
             }
             else
             {
                 // Azure
                 var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
-                rawgApiKey = secretService.GetAzureSecret(azureSecretSettings.Value.RawgApiKeyId);
+                apiKey = secretService.GetAzureSecret(azureSecretSettings.Value.RawgApiKeyId);
             }
 
-            rawgApiSettings.Value.ApiKey = rawgApiKey;
+            rawgApiSettings.Value.ApiKey = apiKey;
+        }
+
+        private static void ConfigureIgdbApi(WebApplication app)
+        {
+            var secretService = app.Services.GetService<ISecretService>();
+            var IgdbApiSettings = app.Services.GetRequiredService<IOptions<IgdbApiSettings>>();
+
+            string clientId = null;
+            string clientSecret = null;
+
+            if (app.Environment.IsDevelopment())
+            {
+                // User-Secrets
+                clientId = secretService.GetUserSecretSettings().IgdbClientId;
+                clientSecret = secretService.GetUserSecretSettings().IgdbClientSecret;
+            }
+            else
+            {
+                // Azure
+                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+                clientId = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientId);
+                clientSecret = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientSecret);
+            }
+
+            IgdbApiSettings.Value.ClientId = clientId;
+            IgdbApiSettings.Value.ClientSecret = clientSecret;
         }
 
         private static void CheckAndPerformDatabaseMigrations(WebApplication app, IServiceScope serviceScope)
@@ -135,6 +174,7 @@ namespace VideoGameCritic
             var logger = app.Services.GetService<ILogger<Program>>();
             var mainDbContext = serviceScope.ServiceProvider.GetRequiredService<MainDbContext>();
             var rawgDbContext = serviceScope.ServiceProvider.GetRequiredService<RawgDbContext>();
+            var igdbDbContext = serviceScope.ServiceProvider.GetRequiredService<IgdbDbContext>();
 
             var mainPendingMigrations = mainDbContext.Database.GetPendingMigrations();
             if (mainPendingMigrations?.Any() ?? false)
@@ -148,6 +188,13 @@ namespace VideoGameCritic
             {
                 logger.LogInformation($"Performing db migrations for {rawgDbContext.Database.GetDbConnection().Database}");
                 rawgDbContext.Database.Migrate();
+            }
+
+            var igdbPendingMigrations = igdbDbContext.Database.GetPendingMigrations();
+            if (igdbPendingMigrations?.Any() ?? false)
+            {
+                logger.LogInformation($"Performing db migrations for {igdbDbContext.Database.GetDbConnection().Database}");
+                igdbDbContext.Database.Migrate();
             }
         }
 

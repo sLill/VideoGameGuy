@@ -17,7 +17,7 @@ namespace VideoGameCritic.Core
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly ISystemStatusRepository _systemStatusRepository;
-        private readonly IGamesRepository _gamesRepository;
+        private readonly IRawgGamesRepository _gamesRepository;
         #endregion Fields..
 
         #region Properties..
@@ -31,7 +31,6 @@ namespace VideoGameCritic.Core
                                      IOptions<RawgApiSettings> settings,
                                      IHttpClientFactory httpClientFactory)
         {
-
             _serviceProvider = serviceProvider;
             _logger = logger;
             _settings = settings;
@@ -39,7 +38,7 @@ namespace VideoGameCritic.Core
 
             var serviceScrope = _serviceProvider.CreateScope();
             _systemStatusRepository = serviceScrope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
-            _gamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IGamesRepository>();
+            _gamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IRawgGamesRepository>();
 
         }
         #endregion Constructors..
@@ -55,13 +54,14 @@ namespace VideoGameCritic.Core
                 if (currentSystemStatus.Rawg_UpdatedOnUtc == default 
                     || (DateTime.UtcNow - currentSystemStatus.Rawg_UpdatedOnUtc.Value).TotalDays >= _settings.Value.LocalCache_UpdateInterval_Days)
                 {
-                    //await ImportGameDataAsync_DEBUG();
-
                     // It's difficult to tell what timezone RAWG uses. To avoid any overlap issues, move the start date a day back
-                    DateTime startDate = currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1);
+                    DateTime startDate = currentSystemStatus.Rawg_UpdatedOnUtc == default
+                        ? DateTime.MinValue : (currentSystemStatus.Rawg_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
+
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    await PollAndCacheAsync(startDate, endDate);
+                    //await ImportGameDataAsync_DEBUG();
+                    //await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);

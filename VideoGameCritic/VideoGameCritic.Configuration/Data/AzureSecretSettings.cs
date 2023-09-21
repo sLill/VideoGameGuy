@@ -6,6 +6,8 @@ namespace VideoGameCritic.Configuration
         public string KeyVaultBaseUrl { get; set; }
         public string SyncfusionProductKeyId { get; set; }
         public string RawgApiKeyId { get; set; }
+        public string IgdbClientId { get; set; }
+        public string IgdbClientSecret { get; set; }
         #endregion Properties..
     }
 }

@@ -9,14 +9,14 @@ namespace VideoGameCritic.Controllers
         #region Fields..
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ISessionService _sessionService;
-        private readonly IGamesRepository _gamesRepository;
+        private readonly IRawgGamesRepository _gamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
         #endregion Fields..
 
         #region Constructors..
         public ReviewScoresController(IWebHostEnvironment webHostEnvironment,
                                       ISessionService sessionService,
-                                      IGamesRepository gamesRepository,
+                                      IRawgGamesRepository gamesRepository,
                                       ISystemStatusRepository systemStatusRepository)
         {
             _webHostEnvironment = webHostEnvironment;
