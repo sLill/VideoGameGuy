@@ -1,4 +1,4 @@
-﻿namespace VideoGameCritic.Configuration
+namespace VideoGameGuy.Configuration
 {
     public class IgdbApiSettings
     {

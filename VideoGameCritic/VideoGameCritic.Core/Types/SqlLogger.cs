@@ -1,6 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
-namespace VideoGameCritic.Core
+namespace VideoGameGuy.Core
 {
     public class SqlLogger : ILogger
     {

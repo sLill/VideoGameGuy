@@ -1,6 +1,6 @@
-﻿using VideoGameCritic.Data;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Core
+namespace VideoGameGuy.Core
 {
     public interface ISessionService
     {

@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net;
-using VideoGameCritic.Configuration;
-using VideoGameCritic.Data;
+using VideoGameGuy.Configuration;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Core
+namespace VideoGameGuy.Core
 {
     public class IgdbBackgroundService : BackgroundService
     {

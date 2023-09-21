@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using VideoGameCritic.Data;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Controllers
+namespace VideoGameGuy.Controllers
 {
     public class HomeController : Controller
     {

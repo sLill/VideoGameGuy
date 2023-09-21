@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using VideoGameCritic.Core;
-using VideoGameCritic.Data;
+using Microsoft.AspNetCore.Mvc;
+using VideoGameGuy.Core;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Controllers
+namespace VideoGameGuy.Controllers
 {
     public class ReviewScoresController : Controller
     {

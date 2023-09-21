@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using VideoGameCritic.Configuration;
-using VideoGameCritic.Core;
-using VideoGameCritic.Data;
+using VideoGameGuy.Configuration;
+using VideoGameGuy.Core;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic
+namespace VideoGameGuy
 {
     public class Program
     {

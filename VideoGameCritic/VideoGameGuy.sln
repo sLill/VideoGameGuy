@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameCritic", "VideoGameCritic\VideoGameCritic.csproj", "{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameGuy", "VideoGameGuy\VideoGameGuy.csproj", "{1F71DE3D-A2FD-4403-B1ED-4A68AAE5CF8A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameCritic.Core", "VideoGameCritic.Core\VideoGameCritic.Core.csproj", "{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameGuy.Core", "VideoGameGuy.Core\VideoGameGuy.Core.csproj", "{153A4CDD-F221-408C-AE5C-6253E7ADCEB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameCritic.Configuration", "VideoGameCritic.Configuration\VideoGameCritic.Configuration.csproj", "{7D8C780C-D136-4675-9117-5C3AD3968228}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameGuy.Configuration", "VideoGameGuy.Configuration\VideoGameGuy.Configuration.csproj", "{7D8C780C-D136-4675-9117-5C3AD3968228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameCritic.Common", "VideoGameCritic.Common\VideoGameCritic.Common.csproj", "{065A49C9-4520-43C6-827D-24277198CF19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameGuy.Common", "VideoGameGuy.Common\VideoGameGuy.Common.csproj", "{065A49C9-4520-43C6-827D-24277198CF19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameCritic.Data", "VideoGameCritic.Data\VideoGameCritic.Data.csproj", "{264BD46F-FC0F-4581-BEA0-D60F3EBBC921}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoGameGuy.Data", "VideoGameGuy.Data\VideoGameGuy.Data.csproj", "{264BD46F-FC0F-4581-BEA0-D60F3EBBC921}"
 	ProjectSection(ProjectDependencies) = postProject
 		{065A49C9-4520-43C6-827D-24277198CF19} = {065A49C9-4520-43C6-827D-24277198CF19}
 	EndProjectSection

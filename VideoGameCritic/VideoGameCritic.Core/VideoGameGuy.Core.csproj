@@ -18,9 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoGameCritic.Common\VideoGameCritic.Common.csproj" />
-    <ProjectReference Include="..\VideoGameCritic.Configuration\VideoGameCritic.Configuration.csproj" />
-    <ProjectReference Include="..\VideoGameCritic.Data\VideoGameCritic.Data.csproj" />
+    <ProjectReference Include="..\VideoGameGuy.Common\VideoGameGuy.Common.csproj" />
+    <ProjectReference Include="..\VideoGameGuy.Configuration\VideoGameGuy.Configuration.csproj" />
+    <ProjectReference Include="..\VideoGameGuy.Data\VideoGameGuy.Data.csproj" />
   </ItemGroup>
 
 </Project>

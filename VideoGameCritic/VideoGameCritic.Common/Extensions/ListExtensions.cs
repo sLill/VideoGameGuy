@@ -1,4 +1,4 @@
-﻿namespace VideoGameCritic.Common
+namespace VideoGameGuy.Common
 {
     public static class ListExtensions
     {

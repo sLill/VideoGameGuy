@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using VideoGameCritic.Data;
+using Newtonsoft.Json;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Core
+namespace VideoGameGuy.Core
 {
     public class SessionService : ISessionService
     {

@@ -1,4 +1,4 @@
-# VideoGameCritic
+# VideoGameGuy
 A *Higher or Lower* style web game based on video game review scores. Built with ASP.NET Core and EF Core.
 
 ## Features
@@ -17,7 +17,7 @@ To build and run this application locally, the following are required:
 * [IGDB Api Access](https://api-docs.igdb.com/#getting-started)
 
 Open the VS Developer Console, perform the following:
-1. dotnet user-secrets init --project VideoGameCritic
+1. dotnet user-secrets init --project VideoGameGuy
 2. dotnet user-secrets set "SyncfusionProductKey" "PRODUCT-KEY-HERE"
 3. dotnet user-secrets set "RawgApiKey" "API-KEY-HERE"
 4. dotnet user-secrets set "IgdbClientId" "CLIENT-ID-HERE"

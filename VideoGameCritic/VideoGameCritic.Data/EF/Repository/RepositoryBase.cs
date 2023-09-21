@@ -1,4 +1,4 @@
-namespace VideoGameCritic.Data
+namespace VideoGameGuy.Data
 {
     public abstract class RepositoryBase
     {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace VideoGameCritic.Data
+namespace VideoGameGuy.Data
 {
     public class PlayerbaseProgress : ModelBase
     {

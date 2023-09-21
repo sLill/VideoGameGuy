@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Net;
-using VideoGameCritic.Configuration;
-using VideoGameCritic.Data;
+using VideoGameGuy.Configuration;
+using VideoGameGuy.Data;
 
-namespace VideoGameCritic.Core
+namespace VideoGameGuy.Core
 {
     public class RawgBackgroundService : BackgroundService
     {

@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace VideoGameCritic.Data
+namespace VideoGameGuy.Data
 {
     public class IgdbDbContext : DbContextBase
     {

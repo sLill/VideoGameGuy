@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using VideoGameCritic.Common;
+using VideoGameGuy.Common;
 
-namespace VideoGameCritic.Data
+namespace VideoGameGuy.Data
 {
     public class RawgGamesRepository : RepositoryBase, IRawgGamesRepository
     {

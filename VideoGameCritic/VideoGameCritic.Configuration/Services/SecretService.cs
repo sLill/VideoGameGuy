@@ -3,7 +3,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Options;
 
-namespace VideoGameCritic.Configuration
+namespace VideoGameGuy.Configuration
 {
     public class SecretService : ISecretService
     {

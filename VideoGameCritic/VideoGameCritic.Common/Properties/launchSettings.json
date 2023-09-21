@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "VideoGameCritic.Common": {
+    "VideoGameGuy.Common": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

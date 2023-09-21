@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace VideoGameCritic.Common
+namespace VideoGameGuy.Common
 {
     public static class DbContextExtensions
     {

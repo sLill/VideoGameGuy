@@ -396,6 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/VideoGameCritic/VideoGameCritic/Migrations
-/VideoGameCritic/VideoGameCritic.Data/Migrations
-/VGC_UsefulQueries.sql
+/VideoGameGuy/VideoGameGuy/Migrations
+/VideoGameGuy/VideoGameGuy.Data/Migrations
+/VGG_UsefulQueries.sql
