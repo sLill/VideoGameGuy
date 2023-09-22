@@ -58,9 +58,10 @@ namespace VideoGameGuy.Core
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = new SqlCommand("INSERT INTO ApplicationLogs (LogLevel, EventId, Category, Message, Exception, CreatedOnUtc, ModifiedOnUtc) " +
-                                             "VALUES (@logLevel, @eventId, @category, @message, @exception, @createdOnUtc, @modifiedOnUtc)", connection);
+                var command = new SqlCommand("INSERT INTO ApplicationLogs (LogId, LogLevel, EventId, Category, Message, Exception, CreatedOnUtc, ModifiedOnUtc) " +
+                                             "VALUES (@LogId, @logLevel, @eventId, @category, @message, @exception, @createdOnUtc, @modifiedOnUtc)", connection);
 
+                command.Parameters.AddWithValue("@LogId", applicationLog.LogId);
                 command.Parameters.AddWithValue("@logLevel", applicationLog.LogLevel);
                 command.Parameters.AddWithValue("@eventId", applicationLog.EventId);
                 command.Parameters.AddWithValue("@category", applicationLog.Category);

@@ -98,7 +98,7 @@ namespace VideoGameGuy.Core
 
                     while (true)
                     {
-                        string baseUrl = Path.Combine(_settings.Value.ApiUrl, _settings.Value.Endpoints["Games"]);
+                        string baseUrl = Path.Combine(_settings.Value.ApiUrl, RawgEndpoints.Games);
                         string requestUrl = $"{baseUrl}?key={_settings.Value.ApiKey}&page={pageNumber}&page_size={_settings.Value.Response_PageSize}";
 
                         // Filter by updated date
@@ -106,11 +106,11 @@ namespace VideoGameGuy.Core
                             requestUrl = $"{requestUrl}&updated={updatedOnStartDate.Value.ToString("yyyy-MM-dd")},{updatedOnEndDate.ToString("yyyy-MM-dd")}";   
 
                         // Request and cache file if it is old or does not exist
-                        var response = await httpClient.GetAsync(requestUrl);
+                        var response = await httpClient.GetAsync(requestUrl).ConfigureAwait(false);
                         if (response.IsSuccessStatusCode)
                         {
                             // Cache response to db
-                            string responseString = await response.Content.ReadAsStringAsync();
+                            string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                             await CacheGameDataAsync(responseString).ConfigureAwait(false);
 
                             // Check for next page
