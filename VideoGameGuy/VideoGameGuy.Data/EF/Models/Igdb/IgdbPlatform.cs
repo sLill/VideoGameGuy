@@ -4,15 +4,16 @@
     {
         #region Properties..
         public Guid IgdbPlatformId { get; set; }
+
         public long SourceId { get; set; }
+        public Guid Checksum { get; set; }
         public List<IgdbGame>? Games { get; set; }
 
-        public Guid Checksum { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
 
-        public long PlatformFamilyId {  get; set; }
-        public long PlatformLogoId {  get; set; }
+        public long? PlatformFamilyId {  get; set; }
+        public long? PlatformLogoId {  get; set; }
 
         public long IgdbPlatformFamilyId { get; set; }
         public IgdbPlatformFamily IgdbPlatformFamily { get; set; }

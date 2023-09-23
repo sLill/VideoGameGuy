@@ -103,6 +103,14 @@ namespace VideoGameGuy.Data
                 .HasKey(p => p.IgdbPlatformId);
 
             modelBuilder.Entity<IgdbPlatform>()
+                .Property(p => p.Name)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbPlatform>()
+                .Property(p => p.Category)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbPlatform>()
                 .HasOne(p => p.IgdbPlatformFamily)
                 .WithMany(pf => pf.Platforms)
                 .HasForeignKey(p => p.PlatformFamilyId);
@@ -117,18 +125,34 @@ namespace VideoGameGuy.Data
         {
             modelBuilder.Entity<IgdbPlatformFamily>()
                 .HasKey(pf => pf.IgdbPlatformFamilyId);
+
+            modelBuilder.Entity<IgdbPlatformFamily>()
+                .Property(pf => pf.Name)
+                .HasColumnType("NVARCHAR(255)");
         }
 
         private void DefinePlatformLogoSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbPlatformLogo>()
                 .HasKey(pl => pl.IgdbPlatformLogoId);
+
+            modelBuilder.Entity<IgdbPlatformLogo>()
+                .Property(pf => pf.ImageId)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbPlatformLogo>()
+                .Property(pf => pf.Url)
+                .HasColumnType("NVARCHAR(2048)");
         }
 
         private void DefineGameModeSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbGameMode>()
                 .HasKey(gm => gm.IgdbGameModeId);
+
+            modelBuilder.Entity<IgdbGameMode>()
+                .Property(gm => gm.Name)
+                .HasColumnType("NVARCHAR(255)");
         }
 
         private void DefineMultiplayerModeSchema(ModelBuilder modelBuilder)
@@ -141,18 +165,42 @@ namespace VideoGameGuy.Data
         {
             modelBuilder.Entity<IgdbArtwork>()
                 .HasKey(a => a.IgdbArtworkId);
+
+            modelBuilder.Entity<IgdbArtwork>()
+                .Property(a => a.ImageId)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbArtwork>()
+                .Property(a => a.Url)
+                .HasColumnType("NVARCHAR(2048)");
         }
 
         private void DefineScreenshotSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbScreenshot>()
                 .HasKey(s => s.IgdbScreenshotId);
+
+            modelBuilder.Entity<IgdbScreenshot>()
+                .Property(a => a.ImageId)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbScreenshot>()
+                .Property(a => a.Url)
+                .HasColumnType("NVARCHAR(2048)");
         }
 
         private void DefineThemeSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbTheme>()
                 .HasKey(t => t.IgdbThemeId);
+
+            modelBuilder.Entity<IgdbTheme>()
+                .Property(a => a.Name)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbTheme>()
+                .Property(a => a.Url)
+                .HasColumnType("NVARCHAR(2048)");
         }
         #endregion Methods..
     }
