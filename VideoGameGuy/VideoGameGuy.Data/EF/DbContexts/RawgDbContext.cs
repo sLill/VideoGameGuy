@@ -31,25 +31,25 @@ namespace VideoGameGuy.Data
         private void DefineGameSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgGame>()
-              .HasKey(x => x.RawgGameId);
+                .HasKey(g => g.RawgGameId);
 
             modelBuilder.Entity<RawgGame>()
-                .Property(x => x.Name)
+                .Property(g => g.Name)
                 .HasColumnType("NVARCHAR(255)")
                 .IsRequired();
 
             modelBuilder.Entity<RawgGame>()
-                .Property(x => x.ImageUri)
+                .Property(g => g.ImageUri)
                 .HasColumnType("NVARCHAR(2048)");
         }
 
         private void DefinePlayerProgressSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgPlayerbaseProgress>()
-               .HasKey(x => x.RawgPlayerbaseProgressId);
+               .HasKey(pp => pp.RawgPlayerbaseProgressId);
 
             modelBuilder.Entity<RawgPlayerbaseProgress>()
-                .Property(x => x.BeatTheGame_Percent)
+                .Property(pp => pp.BeatTheGame_Percent)
                 .HasColumnType("DECIMAL(9,2)")
                 .HasComputedColumnSql("CASE " +
                                       "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL(9,2)) " +
@@ -60,26 +60,25 @@ namespace VideoGameGuy.Data
         private void DefineRatingSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgRating>()
-                    .HasKey(x => x.RawgRatingId);
-
+                    .HasKey(r => r.RawgRatingId);
 
             modelBuilder.Entity<RawgRating>()
-                .Property(x => x.Description)
+                .Property(r => r.Description)
                 .HasColumnType("NVARCHAR(32)");
         }
 
         private void DefineScreenshotSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgScreenshot>()
-               .HasKey(x => x.RawgScreenshotId);
+               .HasKey(s => s.RawgScreenshotId);
 
             modelBuilder.Entity<RawgScreenshot>()
-                .Property(x => x.Source)
+                .Property(s => s.Source)
                 .HasColumnType("NVARCHAR(255)")
                 .IsRequired();
 
             modelBuilder.Entity<RawgScreenshot>()
-                .Property(x => x.Uri)
+                .Property(s => s.Uri)
                 .HasColumnType("NVARCHAR(2048)")
                 .IsRequired();
         }

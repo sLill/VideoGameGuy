@@ -22,23 +22,23 @@ namespace VideoGameGuy.Data
         {
             // SystemStatus
             modelBuilder.Entity<SystemStatus>()
-                 .HasKey(x => x.SystemStatusId);
+                 .HasKey(ss => ss.SystemStatusId);
 
             // ApplicationLogs
             modelBuilder.Entity<ApplicationLog>()
-                .HasKey(x => x.LogId);
+                .HasKey(al => al.LogId);
 
             modelBuilder.Entity<ApplicationLog>()
-                .Property(x => x.Category)
+                .Property(al => al.Category)
                 .HasColumnType("NVARCHAR(255)");
 
             modelBuilder.Entity<ApplicationLog>()
-                .Property(x => x.Message)
+                .Property(al => al.Message)
                 .HasColumnType("NVARCHAR(MAX)")
                 .IsRequired();
 
             modelBuilder.Entity<ApplicationLog>()
-                .Property(x => x.Exception)
+                .Property(al => al.Exception)
                 .HasColumnType("NVARCHAR(MAX)");
         }
         #endregion Methods..

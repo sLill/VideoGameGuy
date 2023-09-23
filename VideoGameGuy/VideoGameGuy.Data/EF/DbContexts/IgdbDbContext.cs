@@ -10,6 +10,8 @@ namespace VideoGameGuy.Data
         #region Properties..
         public DbSet<IgdbGame> Games { get; set; }
         public DbSet<IgdbPlatform> Platforms { get; set; }
+        public DbSet<IgdbPlatformFamily> IgdbPlatformFamilies { get; set; }
+        public DbSet<IgdbPlatformLogo> IgdbPlatformLogos { get; set; }
         public DbSet<IgdbGameMode> GameModes { get; set; }
         public DbSet<IgdbMultiplayerMode> MultiplayerModes { get; set; }
         public DbSet<IgdbArtwork> Artworks { get; set; }
@@ -27,6 +29,8 @@ namespace VideoGameGuy.Data
         {
             DefineGameSchema(modelBuilder);
             DefinePlatformSchema(modelBuilder);
+            DefinePlatformFamilySchema(modelBuilder);
+            DefinePlatformLogoSchema(modelBuilder);
             DefineGameModeSchema(modelBuilder);
             DefineMultiplayerModeSchema(modelBuilder);
             DefineArtworkSchema(modelBuilder);
@@ -37,96 +41,118 @@ namespace VideoGameGuy.Data
         private void DefineGameSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbGame>()
-              .HasKey(x => x.IgdbGameId);
+              .HasKey(g => g.IgdbGameId);
 
             modelBuilder.Entity<IgdbGame>()
-                .HasKey(x => x.SourceId);
+                .HasKey(g => g.SourceId);
 
             modelBuilder.Entity<IgdbGame>()
-                .Property(x => x.Name)
+                .Property(g => g.Name)
                 .HasColumnType("NVARCHAR(255)");
 
             modelBuilder.Entity<IgdbGame>()
-                .Property(x => x.Category)
+                .Property(g => g.Category)
                 .HasColumnType("NVARCHAR(255)");
 
             modelBuilder.Entity<IgdbGame>()
-                .Property(x => x.Status)
+                .Property(g => g.Status)
                 .HasColumnType("NVARCHAR(255)");
 
             modelBuilder.Entity<IgdbGame>()
-                .Property(x => x.Storyline)
+                .Property(g => g.Storyline)
                 .HasColumnType("NVARCHAR(MAX)");
 
             modelBuilder.Entity<IgdbGame>()
-                .Property(x => x.Summary)
+                .Property(g => g.Summary)
                 .HasColumnType("NVARCHAR(MAX)");
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.Platforms)
-                .WithMany(x => x.Games)
-                .UsingEntity(x => x.ToTable("Games_Platforms"));
+                .HasMany(g => g.Platforms)
+                .WithMany(p => p.Games)
+                .UsingEntity(j => j.ToTable("Games_Platforms"));
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.GameModes)
-                .WithMany(x => x.Games)
-                .UsingEntity(x => x.ToTable("Games_GameModes"));
+                .HasMany(g => g.GameModes)
+                .WithMany(gm => gm.Games)
+                .UsingEntity(j => j.ToTable("Games_GameModes"));
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.MultiplayerModes)
-                .WithMany(x => x.Games)
-                .UsingEntity(x => x.ToTable("Games_MultiplayerModes"));
+                .HasMany(g => g.MultiplayerModes)
+                .WithMany(mm => mm.Games)
+                .UsingEntity(j => j.ToTable("Games_MultiplayerModes"));
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.Artworks)
-                .WithOne(x => x.Game)
-                .HasForeignKey(x => x.GameId);
+                .HasMany(g => g.Artworks)
+                .WithOne(a => a.Game)
+                .HasForeignKey(a => a.GameId);
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.Screenshots)
-                .WithOne(x => x.Game)
-                .HasForeignKey(x => x.GameId);
+                .HasMany(g => g.Screenshots)
+                .WithOne(s => s.Game)
+                .HasForeignKey(s => s.GameId);
 
             modelBuilder.Entity<IgdbGame>()
-                .HasMany(x => x.Themes)
-                .WithOne(x => x.Game)
-                .HasForeignKey(x => x.GameId);
+                .HasMany(g => g.Themes)
+                .WithOne(t => t.Game)
+                .HasForeignKey(t => t.GameId);
         }
 
         private void DefinePlatformSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbPlatform>()
-                .HasKey(x => x.IgdbPlatformId);
+                .HasKey(p => p.IgdbPlatformId);
+
+            modelBuilder.Entity<IgdbPlatform>()
+                .HasOne(p => p.IgdbPlatformFamily)
+                .WithMany(pf => pf.Platforms)
+                .HasForeignKey(p => p.PlatformFamilyId);
+
+            modelBuilder.Entity<IgdbPlatform>()
+                .HasOne(p => p.IgdbPlatformLogo)
+                .WithMany(pl => pl.Platforms)
+                .HasForeignKey(p => p.PlatformLogoId);
+        }
+
+        private void DefinePlatformFamilySchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbPlatformFamily>()
+                .HasKey(pf => pf.IgdbPlatformFamilyId);
+        }
+
+        private void DefinePlatformLogoSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbPlatformLogo>()
+                .HasKey(pl => pl.IgdbPlatformLogoId);
         }
 
         private void DefineGameModeSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbGameMode>()
-                .HasKey(x => x.IgdbGameModeId);
+                .HasKey(gm => gm.IgdbGameModeId);
         }
 
         private void DefineMultiplayerModeSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbMultiplayerMode>()
-                .HasKey(x => x.IgdbMultiplayerModeId);
+                .HasKey(mm => mm.IgdbMultiplayerModeId);
         }
 
         private void DefineArtworkSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbArtwork>()
-                .HasKey(x => x.IgdbArtworkId);
+                .HasKey(a => a.IgdbArtworkId);
         }
 
         private void DefineScreenshotSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbScreenshot>()
-                .HasKey(x => x.IgdbScreenshotId);
+                .HasKey(s => s.IgdbScreenshotId);
         }
 
         private void DefineThemeSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbTheme>()
-                .HasKey(x => x.IgdbThemeId);
+                .HasKey(t => t.IgdbThemeId);
         }
         #endregion Methods..
     }
