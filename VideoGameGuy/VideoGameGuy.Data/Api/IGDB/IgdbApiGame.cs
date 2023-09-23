@@ -96,12 +96,12 @@ namespace VideoGameGuy.Data
     #endregion Enums..
 
     // https://api-docs.igdb.com/#game
-    public class IgdbGame
+    public class IgdbApiGame
     {
         #region Properties..
         public long id { get; set; }
         public double aggregated_rating { get; set; }
-        public double aggregated_rating_count { get; set; }
+        public int aggregated_rating_count { get; set; }
         public List<long> artworks { get; set; }
         public IgdbCategory category { get; set; }
         public Guid checksum { get; set; }
@@ -111,7 +111,7 @@ namespace VideoGameGuy.Data
         public List<long> game_modes { get; set; }
         public List<long> multiplayer_modes { get; set; }
         public string name { get; set; }
-        public long parent_game { get; set; }
+        public int parent_game { get; set; }
         public List<long> platforms { get; set; }
         public double rating { get; set; }
         public int rating_count { get; set; }
@@ -126,7 +126,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbArtwork
+    public class IgdbApiArtwork
     {
         #region Properties..
         public long id { get; set; }
@@ -139,7 +139,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbGameMode
+    public class IgdbApiGameMode
     {
         #region Properties..
         public long id { get; set; }
@@ -150,7 +150,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbMultiplayerMode
+    public class IgdbApiMultiplayerMode
     {
         #region Properties..
         public long id { get; set; }
@@ -167,7 +167,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbPlatform
+    public class IgdbApiPlatform
     {
         #region Properties..
         public long id { get; set; }
@@ -181,7 +181,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbPlatformFamily
+    public class IgdbApiPlatformFamily
     {
         #region Properties..
         public long id { get; set; }
@@ -190,7 +190,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbPlatformLogo
+    public class IgdbApiPlatformLogo
     {
         #region Properties..
         public long id { get; set; }
@@ -202,7 +202,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbScreenshot
+    public class IgdbApiScreenshot
     {
         #region Properties..
         public long id { get; set; }
@@ -215,7 +215,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class IgdbTheme
+    public class IgdbApiTheme
     {
         #region Properties..
         public long id { get; set; }

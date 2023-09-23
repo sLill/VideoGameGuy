@@ -1,6 +1,6 @@
 namespace VideoGameGuy.Data
 {
-    public class RawgGame
+    public class RawgApiGame
     {
         #region Properties..
         public int id { get; set; }
@@ -9,17 +9,17 @@ namespace VideoGameGuy.Data
         public string background_image { get; set; }
         public double? rating { get; set; }
         public double? rating_top { get; set; }
-        public List<rating>? ratings { get; set; }
+        public List<RawgApiRating>? ratings { get; set; }
         public int? ratings_count { get; set; }
-        public added_by_status? added_by_status { get; set; }
+        public RawgApiAddedByStatus? added_by_status { get; set; }
         public int? metacritic { get; set; }
         public int? playtime { get; set; }
         public DateTime? updated { get; set; }
-        public List<screenshot>? short_screenshots { get; set; } 
+        public List<RawgApiScreenshot>? short_screenshots { get; set; } 
         #endregion Properties..
     }
 
-    public class rating
+    public class RawgApiRating
     {
         #region Properties..
         public int id { get; set; }
@@ -29,7 +29,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class added_by_status
+    public class RawgApiAddedByStatus
     {
         #region Properties..
         public int yet { get; set; }
@@ -41,7 +41,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
     }
 
-    public class screenshot
+    public class RawgApiScreenshot
     {
         #region Properties..
         public int id { get; set; }

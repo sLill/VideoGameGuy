@@ -15,7 +15,7 @@
             @* Splash *@
             <div class="gameSplash_Container">
                 <button id="gameOneButton" class="gameSplash_Button" style="background-image: url('@Model.CurrentRound?.GameOne.ImageUri');"></button>
-                <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.CurrentRound?.GameOne.GameId" />
+                <input id="gameOneId" type="hidden" name="gameOneId" value="@Model.CurrentRound?.GameOne.RawgGameId" />
             </div>
 
             @* Title *@
@@ -73,7 +73,7 @@
             @* Splash *@
             <div class="gameSplash_Container">
                 <button id="gameTwoButton" class="gameSplash_Button" style="background-image: url('@Model.CurrentRound?.GameTwo.ImageUri');"></button>
-                <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.CurrentRound?.GameTwo.GameId" />
+                <input id="gameTwoId" type="hidden" name="gameTwoId" value="@Model.CurrentRound?.GameTwo.RawgGameId" />
             </div>
 
             @* Title *@

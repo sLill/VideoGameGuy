@@ -29,7 +29,7 @@ namespace VideoGameGuy.Data
                 if (systemStatus == default)
                 {
                     systemStatus = new SystemStatus();
-                    await AddAsync(systemStatus).ConfigureAwait(false);
+                    await AddAsync(systemStatus);
                 }
             }
             catch (Exception ex)
@@ -46,7 +46,7 @@ namespace VideoGameGuy.Data
 
             try
             {
-                await _mainDbContext.SystemStatus.AddAsync(systemStatus).ConfigureAwait(false);
+                await _mainDbContext.SystemStatus.AddAsync(systemStatus);
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ namespace VideoGameGuy.Data
                 success = false;
             }
 
-            await _mainDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _mainDbContext.SaveChangesAsync();
 
             return success;
         }
@@ -73,7 +73,7 @@ namespace VideoGameGuy.Data
                 success = false;
             }
 
-            await _mainDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _mainDbContext.SaveChangesAsync();
             return success;
         }
         #endregion Methods..

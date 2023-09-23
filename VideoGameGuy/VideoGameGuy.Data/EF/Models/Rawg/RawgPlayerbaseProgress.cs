@@ -2,13 +2,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VideoGameGuy.Data
 {
-    public class PlayerbaseProgress : ModelBase
+    public class RawgPlayerbaseProgress : ModelBase
     {
         #region Properties..
-        public Guid PlayerbaseProgressId { get; set; }
+        public Guid RawgPlayerbaseProgressId { get; set; }
 
         public Guid GameId { get; set; }
-        public Game Game { get; set; }
+        public RawgGame Game { get; set; }
 
         public double? OwnTheGame {  get; set; }
 

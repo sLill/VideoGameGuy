@@ -8,10 +8,10 @@ namespace VideoGameGuy.Data
         #endregion Fields..
 
         #region Properties..
-        public DbSet<Game> Games { get; set; }
-        public DbSet<PlayerbaseProgress> PlayerbaseProgress { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
-        public DbSet<Screenshot> Screenshots { get; set; }
+        public DbSet<RawgGame> Games { get; set; }
+        public DbSet<RawgPlayerbaseProgress> PlayerbaseProgress { get; set; }
+        public DbSet<RawgRating> Ratings { get; set; }
+        public DbSet<RawgScreenshot> Screenshots { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -22,50 +22,63 @@ namespace VideoGameGuy.Data
         #region Methods..
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Games
-            modelBuilder.Entity<Game>()
-                .HasKey(x => x.GameId);
+            DefineGameSchema(modelBuilder);
+            DefinePlayerProgressSchema(modelBuilder);
+            DefineRatingSchema(modelBuilder);
+            DefineScreenshotSchema(modelBuilder);
+        }
 
-            modelBuilder.Entity<Game>()
+        private void DefineGameSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RawgGame>()
+              .HasKey(x => x.RawgGameId);
+
+            modelBuilder.Entity<RawgGame>()
                 .Property(x => x.Name)
                 .HasColumnType("NVARCHAR(255)")
                 .IsRequired();
 
-            modelBuilder.Entity<Game>()
+            modelBuilder.Entity<RawgGame>()
                 .Property(x => x.ImageUri)
                 .HasColumnType("NVARCHAR(2048)");
+        }
 
-            // PlayerbaseProgress
-            modelBuilder.Entity<PlayerbaseProgress>()
-                .HasKey(x => x.PlayerbaseProgressId);
+        private void DefinePlayerProgressSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RawgPlayerbaseProgress>()
+               .HasKey(x => x.RawgPlayerbaseProgressId);
 
-            modelBuilder.Entity<PlayerbaseProgress>()
+            modelBuilder.Entity<RawgPlayerbaseProgress>()
                 .Property(x => x.BeatTheGame_Percent)
                 .HasColumnType("DECIMAL(9,2)")
                 .HasComputedColumnSql("CASE " +
                                       "     WHEN [OwnTheGame] > 0 THEN CAST((([BeatTheGame] / [OwnTheGame]) * 100.0) AS DECIMAL(9,2)) " +
                                       "     ELSE 0 " +
                                       "END", true);
+        }
 
-            // Ratings
-            modelBuilder.Entity<Rating>()
-                       .HasKey(x => x.RatingId);
+        private void DefineRatingSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RawgRating>()
+                    .HasKey(x => x.RawgRatingId);
 
 
-            modelBuilder.Entity<Rating>()
+            modelBuilder.Entity<RawgRating>()
                 .Property(x => x.Description)
                 .HasColumnType("NVARCHAR(32)");
+        }
 
-            // Screenshots
-            modelBuilder.Entity<Screenshot>()
-                .HasKey(x => x.ScreenshotId);
+        private void DefineScreenshotSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RawgScreenshot>()
+               .HasKey(x => x.RawgScreenshotId);
 
-            modelBuilder.Entity<Screenshot>()
+            modelBuilder.Entity<RawgScreenshot>()
                 .Property(x => x.Source)
                 .HasColumnType("NVARCHAR(255)")
                 .IsRequired();
 
-            modelBuilder.Entity<Screenshot>()
+            modelBuilder.Entity<RawgScreenshot>()
                 .Property(x => x.Uri)
                 .HasColumnType("NVARCHAR(2048)")
                 .IsRequired();

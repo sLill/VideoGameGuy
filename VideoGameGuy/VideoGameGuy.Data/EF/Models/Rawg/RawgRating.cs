@@ -1,12 +1,12 @@
 namespace VideoGameGuy.Data
 {
-    public class Rating : ModelBase
+    public class RawgRating : ModelBase
     {
         #region Properties..
-        public Guid RatingId { get; set; }
+        public Guid RawgRatingId { get; set; }
 
         public Guid GameId { get; set; }
-        public Game Game { get; set; }
+        public RawgGame Game { get; set; }
 
         public int Score { get; set; }
 

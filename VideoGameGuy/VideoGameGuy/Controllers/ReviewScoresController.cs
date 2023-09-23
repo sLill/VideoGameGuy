@@ -138,14 +138,14 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(ReviewScoresSessionData reviewScoresSessionData)
         {
-            List<Game> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
+            List<RawgGame> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
 
             if (games?.Any() ?? false)
             {
                 reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound()
                 {
-                    GameOneId = games[0].GameId,
-                    GameTwoId = games[1].GameId
+                    GameOneId = games[0].RawgGameId,
+                    GameTwoId = games[1].RawgGameId
                 });
             }
 
@@ -160,9 +160,9 @@ namespace VideoGameGuy.Controllers
             var gameTwoAverageTotalRating = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating();
 
             if (gameOneAverageTotalRating > gameTwoAverageTotalRating)
-                result = reviewScoresViewModel.CurrentRound.GameOne.GameId;
+                result = reviewScoresViewModel.CurrentRound.GameOne.RawgGameId;
             else if (gameTwoAverageTotalRating > gameOneAverageTotalRating)
-                result = reviewScoresViewModel.CurrentRound.GameTwo.GameId;
+                result = reviewScoresViewModel.CurrentRound.GameTwo.RawgGameId;
 
             return result;
         }

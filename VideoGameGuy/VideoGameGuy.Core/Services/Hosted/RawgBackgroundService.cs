@@ -76,17 +76,17 @@ namespace VideoGameGuy.Core
             _logger.LogInformation($"[RAWG] Beginning update..");
             var stopwatch = Stopwatch.StartNew();
 
-            await UpdateLocalGameDataAsync(updatedOnStartDate, updatedOnEndDate).ConfigureAwait(false);
+            await UpdateGameDataAsync(updatedOnStartDate, updatedOnEndDate);
 
             stopwatch.Stop();
             _logger.LogInformation($"[RAWG] Update complete. Total time: {stopwatch.ElapsedMilliseconds / 1000} seconds");
         }
 
-        private async Task UpdateLocalGameDataAsync(DateTime? updatedOnStartDate, DateTime updatedOnEndDate)
+        private async Task UpdateGameDataAsync(DateTime? updatedOnStartDate, DateTime updatedOnEndDate)
         {
             try
             {
-                _logger.LogInformation($"[RAWG] Updating local game data..");
+                _logger.LogInformation($"[RAWG] Updating game data..");
 
                 using (var httpClient = _httpClientFactory.CreateClient())
                 {
@@ -98,7 +98,7 @@ namespace VideoGameGuy.Core
 
                     while (true)
                     {
-                        string baseUrl = Path.Combine(_settings.Value.ApiUrl, RawgEndpoints.Games);
+                        string baseUrl = Path.Combine(_settings.Value.ApiUrl, RawgApiEndpoints.Games);
                         string requestUrl = $"{baseUrl}?key={_settings.Value.ApiKey}&page={pageNumber}&page_size={_settings.Value.Response_PageSize}";
 
                         // Filter by updated date
@@ -106,12 +106,12 @@ namespace VideoGameGuy.Core
                             requestUrl = $"{requestUrl}&updated={updatedOnStartDate.Value.ToString("yyyy-MM-dd")},{updatedOnEndDate.ToString("yyyy-MM-dd")}";   
 
                         // Request and cache file if it is old or does not exist
-                        var response = await httpClient.GetAsync(requestUrl).ConfigureAwait(false);
+                        var response = await httpClient.GetAsync(requestUrl);
                         if (response.IsSuccessStatusCode)
                         {
                             // Cache response to db
-                            string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            await CacheGameDataAsync(responseString).ConfigureAwait(false);
+                            string responseString = await response.Content.ReadAsStringAsync();
+                            await CacheGameDataAsync(responseString);
 
                             // Check for next page
                             JObject json = JsonConvert.DeserializeObject<JObject>(responseString);
@@ -152,17 +152,17 @@ namespace VideoGameGuy.Core
                     }
                 }
 
-                _logger.LogInformation($"[RAWG] Update local game data success");
+                _logger.LogInformation($"[RAWG] Update game data success");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[RAWG] Update local game data failed. {ex.Message} - {ex.StackTrace}");
+                _logger.LogError($"[RAWG] Update game data failed. {ex.Message} - {ex.StackTrace}");
             }
         }
 
         private async Task CacheGameDataAsync(string jsonRaw)
         {
-            var batch = new List<RawgGame>();
+            var batch = new List<RawgApiGame>();
             int batchSize = 1000;
 
             JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
@@ -172,12 +172,12 @@ namespace VideoGameGuy.Core
             {
                 try
                 {
-                    var rawgGame = token.ToObject<RawgGame>();
+                    var rawgGame = token.ToObject<RawgApiGame>();
                     batch.Add(rawgGame);
 
                     if (batch.Count >= batchSize)
                     {
-                        await _rawgGamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
+                        await _rawgGamesRepository.AddOrUpdateRangeAsync(batch);
                         batch.Clear();
                     }
                 }
@@ -188,13 +188,13 @@ namespace VideoGameGuy.Core
             }
 
             if (batch.Any())
-                await _rawgGamesRepository.AddOrUpdateRangeAsync(batch).ConfigureAwait(false);
+                await _rawgGamesRepository.AddOrUpdateRangeAsync(batch);
         }
 
         private async Task ImportGameDataAsync_DEBUG()
         {
             var stopwatch = Stopwatch.StartNew();
-            var rawgGames = new List<RawgGame>();
+            var rawgGames = new List<RawgApiGame>();
 
             int batchSize = 1000;
 
@@ -210,12 +210,12 @@ namespace VideoGameGuy.Core
                 {
                     try
                     {
-                        var rawgGame = token.ToObject<RawgGame>();
+                        var rawgGame = token.ToObject<RawgApiGame>();
                         rawgGames.Add(rawgGame);
 
                         if (rawgGames.Count >= batchSize)
                         {
-                            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+                            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames);
                             rawgGames.Clear();
                         }
                     }
@@ -226,7 +226,7 @@ namespace VideoGameGuy.Core
                 }
             }
 
-            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames).ConfigureAwait(false);
+            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames);
 
             stopwatch.Stop();
         }

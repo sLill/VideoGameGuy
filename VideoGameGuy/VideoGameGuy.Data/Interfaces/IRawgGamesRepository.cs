@@ -3,15 +3,15 @@ namespace VideoGameGuy.Data
     public interface IRawgGamesRepository
     {
         #region Methods..
-        Task<Game> GetGameFromGameIdAsync(Guid gameId);
+        Task<RawgGame> GetGameFromGameIdAsync(Guid gameId);
 
-        Task<Game> GetGameFromRawgIdAsync(int rawgId);
+        Task<RawgGame> GetGameFromRawgIdAsync(int rawgId);
         
-        Task<List<Game>> GetRandomGamesAsync(int numberOfGames);
+        Task<List<RawgGame>> GetRandomGamesAsync(int numberOfGames);
 
-        Task<bool> AddOrUpdateAsync(RawgGame rawgGame);
+        Task<bool> AddOrUpdateAsync(RawgApiGame rawgGame);
 
-        Task<bool> AddOrUpdateRangeAsync(IEnumerable<RawgGame> rawgGames);
+        Task<bool> AddOrUpdateRangeAsync(IEnumerable<RawgApiGame> rawgGames);
         #endregion Methods..
     }
 }

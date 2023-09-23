@@ -1,6 +1,6 @@
 ﻿namespace VideoGameGuy.Data
 {
-    public class RawgEndpoints
+    public class RawgApiEndpoints
     {
         #region Properties..
         public const string Games = @"games";

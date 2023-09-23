@@ -22,14 +22,14 @@ namespace VideoGameGuy.Data
         #endregion Constructors..
 
         #region Methods..
-        public async Task<Game> GetGameFromGameIdAsync(Guid gameId)
+        public async Task<RawgGame> GetGameFromGameIdAsync(Guid gameId)
         {
-            Game game = default;
+            RawgGame game = default;
 
             try
             {
                 game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots").Include("Ratings")
-                    .FirstOrDefaultAsync(x => x.GameId == gameId).ConfigureAwait(false);
+                    .FirstOrDefaultAsync(x => x.RawgGameId == gameId);
             }
             catch (Exception ex)
             {
@@ -39,14 +39,14 @@ namespace VideoGameGuy.Data
             return game;
         }
 
-        public async Task<Game> GetGameFromRawgIdAsync(int rawgId)
+        public async Task<RawgGame> GetGameFromRawgIdAsync(int rawgId)
         {
-            Game game = default;
+            RawgGame game = default;
 
             try
             {
                 game = await _rawgDbContext.Games.Include("PlayerbaseProgress").Include("Screenshots").Include("Ratings")
-                    .FirstOrDefaultAsync(x => x.RawgId.HasValue && x.RawgId == rawgId).ConfigureAwait(false);
+                    .FirstOrDefaultAsync(x => x.SourceId.HasValue && x.SourceId == rawgId);
             }
             catch (Exception ex)
             {
@@ -56,9 +56,9 @@ namespace VideoGameGuy.Data
             return game;
         }
 
-        public async Task<List<Game>> GetRandomGamesAsync(int numberOfGames)
+        public async Task<List<RawgGame>> GetRandomGamesAsync(int numberOfGames)
         {
-            List<Game> games = default;
+            List<RawgGame> games = default;
             int minimumNumberOfRatings = 750;
 
             try
@@ -82,14 +82,14 @@ namespace VideoGameGuy.Data
             return games;
         }
 
-        private async Task<bool> AddAsync(RawgGame rawgGame)
+        private async Task<bool> AddAsync(RawgApiGame rawgGame)
         {
             bool success = true;
 
             try
             {
-                var game = new Game(rawgGame);
-                await _rawgDbContext.AddAsync(game).ConfigureAwait(false);
+                var game = new RawgGame(rawgGame);
+                await _rawgDbContext.AddAsync(game);
             }
             catch (Exception ex)
             {
@@ -97,12 +97,12 @@ namespace VideoGameGuy.Data
                 success = false;
             }
 
-            await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _rawgDbContext.SaveChangesAsync();
 
             return success;
         }
 
-        public async Task<bool> UpdateAsync(Game gameData, RawgGame rawgGame)
+        public async Task<bool> UpdateAsync(RawgGame gameData, RawgApiGame rawgGame)
         {
             bool success = true;
 
@@ -117,18 +117,18 @@ namespace VideoGameGuy.Data
                 success = false;
             }
 
-            await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
+            await _rawgDbContext.SaveChangesAsync();
 
             return success;
         }
         
-        public async Task<bool> AddOrUpdateAsync(RawgGame rawgGame)
+        public async Task<bool> AddOrUpdateAsync(RawgApiGame rawgGame)
         {
             bool success = true;
 
             try
             {
-                Game gameData = await GetGameFromRawgIdAsync(rawgGame.id).ConfigureAwait(false);
+                RawgGame gameData = await GetGameFromRawgIdAsync(rawgGame.id);
 
                 // Add
                 if (gameData == default)
@@ -148,7 +148,7 @@ namespace VideoGameGuy.Data
             return success;
         }
 
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<RawgGame> rawgGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<RawgApiGame> rawgGames)
         {
             bool success = true;
 
@@ -156,11 +156,11 @@ namespace VideoGameGuy.Data
             {
                 foreach (var rawgGame in rawgGames)
                 {
-                    Game gameData = await GetGameFromRawgIdAsync(rawgGame.id).ConfigureAwait(false);
+                    RawgGame gameData = await GetGameFromRawgIdAsync(rawgGame.id);
 
                     // Add
                     if (gameData == default)
-                        _rawgDbContext.Games.Add(new Game(rawgGame));
+                        _rawgDbContext.Games.Add(new RawgGame(rawgGame));
 
                     // Update
                     else
@@ -170,7 +170,7 @@ namespace VideoGameGuy.Data
                     }
                 }
 
-                await _rawgDbContext.SaveChangesAsync().ConfigureAwait(false);
+                await _rawgDbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
