@@ -83,7 +83,7 @@ namespace VideoGameGuy.Core
             var stopwatch = Stopwatch.StartNew();
 
             var token = await GetAccessTokenAsync();
-            await UpdateGameDataAsync(token, updatedOnStartDate);
+            await UpdateDataAsync(token, updatedOnStartDate);
 
             stopwatch.Stop();
             _logger.LogInformation($"[IGDB] Update complete. Total time: {stopwatch.ElapsedMilliseconds / 1000} seconds");
@@ -155,7 +155,7 @@ namespace VideoGameGuy.Core
             return token;
         }
 
-        private async Task UpdateGameDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
+        private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
             try
             {
@@ -183,14 +183,11 @@ namespace VideoGameGuy.Core
                         // Get and parse relational data
                         await UpdateArtworkDataAsync(token, games, unixStartTime);
 
+                        List<long> platformIds = games.SelectMany(x => x.platforms).Distinct()?.ToList() ?? new List<long>();
                         List<long> gameModeIds = games.SelectMany(x => x.game_modes).Distinct()?.ToList() ?? new List<long>();
                         List<long> multiplayerModeIds = games.SelectMany(x => x.multiplayer_modes).Distinct()?.ToList() ?? new List<long>();
-                        List<long> platformIds = games.SelectMany(x => x.platforms).Distinct()?.ToList() ?? new List<long>();
                         List<long> screenshotIds = games.SelectMany(x => x.screenshots).Distinct()?.ToList() ?? new List<long>();
                         List<long> themeIds = games.SelectMany(x => x.themes).Distinct()?.ToList() ?? new List<long>();
-
-         
-
 
                         // If the number of games return does not match the number of games requested, then we have reached the end
                         if (games.Count == resultsPerRequest)
@@ -232,12 +229,14 @@ namespace VideoGameGuy.Core
                     string artworkJson = await ExecuteRequestAsync(token, requestUri, query);
                     if (artworkJson != null)
                     {
-                        List<IgdbApiArtwork> artworks = ParseJsonArray<IgdbApiArtwork>(artworkJson);
-
-
+                        List<IgdbApiArtwork> apiArtworks = ParseJsonArray<IgdbApiArtwork>(artworkJson);
+                        if (apiArtworks?.Any() ?? false)
+                        {
+                            List<IgdbArtwork> artworks = apiArtworks.Select(x => new IgdbArtwork(x))?.ToList() ?? new List<IgdbArtwork>();
+                        }
 
                         // Stop looping once we receive fewer than the number of results that were requested
-                        if (artworks.Count >= resultsPerRequest)
+                        if (apiArtworks.Count >= resultsPerRequest)
                             offset += 500;
                         else
                             break;

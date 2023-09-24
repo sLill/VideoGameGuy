@@ -74,7 +74,7 @@ namespace VideoGameGuy.Data
             Source_CreatedOn_Unix = game.created_at;
             Source_UpdatedOn_Unix = game.updated_at;
 
-            //Platforms
+            // Platforms = 
             //GameModes
             //MultiplayerModes
             //Artworks
