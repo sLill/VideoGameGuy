@@ -19,9 +19,17 @@
         #endregion Properties..
 
         #region Constructors..
-        #endregion Constructors..
+        public IgdbScreenshot(IgdbApiScreenshot screenshot)
+        {
+            SourceId = screenshot.id;
+            Checksum = screenshot.checksum;
 
-        #region Methods..
-        #endregion Methods..
+            ImageId = screenshot.image_id;
+            Url = screenshot.url;
+
+            Height = screenshot.height;
+            Width = screenshot.width;
+        }
+        #endregion Constructors..
     }
 }

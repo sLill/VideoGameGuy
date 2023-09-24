@@ -60,7 +60,7 @@ namespace VideoGameGuy.Data
         private void DefineRatingSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgRating>()
-                    .HasKey(r => r.RawgRatingId);
+                .HasKey(r => r.RawgRatingId);
 
             modelBuilder.Entity<RawgRating>()
                 .Property(r => r.Description)
@@ -70,7 +70,7 @@ namespace VideoGameGuy.Data
         private void DefineScreenshotSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RawgScreenshot>()
-               .HasKey(s => s.RawgScreenshotId);
+                .HasKey(s => s.RawgScreenshotId);
 
             modelBuilder.Entity<RawgScreenshot>()
                 .Property(s => s.Source)

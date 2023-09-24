@@ -19,9 +19,17 @@
         #endregion Properties..
 
         #region Constructors..
-        #endregion Constructors..
+        public IgdbTheme(IgdbApiTheme theme)
+        {
+            SourceId = theme.id;
+            Checksum = theme.checksum;
 
-        #region Methods..
-        #endregion Methods..
+            Name = theme.name;
+            Url = theme.url;
+
+            Source_CreatedOn_Unix = theme.created_at;
+            Source_UpdatedOn_Unix = theme.updated_at;
+        }
+        #endregion Constructors..
     }
 }

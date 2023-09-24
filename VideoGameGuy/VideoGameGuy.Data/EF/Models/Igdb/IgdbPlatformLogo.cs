@@ -7,6 +7,7 @@
 
         public long SourceId { get; set; }
         public Guid Checksum { get; set; }
+
         public List<IgdbPlatform>? Platforms { get; set; }
 
         public string? ImageId { get; set; }
@@ -15,5 +16,19 @@
         public int? Width { get; set; }
         public int? Height { get; set; }
         #endregion Properties..
+
+        #region Constructors..
+        public IgdbPlatformLogo(IgdbApiPlatformLogo platformLogo)
+        {
+            SourceId = platformLogo.id;
+            Checksum = platformLogo.checksum;
+
+            ImageId = platformLogo.image_id;
+            Url = platformLogo.url;
+
+            Height = platformLogo.height;
+            Width = platformLogo.width;
+        }
+        #endregion Constructors..
     }
 }

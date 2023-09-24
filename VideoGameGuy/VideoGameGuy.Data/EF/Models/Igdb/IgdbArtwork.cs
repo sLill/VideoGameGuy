@@ -19,9 +19,17 @@
         #endregion Properties..
 
         #region Constructors..
-        #endregion Constructors..
+        public IgdbArtwork(IgdbApiArtwork artwork)
+        {
+            SourceId = artwork.id;
+            Checksum = artwork.checksum;
 
-        #region Methods..
-        #endregion Methods..
+            ImageId = artwork.image_id;
+            Url = artwork.url;
+            
+            Height = artwork.height;
+            Width = artwork.width;
+        }
+        #endregion Constructors..
     }
 }

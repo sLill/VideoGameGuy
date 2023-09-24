@@ -1,4 +1,6 @@
-﻿namespace VideoGameGuy.Data
+﻿using Syncfusion.Licensing;
+
+namespace VideoGameGuy.Data
 {
     public class IgdbGame : ModelBase
     {
@@ -8,6 +10,7 @@
         public long SourceId { get; set; }
         public int? ParentSourceId { get; set; }
         public Guid? Checksum { get; set; }
+
         public string? Name { get; set; }
 
         // Rating based on external critic scores
@@ -43,6 +46,41 @@
         #endregion Properties..
 
         #region Constructors..
+        public IgdbGame(IgdbApiGame game)
+        {
+            SourceId = game.id;
+            ParentSourceId = game.parent_game;
+            Checksum = game.checksum;
+
+            Name = game.name;
+
+            AggregateRating = game.aggregated_rating;
+            AggregateRating_Count = game.aggregated_rating_count;
+
+            Rating = game.rating;
+            Rating_Count = game.rating_count;
+
+            TotalRating = game.total_rating;
+            TotalRating_Count = game.total_rating_count;
+
+            Category = game.category.ToString();
+            CoverId = game.cover;
+            Status = game.status.ToString();
+
+            Storyline = game.name;
+            Summary = game.name;
+
+            ReleaseDate_Unix = game.first_release_date;
+            Source_CreatedOn_Unix = game.created_at;
+            Source_UpdatedOn_Unix = game.updated_at;
+
+            //Platforms
+            //GameModes
+            //MultiplayerModes
+            //Artworks
+            //Screenshots
+            //Themes
+        }
         #endregion Constructors..
 
         #region Methods..

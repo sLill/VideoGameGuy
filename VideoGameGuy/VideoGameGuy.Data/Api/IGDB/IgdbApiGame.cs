@@ -106,8 +106,8 @@ namespace VideoGameGuy.Data
         public IgdbCategory category { get; set; }
         public Guid checksum { get; set; }
         public long cover { get; set; }
-        public ulong created_at { get; set; }
-        public ulong first_release_date { get; set; }
+        public long created_at { get; set; }
+        public long first_release_date { get; set; }
         public List<long> game_modes { get; set; }
         public List<long> multiplayer_modes { get; set; }
         public string name { get; set; }
@@ -122,7 +122,7 @@ namespace VideoGameGuy.Data
         public List<long> themes { get; set; }
         public double total_rating { get; set; }
         public int total_rating_count { get; set; }
-        public ulong updated_at { get; set; }
+        public long updated_at { get; set; }
         #endregion Properties..
     }
 
@@ -144,9 +144,9 @@ namespace VideoGameGuy.Data
         #region Properties..
         public long id { get; set; }
         public Guid checksum { get; set; }
-        public ulong created_at { get; set; }
+        public long created_at { get; set; }
         public string name { get; set; }
-        public ulong updated_at { get; set; } 
+        public long updated_at { get; set; } 
         #endregion Properties..
     }
 
@@ -173,11 +173,11 @@ namespace VideoGameGuy.Data
         public long id { get; set; }
         public IgdbPlatformCategory category { get; set; }
         public Guid checksum { get; set; }
-        public ulong created_at { get; set; }
+        public long created_at { get; set; }
         public string name { get; set; }
         public long platform_family { get; set; }
         public long platform_logo { get; set; }
-        public ulong updated_at { get; set; } 
+        public long updated_at { get; set; } 
         #endregion Properties..
     }
 
@@ -220,9 +220,9 @@ namespace VideoGameGuy.Data
         #region Properties..
         public long id { get; set; }
         public Guid checksum { get; set; }
-        public ulong created_at { get; set; }
+        public long created_at { get; set; }
         public string name { get; set; }
-        public ulong updated_at { get; set; }
+        public long updated_at { get; set; }
         public string url { get; set; } 
         #endregion Properties..
     }

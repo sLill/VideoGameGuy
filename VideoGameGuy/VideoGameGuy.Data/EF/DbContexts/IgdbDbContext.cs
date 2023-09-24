@@ -41,10 +41,7 @@ namespace VideoGameGuy.Data
         private void DefineGameSchema(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IgdbGame>()
-              .HasKey(g => g.IgdbGameId);
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasKey(g => g.SourceId);
+                .HasKey(g => g.IgdbGameId);
 
             modelBuilder.Entity<IgdbGame>()
                 .Property(g => g.Name)
@@ -113,12 +110,12 @@ namespace VideoGameGuy.Data
             modelBuilder.Entity<IgdbPlatform>()
                 .HasOne(p => p.IgdbPlatformFamily)
                 .WithMany(pf => pf.Platforms)
-                .HasForeignKey(p => p.PlatformFamilyId);
+                .HasForeignKey(p => p.IgdbPlatformFamilyId);
 
             modelBuilder.Entity<IgdbPlatform>()
                 .HasOne(p => p.IgdbPlatformLogo)
                 .WithMany(pl => pl.Platforms)
-                .HasForeignKey(p => p.PlatformLogoId);
+                .HasForeignKey(p => p.IgdbPlatformLogoId);
         }
 
         private void DefinePlatformFamilySchema(ModelBuilder modelBuilder)
