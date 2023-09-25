@@ -3,13 +3,9 @@
     public class IgdbScreenshot : ModelBase
     {
         #region Properties..
-        public Guid IgdbScreenshotId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbScreenshotId { get; set; }
         public Guid Checksum { get; set; }
-
-        public Guid GameId { get; set; }
-        public IgdbGame Game { get; set; }
+        public long IgdbGameId { get; set; }
 
         public string? ImageId { get; set; }
         public string? Url { get; set; }
@@ -21,8 +17,16 @@
         #region Constructors..
         public IgdbScreenshot(IgdbApiScreenshot screenshot)
         {
-            SourceId = screenshot.id;
+            Initialize(screenshot);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiScreenshot screenshot)
+        {
+            IgdbScreenshotId = screenshot.id;
             Checksum = screenshot.checksum;
+            IgdbGameId = screenshot.game;
 
             ImageId = screenshot.image_id;
             Url = screenshot.url;
@@ -30,6 +34,6 @@
             Height = screenshot.height;
             Width = screenshot.width;
         }
-        #endregion Constructors..
+        #endregion Methods..
     }
 }

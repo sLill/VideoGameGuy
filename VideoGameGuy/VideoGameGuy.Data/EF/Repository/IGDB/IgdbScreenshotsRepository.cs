@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameGuy.Data
 {
-    public class IgdbGamesRepository : RepositoryBase, IIgdbGamesRepository
+    public class IgdbScreenshotsRepository : RepositoryBase, IIgdbScreenshotsRepository
     {
         #region Fields..
         protected readonly IgdbDbContext _igdbDbContext;
@@ -12,34 +12,34 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
+        public IgdbScreenshotsRepository(ILogger<IgdbScreenshotsRepository> logger,
+                                         IgdbDbContext igdbDbContext)
             : base(logger)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiScreenshot> apiScreenshots)
         {
             bool success = true;
 
             try
             {
-                foreach (var apiGame in apiGames)
+                foreach (var apiScreenshot in apiScreenshots)
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingScreenshot = await _igdbDbContext.Screenshots.FirstOrDefaultAsync(x => x.IgdbScreenshotId == apiScreenshot.id);
 
                     // Add
-                    if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    if (existingScreenshot == default)
+                        _igdbDbContext.Screenshots.Add(new IgdbScreenshot(apiScreenshot));
 
                     // Update
                     else
                     {
-                        existingGame.Initialize(apiGame);
-                        _igdbDbContext.Games.Update(existingGame);
+                        existingScreenshot.Initialize(apiScreenshot);
+                        _igdbDbContext.Screenshots.Update(existingScreenshot);
                     }
                 }
 

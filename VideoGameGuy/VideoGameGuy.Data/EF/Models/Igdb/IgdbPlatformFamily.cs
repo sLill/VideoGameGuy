@@ -5,12 +5,8 @@ namespace VideoGameGuy.Data
     public class IgdbPlatformFamily : ModelBase
     {
         #region Properties..
-        public Guid IgdbPlatformFamilyId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbPlatformFamilyId { get; set; }
         public Guid Checksum { get; set; }
-
-        public List<IgdbPlatform>? Platforms { get; set; }
 
         public string? Name { get; set; }
         #endregion Properties..
@@ -18,11 +14,18 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbPlatformFamily(IgdbApiPlatformFamily platformFamily)
         {
-            SourceId = platformFamily.id;
-            Checksum = platformFamily.checksum;
-
-            Name= platformFamily.name;
+            Initialize(platformFamily);
         }
         #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiPlatformFamily platformFamily)
+        {
+            IgdbPlatformFamilyId = platformFamily.id;
+            Checksum = platformFamily.checksum;
+
+            Name = platformFamily.name;
+        }
+        #endregion Methods..
     }
 }

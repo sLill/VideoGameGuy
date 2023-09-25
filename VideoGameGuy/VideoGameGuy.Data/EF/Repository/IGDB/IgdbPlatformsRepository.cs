@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameGuy.Data
 {
-    public class IgdbGamesRepository : RepositoryBase, IIgdbGamesRepository
+    public class IgdbPlatformsRepository : RepositoryBase, IIgdbPlatformsRepository
     {
         #region Fields..
         protected readonly IgdbDbContext _igdbDbContext;
@@ -12,34 +12,34 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
+        public IgdbPlatformsRepository(ILogger<IgdbPlatformsRepository> logger,
+                                       IgdbDbContext igdbDbContext)
             : base(logger)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiPlatform> apiPlatforms)
         {
             bool success = true;
 
             try
             {
-                foreach (var apiGame in apiGames)
+                foreach (var apiPlatform in apiPlatforms)
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingPlatform = await _igdbDbContext.Platforms.FirstOrDefaultAsync(x => x.IgdbPlatformId == apiPlatform.id);
 
                     // Add
-                    if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    if (existingPlatform == default)
+                        _igdbDbContext.Platforms.Add(new IgdbPlatform(apiPlatform));
 
                     // Update
                     else
                     {
-                        existingGame.Initialize(apiGame);
-                        _igdbDbContext.Games.Update(existingGame);
+                        existingPlatform.Initialize(apiPlatform);
+                        _igdbDbContext.Platforms.Update(existingPlatform);
                     }
                 }
 

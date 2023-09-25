@@ -3,18 +3,11 @@
     public class IgdbPlatform : ModelBase
     {
         #region Properties..
-        public Guid IgdbPlatformId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbPlatformId { get; set; }
         public Guid Checksum { get; set; }
 
-        public List<IgdbGame>? Games { get; set; }
-
-        public Guid IgdbPlatformFamilyId { get; set; }
-        public IgdbPlatformFamily IgdbPlatformFamily { get; set; }
-
-        public Guid IgdbPlatformLogoId { get; set; }
-        public IgdbPlatformLogo IgdbPlatformLogo { get; set; }
+        public long IgdbPlatformFamilyId { get; set; }
+        public long IgdbPlatformLogoId { get; set; }
 
         public string Name { get; set; }
         public string Category { get; set; }
@@ -26,7 +19,14 @@
         #region Constructors..
         public IgdbPlatform(IgdbApiPlatform platform)
         {
-            SourceId = platform.id;
+            Initialize(platform);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiPlatform platform)
+        {
+            IgdbPlatformId = platform.id;
             Checksum = platform.checksum;
 
             Name = platform.name;
@@ -35,6 +35,6 @@
             Source_CreatedOn_Unix = platform.created_at;
             Source_UpdatedOn_Unix = platform.updated_at;
         }
-        #endregion Constructors..
+        #endregion Methods..
     }
 }

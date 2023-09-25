@@ -5,12 +5,8 @@ namespace VideoGameGuy.Data
     public class IgdbGameMode : ModelBase
     {
         #region Properties..
-        public Guid IgdbGameModeId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbGameModeId { get; set; }
         public Guid Checksum { get; set; }
-
-        public List<IgdbGame>? Games { get; set; }
 
         public string Name { get; set; }
 
@@ -21,7 +17,14 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbGameMode(IgdbApiGameMode gameMode)
         {
-            SourceId = gameMode.id;
+            Initialize(gameMode);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiGameMode gameMode)
+        {
+            IgdbGameModeId = gameMode.id;
             Checksum = gameMode.checksum;
 
             Name = gameMode.name;
@@ -29,9 +32,6 @@ namespace VideoGameGuy.Data
             Source_CreatedOn_Unix = gameMode.created_at;
             Source_UpdatedOn_Unix = gameMode.updated_at;
         }
-        #endregion Constructors..
-
-        #region Methods..
         #endregion Methods..
     }
 }

@@ -3,12 +3,8 @@
     public class IgdbPlatformLogo : ModelBase
     {
         #region Properties..
-        public Guid IgdbPlatformLogoId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbPlatformLogoId { get; set; }
         public Guid Checksum { get; set; }
-
-        public List<IgdbPlatform>? Platforms { get; set; }
 
         public string? ImageId { get; set; }
         public string Url { get; set; }
@@ -20,7 +16,14 @@
         #region Constructors..
         public IgdbPlatformLogo(IgdbApiPlatformLogo platformLogo)
         {
-            SourceId = platformLogo.id;
+            Initialize(platformLogo);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiPlatformLogo platformLogo)
+        {
+            IgdbPlatformLogoId = platformLogo.id;
             Checksum = platformLogo.checksum;
 
             ImageId = platformLogo.image_id;
@@ -29,6 +32,6 @@
             Height = platformLogo.height;
             Width = platformLogo.width;
         }
-        #endregion Constructors..
+        #endregion Methods..
     }
 }

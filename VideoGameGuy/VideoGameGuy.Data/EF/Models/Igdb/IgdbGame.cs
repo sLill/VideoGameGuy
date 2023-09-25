@@ -5,9 +5,7 @@ namespace VideoGameGuy.Data
     public class IgdbGame : ModelBase
     {
         #region Properties..
-        public Guid IgdbGameId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbGameId { get; set; }
         public int? ParentSourceId { get; set; }
         public Guid? Checksum { get; set; }
 
@@ -35,20 +33,19 @@ namespace VideoGameGuy.Data
         public long? ReleaseDate_Unix { get; set; }
         public long? Source_CreatedOn_Unix { get; set; }
         public long? Source_UpdatedOn_Unix { get; set; }
-
-        // Foreign Keys
-        public List<IgdbPlatform>? Platforms { get; set; }
-        public List<IgdbGameMode>? GameModes { get; set; }
-        public List<IgdbMultiplayerMode>? MultiplayerModes { get; set; }
-        public List<IgdbArtwork>? Artworks { get; set; }
-        public List<IgdbScreenshot>? Screenshots { get; set; }
-        public List<IgdbTheme>? Themes { get; set; }
         #endregion Properties..
 
         #region Constructors..
         public IgdbGame(IgdbApiGame game)
         {
-            SourceId = game.id;
+            Initialize(game);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiGame game)
+        {
+            IgdbGameId = game.id;
             ParentSourceId = game.parent_game;
             Checksum = game.checksum;
 
@@ -73,17 +70,7 @@ namespace VideoGameGuy.Data
             ReleaseDate_Unix = game.first_release_date;
             Source_CreatedOn_Unix = game.created_at;
             Source_UpdatedOn_Unix = game.updated_at;
-
-            // Platforms = 
-            //GameModes
-            //MultiplayerModes
-            //Artworks
-            //Screenshots
-            //Themes
         }
-        #endregion Constructors..
-
-        #region Methods..
         #endregion Methods..
     }
 }

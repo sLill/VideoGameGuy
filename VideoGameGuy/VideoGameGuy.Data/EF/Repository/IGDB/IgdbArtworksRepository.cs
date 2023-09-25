@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameGuy.Data
 {
-    public class IgdbGamesRepository : RepositoryBase, IIgdbGamesRepository
+    public class IgdbArtworksRepository : RepositoryBase, IIgdbArtworksRepository
     {
         #region Fields..
         protected readonly IgdbDbContext _igdbDbContext;
@@ -12,34 +12,34 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
+        public IgdbArtworksRepository(ILogger<IgdbArtworksRepository> logger,
+                                      IgdbDbContext igdbDbContext)
             : base(logger)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiArtwork> apiArtworks)
         {
             bool success = true;
 
             try
             {
-                foreach (var apiGame in apiGames)
+                foreach (var apiArtwork in apiArtworks)
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingArtwork = await _igdbDbContext.Artworks.FirstOrDefaultAsync(x => x.IgdbArtworkId == apiArtwork.id);
 
                     // Add
-                    if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    if (existingArtwork == default)
+                        _igdbDbContext.Artworks.Add(new IgdbArtwork(apiArtwork));
 
                     // Update
                     else
                     {
-                        existingGame.Initialize(apiGame);
-                        _igdbDbContext.Games.Update(existingGame);
+                        existingArtwork.Initialize(apiArtwork);
+                        _igdbDbContext.Artworks.Update(existingArtwork);
                     }
                 }
 

@@ -1,13 +1,12 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using System.Threading.RateLimiting;
 using VideoGameGuy.Configuration;
 using VideoGameGuy.Data;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace VideoGameGuy.Core
 {
@@ -20,7 +19,15 @@ namespace VideoGameGuy.Core
         private readonly IHttpClientFactory _httpClientFactory;
 
         private ISystemStatusRepository _systemStatusRepository;
+        private IIgdbArtworksRepository _igdbArtworksRepository;
+        private IIgdbGameModesRepository _igdbGameModesRepository;
         private IIgdbGamesRepository _igdbGamesRepository;
+        private IIgdbMultiplayerModesRepository _igdbMultiplayerModesRepository;
+        private IIgdbPlatformFamiliesRepository _igdbPlatformFamiliesRepository;
+        private IIgdbPlatformLogosRepository _igdbPlatformLogosRepository;
+        private IIgdbPlatformsRepository _igdbPlatformsRepository;
+        private IIgdbScreenshotsRepository _igdbScreenshotsRepository;
+        private IIgdbThemesRepository _igdbThemesRepository;
 
         private Stopwatch _requestRateTimer;
         private int _requestsThisSecond;
@@ -47,9 +54,18 @@ namespace VideoGameGuy.Core
         #region Methods..
         private void Initialize()
         {
-            var serviceScrope = _serviceProvider.CreateScope();
-            _systemStatusRepository = serviceScrope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
-            _igdbGamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IIgdbGamesRepository>();
+            var serviceScope = _serviceProvider.CreateScope();
+
+            _systemStatusRepository = serviceScope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
+            _igdbArtworksRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbArtworksRepository>();
+            _igdbGameModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGameModesRepository>();
+            _igdbGamesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGamesRepository>();
+            _igdbMultiplayerModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbMultiplayerModesRepository>();
+            _igdbPlatformFamiliesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformFamiliesRepository>();
+            _igdbPlatformLogosRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformLogosRepository>();
+            _igdbPlatformsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformsRepository>();
+            _igdbScreenshotsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbScreenshotsRepository>();
+            _igdbThemesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbThemesRepository>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -157,9 +173,24 @@ namespace VideoGameGuy.Core
 
         private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
+            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiArtwork>(token, IgdbApiEndpoints.Artworks,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiGameMode>(token, IgdbApiEndpoints.GameModes,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiMultiplayerMode>(token, IgdbApiEndpoints.MultiplayerModes, updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiScreenshot>(token, IgdbApiEndpoints.Screenshots, updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiTheme>(token, IgdbApiEndpoints.Themes,  updatedOnStartDate);
+        }
+
+        private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate) where T : class 
+        {
+            Type apiObjectType = typeof(T);
+
             try
             {
-                _logger.LogInformation($"[IGDB] Updating game data..");
+                _logger.LogInformation($"[IGDB] Updating {apiObjectType} data..");
 
                 // Loop until no more data is returned
                 while (true)
@@ -167,30 +198,23 @@ namespace VideoGameGuy.Core
                     int offset = 0;
                     int resultsPerRequest = 500;
 
-                    string requestUri = $"{_settings.Value.ApiUrl}/{IgdbApiEndpoints.Games}";
+                    string requestUri = $"{_settings.Value.ApiUrl}/{endpoint}";
                     long unixStartTime = updatedOnStartDate.HasValue ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
-                    
+
                     string query = $"fields *;" +
                                    $"limit {resultsPerRequest};" +
                                    $"offset {offset};" +
                                    $"where updated_at >= {unixStartTime}";
 
-                    string gameJson = await ExecuteRequestAsync(token, requestUri, query);
-                    if (gameJson != null)
+                    string responseJson = await ExecuteRequestAsync(token, requestUri, query);
+                    if (responseJson != null)
                     {
-                        List<IgdbApiGame> games = ParseJsonArray<IgdbApiGame>(gameJson);
+                        List<T> apiObjects = ParseJsonArray<T>(responseJson);
+                        if (apiObjects?.Any() ?? false)
+                            await SaveModelDataAsync(apiObjects);
 
-                        // Get and parse relational data
-                        await UpdateArtworkDataAsync(token, games, unixStartTime);
-
-                        List<long> platformIds = games.SelectMany(x => x.platforms).Distinct()?.ToList() ?? new List<long>();
-                        List<long> gameModeIds = games.SelectMany(x => x.game_modes).Distinct()?.ToList() ?? new List<long>();
-                        List<long> multiplayerModeIds = games.SelectMany(x => x.multiplayer_modes).Distinct()?.ToList() ?? new List<long>();
-                        List<long> screenshotIds = games.SelectMany(x => x.screenshots).Distinct()?.ToList() ?? new List<long>();
-                        List<long> themeIds = games.SelectMany(x => x.themes).Distinct()?.ToList() ?? new List<long>();
-
-                        // If the number of games return does not match the number of games requested, then we have reached the end
-                        if (games.Count == resultsPerRequest)
+                        // If the number of items returned does not match the number of items requested, then we have reached the end
+                        if (apiObjects.Count() == resultsPerRequest)
                             offset += resultsPerRequest;
                         else
                             break;
@@ -201,47 +225,46 @@ namespace VideoGameGuy.Core
                         break;
                 }
 
-                _logger.LogInformation($"[IGDB] Update game data complete");
+                _logger.LogInformation($"[IGDB] Update {apiObjectType} data complete");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[IGDB] Update game data failed. {ex.Message} - {ex.StackTrace}");
+                _logger.LogError($"[IGDB] Update {apiObjectType} data failed. {ex.Message} - {ex.StackTrace}");
             }
         }
 
-        private async Task UpdateArtworkDataAsync(IgdbApiAccessToken token, List<IgdbApiGame> games, long unixStartTime)
+        private async Task SaveModelDataAsync<U>(IEnumerable<U> modelObjects) where U : class
         {
-            string requestUri = $"{_settings.Value.ApiUrl}/{IgdbApiEndpoints.Artworks}";
-            List<long> artworkIds = games.SelectMany(x => x.artworks).Distinct()?.ToList() ?? new List<long>();
-         
-            int offset = 0;
-            int resultsPerRequest = 500;
-
-            while (true)
+            if (modelObjects?.Any() ?? false)
             {
-                foreach (long id in artworkIds)
+                switch (modelObjects)
                 {
-                    string query = $"fields *;" +
-                                   $"limit {resultsPerRequest};" +
-                                   $"offset {offset};" +
-                                   $"where updated_at >= {unixStartTime}";
-
-                    string artworkJson = await ExecuteRequestAsync(token, requestUri, query);
-                    if (artworkJson != null)
-                    {
-                        List<IgdbApiArtwork> apiArtworks = ParseJsonArray<IgdbApiArtwork>(artworkJson);
-                        if (apiArtworks?.Any() ?? false)
-                        {
-                            List<IgdbArtwork> artworks = apiArtworks.Select(x => new IgdbArtwork(x))?.ToList() ?? new List<IgdbArtwork>();
-                        }
-
-                        // Stop looping once we receive fewer than the number of results that were requested
-                        if (apiArtworks.Count >= resultsPerRequest)
-                            offset += 500;
-                        else
-                            break;
-                    }
-                    else
+                    case IEnumerable<IgdbApiArtwork> apiArtworks:
+                        await _igdbArtworksRepository.AddOrUpdateRangeAsync(apiArtworks);
+                        break;
+                    case IEnumerable<IgdbApiGameMode> apiGameModes:
+                        await _igdbGameModesRepository.AddOrUpdateRangeAsync(apiGameModes);
+                        break;
+                    case IEnumerable<IgdbApiGame> apiGames:
+                        await _igdbGamesRepository.AddOrUpdateRangeAsync(apiGames);
+                        break;
+                    case IEnumerable<IgdbApiMultiplayerMode> apiMultiplayerModes:
+                        await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(apiMultiplayerModes);
+                        break;
+                    case IEnumerable<IgdbApiPlatformFamily> apiPlatformFamilies:
+                        await _igdbPlatformFamiliesRepository.AddOrUpdateRangeAsync(apiPlatformFamilies);
+                        break;
+                    case IEnumerable<IgdbApiPlatformLogo> apiPlatformLogos:
+                        await _igdbPlatformLogosRepository.AddOrUpdateRangeAsync(apiPlatformLogos);
+                        break;
+                    case IEnumerable<IgdbApiPlatform> apiPlatforms:
+                        await _igdbPlatformsRepository.AddOrUpdateRangeAsync(apiPlatforms);
+                        break;
+                    case IEnumerable<IgdbApiScreenshot> apiScreenshots:
+                        await _igdbScreenshotsRepository.AddOrUpdateRangeAsync(apiScreenshots);
+                        break;
+                    case IEnumerable<IgdbApiTheme> apiThemes:
+                        await _igdbThemesRepository.AddOrUpdateRangeAsync(apiThemes);
                         break;
                 }
             }
@@ -318,36 +341,6 @@ namespace VideoGameGuy.Core
             }
 
             return results;
-        }
-
-        private async Task CacheGameDataAsync(List<IgdbApiArtwork> artworks)
-        {
-            //var batch = new List<RawgGame>();
-
-            //JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
-            //var resultTokens = responseObject.GetValue("results")?.ToList() ?? new List<JToken>();
-
-            //foreach (JToken token in resultTokens)
-            //{
-            //    try
-            //    {
-            //        var rawgGame = token.ToObject<RawgGame>();
-            //        batch.Add(rawgGame);
-
-            //        if (batch.Count >= batchSize)
-            //        {
-            //            await _igdbGamesRepository.AddOrUpdateRangeAsync(batch);
-            //            batch.Clear();
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _logger.LogError($"[IGDB] {ex.Message} - {ex.StackTrace}");
-            //    }
-            //}
-
-            //if (batch.Any())
-            //    await _igdbGamesRepository.AddOrUpdateRangeAsync(batch);
         }
         #endregion Methods..
     }

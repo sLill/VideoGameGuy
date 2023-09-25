@@ -3,13 +3,8 @@
     public class IgdbTheme : ModelBase
     {
         #region Properties..
-        public Guid IgdbThemeId { get; set; }
-
-        public long SourceId { get; set; }
+        public long IgdbThemeId { get; set; }
         public Guid Checksum { get; set; }
-
-        public Guid GameId { get; set; }
-        public IgdbGame Game { get; set; }
 
         public string? Name { get; set; }
         public string Url { get; set; }
@@ -21,7 +16,14 @@
         #region Constructors..
         public IgdbTheme(IgdbApiTheme theme)
         {
-            SourceId = theme.id;
+            Initialize(theme);
+        }
+        #endregion Constructors..
+
+        #region Methods..
+        public void Initialize(IgdbApiTheme theme)
+        {
+            IgdbThemeId = theme.id;
             Checksum = theme.checksum;
 
             Name = theme.name;
@@ -30,6 +32,6 @@
             Source_CreatedOn_Unix = theme.created_at;
             Source_UpdatedOn_Unix = theme.updated_at;
         }
-        #endregion Constructors..
+        #endregion Methods..
     }
 }

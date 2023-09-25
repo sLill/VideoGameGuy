@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameGuy.Data
 {
-    public class IgdbGamesRepository : RepositoryBase, IIgdbGamesRepository
+    public class IgdbGameModesRepository : RepositoryBase, IIgdbGameModesRepository
     {
         #region Fields..
         protected readonly IgdbDbContext _igdbDbContext;
@@ -12,34 +12,34 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
+        public IgdbGameModesRepository(ILogger<IgdbGameModesRepository> logger,
+                                       IgdbDbContext igdbDbContext)
             : base(logger)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGameMode> apiGameModes)
         {
             bool success = true;
 
             try
             {
-                foreach (var apiGame in apiGames)
+                foreach (var apiGameMode in apiGameModes)
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingGameModes = await _igdbDbContext.GameModes.FirstOrDefaultAsync(x => x.IgdbGameModeId == apiGameMode.id);
 
                     // Add
-                    if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    if (existingGameModes == default)
+                        _igdbDbContext.GameModes.Add(new IgdbGameMode(apiGameMode));
 
                     // Update
                     else
                     {
-                        existingGame.Initialize(apiGame);
-                        _igdbDbContext.Games.Update(existingGame);
+                        existingGameModes.Initialize(apiGameMode);
+                        _igdbDbContext.GameModes.Update(existingGameModes);
                     }
                 }
 

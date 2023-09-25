@@ -10,8 +10,8 @@ namespace VideoGameGuy.Data
         #region Properties..
         public DbSet<IgdbGame> Games { get; set; }
         public DbSet<IgdbPlatform> Platforms { get; set; }
-        public DbSet<IgdbPlatformFamily> IgdbPlatformFamilies { get; set; }
-        public DbSet<IgdbPlatformLogo> IgdbPlatformLogos { get; set; }
+        public DbSet<IgdbPlatformFamily> PlatformFamilies { get; set; }
+        public DbSet<IgdbPlatformLogo> PlatformLogos { get; set; }
         public DbSet<IgdbGameMode> GameModes { get; set; }
         public DbSet<IgdbMultiplayerMode> MultiplayerModes { get; set; }
         public DbSet<IgdbArtwork> Artworks { get; set; }
@@ -62,36 +62,6 @@ namespace VideoGameGuy.Data
             modelBuilder.Entity<IgdbGame>()
                 .Property(g => g.Summary)
                 .HasColumnType("NVARCHAR(MAX)");
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.Platforms)
-                .WithMany(p => p.Games)
-                .UsingEntity(j => j.ToTable("Games_Platforms"));
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.GameModes)
-                .WithMany(gm => gm.Games)
-                .UsingEntity(j => j.ToTable("Games_GameModes"));
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.MultiplayerModes)
-                .WithMany(mm => mm.Games)
-                .UsingEntity(j => j.ToTable("Games_MultiplayerModes"));
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.Artworks)
-                .WithOne(a => a.Game)
-                .HasForeignKey(a => a.GameId);
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.Screenshots)
-                .WithOne(s => s.Game)
-                .HasForeignKey(s => s.GameId);
-
-            modelBuilder.Entity<IgdbGame>()
-                .HasMany(g => g.Themes)
-                .WithOne(t => t.Game)
-                .HasForeignKey(t => t.GameId);
         }
 
         private void DefinePlatformSchema(ModelBuilder modelBuilder)
@@ -106,16 +76,6 @@ namespace VideoGameGuy.Data
             modelBuilder.Entity<IgdbPlatform>()
                 .Property(p => p.Category)
                 .HasColumnType("NVARCHAR(255)");
-
-            modelBuilder.Entity<IgdbPlatform>()
-                .HasOne(p => p.IgdbPlatformFamily)
-                .WithMany(pf => pf.Platforms)
-                .HasForeignKey(p => p.IgdbPlatformFamilyId);
-
-            modelBuilder.Entity<IgdbPlatform>()
-                .HasOne(p => p.IgdbPlatformLogo)
-                .WithMany(pl => pl.Platforms)
-                .HasForeignKey(p => p.IgdbPlatformLogoId);
         }
 
         private void DefinePlatformFamilySchema(ModelBuilder modelBuilder)

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VideoGameGuy.Data
 {
-    public class IgdbGamesRepository : RepositoryBase, IIgdbGamesRepository
+    public class IgdbThemesRepository : RepositoryBase, IIgdbThemesRepository
     {
         #region Fields..
         protected readonly IgdbDbContext _igdbDbContext;
@@ -12,34 +12,34 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
+        public IgdbThemesRepository(ILogger<IgdbThemesRepository> logger,
+                                    IgdbDbContext igdbDbContext)
             : base(logger)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiTheme> apiThemes)
         {
             bool success = true;
 
             try
             {
-                foreach (var apiGame in apiGames)
+                foreach (var apiTheme in apiThemes)
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingTheme = await _igdbDbContext.Themes.FirstOrDefaultAsync(x => x.IgdbThemeId == apiTheme.id);
 
                     // Add
-                    if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    if (existingTheme == default)
+                        _igdbDbContext.Themes.Add(new IgdbTheme(apiTheme));
 
                     // Update
                     else
                     {
-                        existingGame.Initialize(apiGame);
-                        _igdbDbContext.Games.Update(existingGame);
+                        existingTheme.Initialize(apiTheme);
+                        _igdbDbContext.Themes.Update(existingTheme);
                     }
                 }
 

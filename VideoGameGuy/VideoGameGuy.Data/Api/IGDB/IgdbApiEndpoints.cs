@@ -9,6 +9,9 @@
         public const string MultiplayerModes = @"multiplayer_modes";
         public const string Platforms = @"platforms";
         public const string Screenshots = @"screenshots";
+        public const string Themes = @"themes";
+        public const string PlatformFamilies = @"platform_families";
+        public const string PlatformLogos = @"platform_logos";
         #endregion Properties..
     }
 }
