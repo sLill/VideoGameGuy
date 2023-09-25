@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiMultiplayerMode in apiMultiplayerModes)
                 {
-                    var existingMultiplayerMode = await _igdbDbContext.MultiplayerModes.FirstOrDefaultAsync(x => x.IgdbMultiplayerModeId == apiMultiplayerMode.id);
+                    var existingMultiplayerMode = await _igdbDbContext.MultiplayerModes.FirstOrDefaultAsync(x => x.SourceId == apiMultiplayerMode.id);
 
                     // Add
                     if (existingMultiplayerMode == default)
-                        _igdbDbContext.MultiplayerModes.Add(new IgdbMultiplayerMode(apiMultiplayerMode));
+                    {
+                        var multiplayerMode = new IgdbMultiplayerMode();
+                        multiplayerMode.Initialize(apiMultiplayerMode);
+                        _igdbDbContext.MultiplayerModes.Add(multiplayerMode);
+                    }
 
                     // Update
                     else

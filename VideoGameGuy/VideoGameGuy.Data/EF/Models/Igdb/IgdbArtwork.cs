@@ -3,9 +3,10 @@
     public class IgdbArtwork : ModelBase
     {
         #region Properties..
-        public long IgdbArtworkId { get; set; }
+        public Guid IgdbArtworkId { get; set; }
+        public long SourceId { get; set; }
+        public long Games_SourceId { get; set; }
         public Guid Checksum { get; set; }
-        public long IgdbGameId { get; set; }
 
         public int? ImageId { get; set; }
         public string Url { get; set; }
@@ -14,20 +15,12 @@
         public int? Width { get; set; }
         #endregion Properties..
 
-        #region Constructors..
-        public IgdbArtwork(IgdbApiArtwork artwork)
-        {
-            Initialize(artwork);
-        }
-        #endregion Constructors..
-
         #region Methods..
         public void Initialize(IgdbApiArtwork artwork)
         {
-            IgdbArtworkId = artwork.id;
+            SourceId = artwork.id;
+            Games_SourceId = artwork.game;
             Checksum = artwork.checksum;
-
-            IgdbGameId = artwork.game;
 
             ImageId = artwork.image_id;
             Url = artwork.url;

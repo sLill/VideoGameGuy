@@ -25,15 +25,19 @@ namespace VideoGameGuy.Data
         {
             bool success = true;
 
-            try
+            foreach (var apiGame in apiGames)
             {
-                foreach (var apiGame in apiGames)
+                try
                 {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.IgdbGameId == apiGame.id);
+                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.SourceId == apiGame.id);
 
                     // Add
                     if (existingGame == default)
-                        _igdbDbContext.Games.Add(new IgdbGame(apiGame));
+                    {
+                        var game = new IgdbGame();
+                        game.Initialize(apiGame);
+                        _igdbDbContext.Games.Add(game);
+                    }
 
                     // Update
                     else
@@ -42,14 +46,14 @@ namespace VideoGameGuy.Data
                         _igdbDbContext.Games.Update(existingGame);
                     }
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                    success = false;
+                }
+            }
 
-                await _igdbDbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
+            await _igdbDbContext.SaveChangesAsync();
 
             return success;
         }

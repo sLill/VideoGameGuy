@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiGameMode in apiGameModes)
                 {
-                    var existingGameModes = await _igdbDbContext.GameModes.FirstOrDefaultAsync(x => x.IgdbGameModeId == apiGameMode.id);
+                    var existingGameModes = await _igdbDbContext.GameModes.FirstOrDefaultAsync(x => x.SourceId == apiGameMode.id);
 
                     // Add
                     if (existingGameModes == default)
-                        _igdbDbContext.GameModes.Add(new IgdbGameMode(apiGameMode));
+                    {
+                        var gameMode = new IgdbGameMode();
+                        gameMode.Initialize(apiGameMode);
+                        _igdbDbContext.GameModes.Add(gameMode);
+                    }
 
                     // Update
                     else

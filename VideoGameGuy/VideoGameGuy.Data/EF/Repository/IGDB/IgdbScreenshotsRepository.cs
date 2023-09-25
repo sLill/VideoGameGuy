@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiScreenshot in apiScreenshots)
                 {
-                    var existingScreenshot = await _igdbDbContext.Screenshots.FirstOrDefaultAsync(x => x.IgdbScreenshotId == apiScreenshot.id);
+                    var existingScreenshot = await _igdbDbContext.Screenshots.FirstOrDefaultAsync(x => x.SourceId == apiScreenshot.id);
 
                     // Add
                     if (existingScreenshot == default)
-                        _igdbDbContext.Screenshots.Add(new IgdbScreenshot(apiScreenshot));
+                    {
+                        var screenshot = new IgdbScreenshot();
+                        screenshot.Initialize(apiScreenshot);
+                        _igdbDbContext.Screenshots.Add(screenshot);
+                    }
 
                     // Update
                     else

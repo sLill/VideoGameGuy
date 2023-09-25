@@ -3,27 +3,21 @@
     public class IgdbTheme : ModelBase
     {
         #region Properties..
-        public long IgdbThemeId { get; set; }
+        public Guid IgdbThemeId { get; set; }
+        public long SourceId { get; set; }
         public Guid Checksum { get; set; }
 
         public string? Name { get; set; }
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         public long Source_CreatedOn_Unix { get; set; }
         public long Source_UpdatedOn_Unix { get; set; }
         #endregion Properties..
 
-        #region Constructors..
-        public IgdbTheme(IgdbApiTheme theme)
-        {
-            Initialize(theme);
-        }
-        #endregion Constructors..
-
         #region Methods..
         public void Initialize(IgdbApiTheme theme)
         {
-            IgdbThemeId = theme.id;
+            SourceId = theme.id;
             Checksum = theme.checksum;
 
             Name = theme.name;

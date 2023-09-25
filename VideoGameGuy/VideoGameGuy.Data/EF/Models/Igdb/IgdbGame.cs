@@ -5,7 +5,8 @@ namespace VideoGameGuy.Data
     public class IgdbGame : ModelBase
     {
         #region Properties..
-        public long IgdbGameId { get; set; }
+        public Guid IgdbGameId { get; set; }
+        public long SourceId { get; set; }
         public int? ParentSourceId { get; set; }
         public Guid? Checksum { get; set; }
 
@@ -35,17 +36,10 @@ namespace VideoGameGuy.Data
         public long? Source_UpdatedOn_Unix { get; set; }
         #endregion Properties..
 
-        #region Constructors..
-        public IgdbGame(IgdbApiGame game)
-        {
-            Initialize(game);
-        }
-        #endregion Constructors..
-
         #region Methods..
         public void Initialize(IgdbApiGame game)
         {
-            IgdbGameId = game.id;
+            SourceId = game.id;
             ParentSourceId = game.parent_game;
             Checksum = game.checksum;
 
@@ -64,8 +58,8 @@ namespace VideoGameGuy.Data
             CoverId = game.cover;
             Status = game.status.ToString();
 
-            Storyline = game.name;
-            Summary = game.name;
+            Storyline = game.storyline;
+            Summary = game.summary;
 
             ReleaseDate_Unix = game.first_release_date;
             Source_CreatedOn_Unix = game.created_at;

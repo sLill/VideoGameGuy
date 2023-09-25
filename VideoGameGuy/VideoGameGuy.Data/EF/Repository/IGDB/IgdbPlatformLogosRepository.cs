@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiPlatformLogo in apiPlatformLogos)
                 {
-                    var existingPlatformLogo = await _igdbDbContext.PlatformLogos.FirstOrDefaultAsync(x => x.IgdbPlatformLogoId == apiPlatformLogo.id);
+                    var existingPlatformLogo = await _igdbDbContext.PlatformLogos.FirstOrDefaultAsync(x => x.SourceId == apiPlatformLogo.id);
 
                     // Add
                     if (existingPlatformLogo == default)
-                        _igdbDbContext.PlatformLogos.Add(new IgdbPlatformLogo(apiPlatformLogo));
+                    {
+                        var platformLogo = new IgdbPlatformLogo();
+                        platformLogo.Initialize(apiPlatformLogo);
+                        _igdbDbContext.PlatformLogos.Add(platformLogo);
+                    }
 
                     // Update
                     else

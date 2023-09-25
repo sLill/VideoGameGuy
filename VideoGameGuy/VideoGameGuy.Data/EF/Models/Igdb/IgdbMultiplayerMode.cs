@@ -3,7 +3,9 @@
     public class IgdbMultiplayerMode : ModelBase
     {
         #region Properties..
-        public long IgdbMultiplayerModeId { get; set; }
+        public Guid IgdbMultiplayerModeId { get; set; }
+        public long SourceId { get; set; }
+        public long Games_SourceId { get; set; }
         public Guid Checksum { get; set; }
 
         public bool? CampaignCoop { get; set; }
@@ -14,17 +16,11 @@
         public bool? SplitscreenOnline { get; set; }
         #endregion Properties..
 
-        #region Constructors..
-        public IgdbMultiplayerMode(IgdbApiMultiplayerMode multiplayerMode)
-        {
-            Initialize(multiplayerMode);
-        }
-        #endregion Constructors..
-
         #region Methods..
         public void Initialize(IgdbApiMultiplayerMode multiplayerMode)
         {
-            IgdbMultiplayerModeId = multiplayerMode.id;
+            SourceId = multiplayerMode.id;
+            Games_SourceId = multiplayerMode.game;
             Checksum = multiplayerMode.checksum;
 
             CampaignCoop = multiplayerMode.campaigncoop;

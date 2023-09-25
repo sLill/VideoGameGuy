@@ -28,9 +28,6 @@ namespace VideoGameGuy.Core
         private IIgdbPlatformsRepository _igdbPlatformsRepository;
         private IIgdbScreenshotsRepository _igdbScreenshotsRepository;
         private IIgdbThemesRepository _igdbThemesRepository;
-
-        private Stopwatch _requestRateTimer;
-        private int _requestsThisSecond;
         #endregion Fields..
 
         #region Properties..
@@ -174,13 +171,13 @@ namespace VideoGameGuy.Core
         private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
             await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiArtwork>(token, IgdbApiEndpoints.Artworks,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiArtwork>(token, IgdbApiEndpoints.Artworks, null);
             await UpdateEndpointDataAsync<IgdbApiGameMode>(token, IgdbApiEndpoints.GameModes,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiMultiplayerMode>(token, IgdbApiEndpoints.MultiplayerModes, updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiMultiplayerMode>(token, IgdbApiEndpoints.MultiplayerModes, null);
             await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiScreenshot>(token, IgdbApiEndpoints.Screenshots, updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos, null);
+            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies, null);
+            await UpdateEndpointDataAsync<IgdbApiScreenshot>(token, IgdbApiEndpoints.Screenshots, null);
             await UpdateEndpointDataAsync<IgdbApiTheme>(token, IgdbApiEndpoints.Themes,  updatedOnStartDate);
         }
 
@@ -192,26 +189,49 @@ namespace VideoGameGuy.Core
             {
                 _logger.LogInformation($"[IGDB] Updating {apiObjectType} data..");
 
+                Stopwatch requestRateTimer = Stopwatch.StartNew();
+                int requestsThisSecond = 0;
+
+                int offset = 0;
+                int resultsPerRequest = 500;
+
                 // Loop until no more data is returned
                 while (true)
                 {
-                    int offset = 0;
-                    int resultsPerRequest = 500;
-
                     string requestUri = $"{_settings.Value.ApiUrl}/{endpoint}";
-                    long unixStartTime = updatedOnStartDate.HasValue ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
+                    long unixStartTime = updatedOnStartDate != default ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
 
-                    string query = $"fields *;" +
-                                   $"limit {resultsPerRequest};" +
-                                   $"offset {offset};" +
-                                   $"where updated_at >= {unixStartTime}";
+                    // Build query
+                    string query = $"fields *;";
+
+                    if (updatedOnStartDate != null)
+                    {
+                        query += $"where updated_at >= {unixStartTime};";
+                    }
+
+                    query += $"limit {resultsPerRequest};" +
+                                 $"offset {offset};";
+
+                    // Limit the number of requests per second
+                    if (requestsThisSecond >= _settings.Value.RateLimit || requestRateTimer.ElapsedMilliseconds >= 1000)
+                    {
+                        // Wait out the rest of the second before allowing requests to continue
+                        int timeRemaining = 1000 - (int)requestRateTimer.ElapsedMilliseconds;
+                        if (timeRemaining > 0)
+                            await Task.Delay(timeRemaining);
+
+                        requestRateTimer.Restart();
+                        requestsThisSecond = 0;
+                    }
+
+                    requestsThisSecond++;
 
                     string responseJson = await ExecuteRequestAsync(token, requestUri, query);
                     if (responseJson != null)
                     {
                         List<T> apiObjects = ParseJsonArray<T>(responseJson);
                         if (apiObjects?.Any() ?? false)
-                            await SaveModelDataAsync(apiObjects);
+                            await SaveEndpointDataAsync(apiObjects);
 
                         // If the number of items returned does not match the number of items requested, then we have reached the end
                         if (apiObjects.Count() == resultsPerRequest)
@@ -233,7 +253,7 @@ namespace VideoGameGuy.Core
             }
         }
 
-        private async Task SaveModelDataAsync<U>(IEnumerable<U> modelObjects) where U : class
+        private async Task SaveEndpointDataAsync<U>(IEnumerable<U> modelObjects) where U : class
         {
             if (modelObjects?.Any() ?? false)
             {
@@ -276,30 +296,17 @@ namespace VideoGameGuy.Core
 
             int retries = 0;
             int retryLimit = _settings.Value.RetryLimit;
-            _requestRateTimer = _requestRateTimer ?? Stopwatch.StartNew();
-
-            // Limit the number of requests per second
-            if (_requestsThisSecond >= _settings.Value.RateLimit)
-            {
-                // Wait out the rest of the second before allowing requests to continue
-                int timeRemaining = 1000 - (int)_requestRateTimer.ElapsedMilliseconds;
-                if (timeRemaining > 0)
-                    await Task.Delay(timeRemaining);
-                
-                _requestRateTimer.Restart();
-            }
-
-            _requestsThisSecond++;
-
-            while (requestResponse != null)
+        
+            while (requestResponse == null)
             {
                 using (var httpClient = _httpClientFactory.CreateClient())
                 {
                     httpClient.Timeout = TimeSpan.FromSeconds(_settings.Value.RequestTimeout);
                     httpClient.DefaultRequestHeaders.Add("Client-ID", _settings.Value.ClientId);
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.access_token}");
-                    
-                    var content = new StringContent(query, Encoding.UTF8, "application/json");
+                    httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+                    var content = new StringContent(query, Encoding.UTF8);
                     var response = await httpClient.PostAsync(requestUri, content);
 
                     if (response.IsSuccessStatusCode)

@@ -3,7 +3,8 @@
     public class IgdbPlatform : ModelBase
     {
         #region Properties..
-        public long IgdbPlatformId { get; set; }
+        public Guid IgdbPlatformId { get; set; }
+        public long SourceId { get; set; }
         public Guid Checksum { get; set; }
 
         public long IgdbPlatformFamilyId { get; set; }
@@ -16,17 +17,10 @@
         public long Source_UpdatedOn_Unix { get; set; }
         #endregion Properties..
 
-        #region Constructors..
-        public IgdbPlatform(IgdbApiPlatform platform)
-        {
-            Initialize(platform);
-        }
-        #endregion Constructors..
-
         #region Methods..
         public void Initialize(IgdbApiPlatform platform)
         {
-            IgdbPlatformId = platform.id;
+            SourceId = platform.id;
             Checksum = platform.checksum;
 
             Name = platform.name;

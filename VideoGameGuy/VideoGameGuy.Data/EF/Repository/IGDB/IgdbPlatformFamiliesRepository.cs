@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiPlatformFamily in apiPlatformFamilies)
                 {
-                    var existingPlatformFamily = await _igdbDbContext.PlatformFamilies.FirstOrDefaultAsync(x => x.IgdbPlatformFamilyId == apiPlatformFamily.id);
+                    var existingPlatformFamily = await _igdbDbContext.PlatformFamilies.FirstOrDefaultAsync(x => x.SourceId == apiPlatformFamily.id);
 
                     // Add
                     if (existingPlatformFamily == default)
-                        _igdbDbContext.PlatformFamilies.Add(new IgdbPlatformFamily(apiPlatformFamily));
+                    {
+                        var platformFamily = new IgdbPlatformFamily();
+                        platformFamily.Initialize(apiPlatformFamily);
+                        _igdbDbContext.PlatformFamilies.Add(platformFamily);
+                    }
 
                     // Update
                     else

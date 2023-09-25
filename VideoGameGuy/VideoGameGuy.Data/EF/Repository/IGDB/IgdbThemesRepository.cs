@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiTheme in apiThemes)
                 {
-                    var existingTheme = await _igdbDbContext.Themes.FirstOrDefaultAsync(x => x.IgdbThemeId == apiTheme.id);
+                    var existingTheme = await _igdbDbContext.Themes.FirstOrDefaultAsync(x => x.SourceId == apiTheme.id);
 
                     // Add
                     if (existingTheme == default)
-                        _igdbDbContext.Themes.Add(new IgdbTheme(apiTheme));
+                    {
+                        var theme = new IgdbTheme();
+                        theme.Initialize(apiTheme);
+                        _igdbDbContext.Themes.Add(theme);
+                    }
 
                     // Update
                     else

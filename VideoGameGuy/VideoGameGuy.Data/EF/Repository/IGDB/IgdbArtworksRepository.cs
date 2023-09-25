@@ -29,11 +29,15 @@ namespace VideoGameGuy.Data
             {
                 foreach (var apiArtwork in apiArtworks)
                 {
-                    var existingArtwork = await _igdbDbContext.Artworks.FirstOrDefaultAsync(x => x.IgdbArtworkId == apiArtwork.id);
+                    var existingArtwork = await _igdbDbContext.Artworks.FirstOrDefaultAsync(x => x.SourceId == apiArtwork.id);
 
                     // Add
                     if (existingArtwork == default)
-                        _igdbDbContext.Artworks.Add(new IgdbArtwork(apiArtwork));
+                    {
+                        var artwork = new IgdbArtwork();
+                        artwork.Initialize(apiArtwork);
+                        _igdbDbContext.Artworks.Add(artwork);
+                    }
 
                     // Update
                     else
