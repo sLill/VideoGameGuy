@@ -25,8 +25,6 @@ namespace VideoGameGuy.Data
         public DbSet<IgdbGames_Themes> Games_Themes { get; set; }
         public DbSet<IgdbGames_Artworks> Games_Artworks { get; set; }
         public DbSet<IgdbGames_Screenshots> Games_Screenshots { get; set; }
-        public DbSet<IgdbPlatforms_PlatformFamilies> Platforms_PlatformFamilies { get; set; }
-        public DbSet<IgdbPlatforms_PlatformLogos> Platforms_PlatformLogos { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -54,8 +52,6 @@ namespace VideoGameGuy.Data
             DefineGames_ThemesSchema(modelBuilder);
             DefineGames_ArtworksSchema(modelBuilder);
             DefineGames_ScreenshotsSchema(modelBuilder);
-            DefinePlatforms_PlatformFamiliesSchema(modelBuilder);
-            DefinePlatforms_PlatformLogosSchema(modelBuilder);
         }
 
         private void DefineGameSchema(ModelBuilder modelBuilder)
@@ -214,18 +210,6 @@ namespace VideoGameGuy.Data
         {
             modelBuilder.Entity<IgdbGames_Screenshots>()
                 .HasKey(t => t.IgdbGames_ScreenshotsId);
-        }
-
-        private void DefinePlatforms_PlatformFamiliesSchema(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<IgdbPlatforms_PlatformFamilies>()
-                .HasKey(t => t.IgdbPlatforms_PlatformFamiliesId);
-        }
-
-        private void DefinePlatforms_PlatformLogosSchema(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<IgdbPlatforms_PlatformLogos>()
-                  .HasKey(t => t.IgdbPlatforms_PlatformLogosId);
         }
         #endregion Methods..
     }

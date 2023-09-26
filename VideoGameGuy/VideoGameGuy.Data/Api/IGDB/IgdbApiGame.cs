@@ -102,7 +102,7 @@ namespace VideoGameGuy.Data
         public long id { get; set; }
         public double aggregated_rating { get; set; }
         public int aggregated_rating_count { get; set; }
-        public List<IgdbApiArtwork> artworks { get; set; }
+        public List<IgdbApiArtwork> artworks { get; set; } = new List<IgdbApiArtwork>();
         public IgdbCategory category { get; set; }
         public Guid checksum { get; set; }
         public long cover { get; set; }
@@ -115,7 +115,7 @@ namespace VideoGameGuy.Data
         public List<IgdbApiPlatform> platforms { get; set; } = new List<IgdbApiPlatform>();
         public double rating { get; set; }
         public int rating_count { get; set; }
-        public List<IgdbApiScreenshot> screenshots { get; set; }
+        public List<IgdbApiScreenshot> screenshots { get; set; } = new List<IgdbApiScreenshot>();
         public IgdbStatus status { get; set; }
         public string storyline { get; set; }
         public string summary { get; set; }
@@ -133,7 +133,7 @@ namespace VideoGameGuy.Data
         public Guid checksum { get; set; }
         public long game { get; set; }
         public int height { get; set; }
-        public int image_id { get; set; }
+        public string image_id { get; set; }
         public string url { get; set; }
         public int width { get; set; } 
         #endregion Properties..
@@ -175,8 +175,8 @@ namespace VideoGameGuy.Data
         public Guid checksum { get; set; }
         public long created_at { get; set; }
         public string name { get; set; }
-        public IgdbApiPlatformFamily platform_family { get; set; }
-        public IgdbApiPlatformLogo platform_logo { get; set; }
+        public long platform_family { get; set; }
+        public long platform_logo { get; set; }
         public long updated_at { get; set; } 
         #endregion Properties..
     }

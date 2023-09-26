@@ -7,6 +7,9 @@
         public long SourceId { get; set; }
         public Guid Checksum { get; set; }
 
+        public long Source_PlatformFamilyId { get; set; }
+        public long Source_PlatformLogoId { get; set; }
+
         public string Name { get; set; }
         public string Category { get; set; }
 
@@ -19,6 +22,9 @@
         {
             SourceId = platform.id;
             Checksum = platform.checksum;
+
+            Source_PlatformFamilyId = platform.platform_family;
+            Source_PlatformLogoId = platform.platform_logo;
 
             Name = platform.name;
             Category = platform.category.ToString();

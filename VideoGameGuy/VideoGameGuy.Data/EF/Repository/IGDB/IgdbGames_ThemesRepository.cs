@@ -34,7 +34,7 @@ namespace VideoGameGuy.Data
 
                     // Add
                     if (existingEntry == default)
-                        _igdbDbContext.Games_Themes.Add(existingEntry);
+                        _igdbDbContext.Games_Themes.Add(entry);
 
                     // Update
                     else

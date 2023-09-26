@@ -21,7 +21,7 @@ namespace VideoGameGuy.Data
         #endregion Constructors..
 
         #region Methods..
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiScreenshot> apiScreenshots)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiScreenshot> apiScreenshots, bool suspendSaveChanges = false)
         {
             bool success = true;
 
@@ -47,7 +47,8 @@ namespace VideoGameGuy.Data
                     }
                 }
 
-                await _igdbDbContext.SaveChangesAsync();
+                if (!suspendSaveChanges)
+                    await _igdbDbContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
