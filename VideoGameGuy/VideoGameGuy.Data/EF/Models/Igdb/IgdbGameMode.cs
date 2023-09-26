@@ -1,6 +1,4 @@
-﻿using Syncfusion.Licensing;
-
-namespace VideoGameGuy.Data
+﻿namespace VideoGameGuy.Data
 {
     public class IgdbGameMode : ModelBase
     {

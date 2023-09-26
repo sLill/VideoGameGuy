@@ -17,6 +17,16 @@ namespace VideoGameGuy.Data
         public DbSet<IgdbArtwork> Artworks { get; set; }
         public DbSet<IgdbScreenshot> Screenshots { get; set; }
         public DbSet<IgdbTheme> Themes { get; set; }
+
+        // Join tables
+        public DbSet<IgdbGames_GameModes> Games_GameModes { get; set; }
+        public DbSet<IgdbGames_MultiplayerModes> Games_MultiplayerModes { get; set; }
+        public DbSet<IgdbGames_Platforms> Games_Platforms { get; set; }
+        public DbSet<IgdbGames_Themes> Games_Themes { get; set; }
+        public DbSet<IgdbGames_Artworks> Games_Artworks { get; set; }
+        public DbSet<IgdbGames_Screenshots> Games_Screenshots { get; set; }
+        public DbSet<IgdbPlatforms_PlatformFamilies> Platforms_PlatformFamilies { get; set; }
+        public DbSet<IgdbPlatforms_PlatformLogos> Platforms_PlatformLogos { get; set; }
         #endregion Properties..
 
         #region Constructors..
@@ -36,6 +46,16 @@ namespace VideoGameGuy.Data
             DefineArtworkSchema(modelBuilder);
             DefineScreenshotSchema(modelBuilder);
             DefineThemeSchema(modelBuilder);
+
+            // Join tables
+            DefineGames_GameModesSchema(modelBuilder);
+            DefineGames_MultiplayerModesSchema(modelBuilder);
+            DefineGames_PlatformsSchema(modelBuilder);
+            DefineGames_ThemesSchema(modelBuilder);
+            DefineGames_ArtworksSchema(modelBuilder);
+            DefineGames_ScreenshotsSchema(modelBuilder);
+            DefinePlatforms_PlatformFamiliesSchema(modelBuilder);
+            DefinePlatforms_PlatformLogosSchema(modelBuilder);
         }
 
         private void DefineGameSchema(ModelBuilder modelBuilder)
@@ -158,6 +178,54 @@ namespace VideoGameGuy.Data
             modelBuilder.Entity<IgdbTheme>()
                 .Property(a => a.Url)
                 .HasColumnType("NVARCHAR(2048)");
+        }
+
+        private void DefineGames_GameModesSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_GameModes>()
+                .HasKey(t => t.IgdbGames_GameModesId);
+        }
+
+        private void DefineGames_MultiplayerModesSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_MultiplayerModes>()
+                .HasKey(t => t.IgdbGames_MultiplayerModesId);
+        }
+
+        private void DefineGames_PlatformsSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_Platforms>()
+                .HasKey(t => t.IgdbGames_PlatformsId);
+        }
+
+        private void DefineGames_ThemesSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_Themes>()
+                .HasKey(t => t.IgdbGames_ThemesId);
+        }
+
+        private void DefineGames_ArtworksSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_Artworks>()
+                .HasKey(t => t.IgdbGames_ArtworksId);
+        }
+
+        private void DefineGames_ScreenshotsSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbGames_Screenshots>()
+                .HasKey(t => t.IgdbGames_ScreenshotsId);
+        }
+
+        private void DefinePlatforms_PlatformFamiliesSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbPlatforms_PlatformFamilies>()
+                .HasKey(t => t.IgdbPlatforms_PlatformFamiliesId);
+        }
+
+        private void DefinePlatforms_PlatformLogosSchema(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<IgdbPlatforms_PlatformLogos>()
+                  .HasKey(t => t.IgdbPlatforms_PlatformLogosId);
         }
         #endregion Methods..
     }

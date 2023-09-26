@@ -73,6 +73,15 @@ namespace VideoGameGuy
             builder.Services.AddScoped<IIgdbScreenshotsRepository, IgdbScreenshotsRepository>();
             builder.Services.AddScoped<IIgdbThemesRepository, IgdbThemesRepository>();
 
+            builder.Services.AddScoped<IIgdbGames_GameModesRepository, IgdbGames_GameModesRepository>();
+            builder.Services.AddScoped<IIgdbGames_MultiplayerModesRepository, IgdbGames_MultiplayerModesRepository>();
+            builder.Services.AddScoped<IIgdbGames_PlatformsRepository, IgdbGames_PlatformsRepository>();
+            builder.Services.AddScoped<IIgdbGames_ThemesRepository, IgdbGames_ThemesRepository>();
+            builder.Services.AddScoped<IIgdbGames_ArtworksRepository, IgdbGames_ArtworksRepository>();
+            builder.Services.AddScoped<IIgdbGames_ScreenshotsRepository, IgdbGames_ScreenshotsRepository>();
+            builder.Services.AddScoped<IIgdbPlatforms_PlatformFamiliesRepository, IgdbPlatforms_PlatformFamiliesRepository>();
+            builder.Services.AddScoped<IIgdbPlatforms_PlatformLogosRepository, IgdbPlatforms_PlatformLogosRepository>();
+
             var app = builder.Build();
             var serviceScope = app.Services.CreateScope();
 

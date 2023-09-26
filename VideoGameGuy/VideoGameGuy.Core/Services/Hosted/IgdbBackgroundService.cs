@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Syncfusion.EJ2.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -28,6 +29,15 @@ namespace VideoGameGuy.Core
         private IIgdbPlatformsRepository _igdbPlatformsRepository;
         private IIgdbScreenshotsRepository _igdbScreenshotsRepository;
         private IIgdbThemesRepository _igdbThemesRepository;
+
+        private IIgdbGames_GameModesRepository _igdbGames_GameModesRepository;
+        private IIgdbGames_MultiplayerModesRepository _igdbGames_MultiplayerModesRepository;
+        private IIgdbGames_PlatformsRepository _igdbGames_PlatformsRepository;
+        private IIgdbGames_ThemesRepository _igdbGames_ThemesRepository;
+        private IIgdbGames_ArtworksRepository _igdbGames_ArtworksRepository;
+        private IIgdbGames_ScreenshotsRepository _igdbGames_ScreenshotsRepository;
+        private IIgdbPlatforms_PlatformFamiliesRepository _iIgdbPlatforms_PlatformFamiliesRepository;
+        private IIgdbPlatforms_PlatformLogosRepository _iIgdbPlatforms_PlatformLogosRepository;
         #endregion Fields..
 
         #region Properties..
@@ -63,6 +73,15 @@ namespace VideoGameGuy.Core
             _igdbPlatformsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformsRepository>();
             _igdbScreenshotsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbScreenshotsRepository>();
             _igdbThemesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbThemesRepository>();
+
+            _igdbGames_GameModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_GameModesRepository>();
+            _igdbGames_MultiplayerModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_MultiplayerModesRepository>();
+            _igdbGames_PlatformsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_PlatformsRepository>();
+            _igdbGames_ThemesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ThemesRepository>();
+            _igdbGames_ArtworksRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ArtworksRepository>();
+            _igdbGames_ScreenshotsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ScreenshotsRepository>();
+            _iIgdbPlatforms_PlatformFamiliesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatforms_PlatformFamiliesRepository>();
+            _iIgdbPlatforms_PlatformLogosRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatforms_PlatformLogosRepository>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -170,18 +189,11 @@ namespace VideoGameGuy.Core
 
         private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
-            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiArtwork>(token, IgdbApiEndpoints.Artworks, null);
-            await UpdateEndpointDataAsync<IgdbApiGameMode>(token, IgdbApiEndpoints.GameModes,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiMultiplayerMode>(token, IgdbApiEndpoints.MultiplayerModes, null);
-            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate);
-            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos, null);
-            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies, null);
-            await UpdateEndpointDataAsync<IgdbApiScreenshot>(token, IgdbApiEndpoints.Screenshots, null);
-            await UpdateEndpointDataAsync<IgdbApiTheme>(token, IgdbApiEndpoints.Themes,  updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate, IgdbApiEndpoints.GameModes, IgdbApiEndpoints.MultiplayerModes, IgdbApiEndpoints.Platforms, IgdbApiEndpoints.Themes);
+            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate, IgdbApiEndpoints.PlatformFamilies, IgdbApiEndpoints.PlatformLogos);
         }
 
-        private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate) where T : class 
+        private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate, params string[] subEndpoints) where T : class 
         {
             Type apiObjectType = typeof(T);
 
@@ -202,15 +214,18 @@ namespace VideoGameGuy.Core
                     long unixStartTime = updatedOnStartDate != default ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
 
                     // Build query
-                    string query = $"fields *;";
+                    StringBuilder query = new StringBuilder($"fields *");
+
+                    if (subEndpoints?.Any() ?? false)
+                        query.Append(string.Join(',', subEndpoints.Select(x => $"{x}.*")));
+
+                    query.Append(';');
 
                     if (updatedOnStartDate != null)
-                    {
-                        query += $"where updated_at >= {unixStartTime};";
-                    }
+                        query.Append($"where updated_at >= {unixStartTime};");
 
-                    query += $"limit {resultsPerRequest};" +
-                                 $"offset {offset};";
+                    query.Append($"limit {resultsPerRequest};" +
+                                 $"offset {offset};");
 
                     // Limit the number of requests per second
                     if (requestsThisSecond >= _settings.Value.RateLimit || requestRateTimer.ElapsedMilliseconds >= 1000)
@@ -226,7 +241,7 @@ namespace VideoGameGuy.Core
 
                     requestsThisSecond++;
 
-                    string responseJson = await ExecuteRequestAsync(token, requestUri, query);
+                    string responseJson = await ExecuteRequestAsync(token, requestUri, query.ToString());
                     if (responseJson != null)
                     {
                         List<T> apiObjects = ParseJsonArray<T>(responseJson);
@@ -262,29 +277,40 @@ namespace VideoGameGuy.Core
                     case IEnumerable<IgdbApiArtwork> apiArtworks:
                         await _igdbArtworksRepository.AddOrUpdateRangeAsync(apiArtworks);
                         break;
-                    case IEnumerable<IgdbApiGameMode> apiGameModes:
-                        await _igdbGameModesRepository.AddOrUpdateRangeAsync(apiGameModes);
-                        break;
                     case IEnumerable<IgdbApiGame> apiGames:
+                        foreach (var game in apiGames)
+                        {
+                            await _igdbGameModesRepository.AddOrUpdateRangeAsync(game.game_modes);
+                            await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes);
+                            await _igdbPlatformsRepository.AddOrUpdateRangeAsync(game.platforms);
+                            await _igdbThemesRepository.AddOrUpdateRangeAsync(game.themes);
+
+                            // Join tables
+                            await _igdbGames_GameModesRepository.AddOrUpdateRangeAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }));    
+                            await _igdbGames_MultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }));    
+                            await _igdbGames_PlatformsRepository.AddOrUpdateRangeAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }));    
+                            await _igdbGames_ThemesRepository.AddOrUpdateRangeAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }));    
+                            await _igdbGames_ArtworksRepository.AddOrUpdateRangeAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }));    
+                            await _igdbGames_ScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }));    
+                        }
+
                         await _igdbGamesRepository.AddOrUpdateRangeAsync(apiGames);
                         break;
-                    case IEnumerable<IgdbApiMultiplayerMode> apiMultiplayerModes:
-                        await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(apiMultiplayerModes);
-                        break;
-                    case IEnumerable<IgdbApiPlatformFamily> apiPlatformFamilies:
-                        await _igdbPlatformFamiliesRepository.AddOrUpdateRangeAsync(apiPlatformFamilies);
-                        break;
-                    case IEnumerable<IgdbApiPlatformLogo> apiPlatformLogos:
-                        await _igdbPlatformLogosRepository.AddOrUpdateRangeAsync(apiPlatformLogos);
-                        break;
                     case IEnumerable<IgdbApiPlatform> apiPlatforms:
+                        foreach (var platform in apiPlatforms)
+                        {
+                            await _igdbPlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { platform.platform_family });
+                            await _igdbPlatformLogosRepository.AddOrUpdateRangeAsync(new[] { platform.platform_logo });
+
+                            // Join tables
+                            await _iIgdbPlatforms_PlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformFamilies() { Platforms_SourceId = platform.id, PlatformFamilies_SourceId = platform.platform_family.id } });
+                            await _iIgdbPlatforms_PlatformLogosRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformLogos() { Platforms_SourceId = platform.id, PlatformLogos_SourceId = platform.platform_logo.id } });
+                        }
+
                         await _igdbPlatformsRepository.AddOrUpdateRangeAsync(apiPlatforms);
                         break;
                     case IEnumerable<IgdbApiScreenshot> apiScreenshots:
                         await _igdbScreenshotsRepository.AddOrUpdateRangeAsync(apiScreenshots);
-                        break;
-                    case IEnumerable<IgdbApiTheme> apiThemes:
-                        await _igdbThemesRepository.AddOrUpdateRangeAsync(apiThemes);
                         break;
                 }
             }

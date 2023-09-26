@@ -102,24 +102,24 @@ namespace VideoGameGuy.Data
         public long id { get; set; }
         public double aggregated_rating { get; set; }
         public int aggregated_rating_count { get; set; }
-        public List<long> artworks { get; set; }
+        public List<IgdbApiArtwork> artworks { get; set; }
         public IgdbCategory category { get; set; }
         public Guid checksum { get; set; }
         public long cover { get; set; }
         public long created_at { get; set; }
         public long first_release_date { get; set; }
-        public List<long> game_modes { get; set; }
-        public List<long> multiplayer_modes { get; set; }
+        public List<IgdbApiGameMode> game_modes { get; set; } = new List<IgdbApiGameMode>();
+        public List<IgdbApiMultiplayerMode> multiplayer_modes { get; set; } = new List<IgdbApiMultiplayerMode>();
         public string name { get; set; }
         public int parent_game { get; set; }
-        public List<long> platforms { get; set; }
+        public List<IgdbApiPlatform> platforms { get; set; } = new List<IgdbApiPlatform>();
         public double rating { get; set; }
         public int rating_count { get; set; }
-        public List<long> screenshots { get; set; }
+        public List<IgdbApiScreenshot> screenshots { get; set; }
         public IgdbStatus status { get; set; }
         public string storyline { get; set; }
         public string summary { get; set; }
-        public List<long> themes { get; set; }
+        public List<IgdbApiTheme> themes { get; set; } = new List<IgdbApiTheme>();
         public double total_rating { get; set; }
         public int total_rating_count { get; set; }
         public long updated_at { get; set; }
@@ -175,8 +175,8 @@ namespace VideoGameGuy.Data
         public Guid checksum { get; set; }
         public long created_at { get; set; }
         public string name { get; set; }
-        public long platform_family { get; set; }
-        public long platform_logo { get; set; }
+        public IgdbApiPlatformFamily platform_family { get; set; }
+        public IgdbApiPlatformLogo platform_logo { get; set; }
         public long updated_at { get; set; } 
         #endregion Properties..
     }
