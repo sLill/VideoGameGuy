@@ -189,8 +189,10 @@ namespace VideoGameGuy.Core
 
         private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
-            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate, IgdbApiEndpoints.GameModes, IgdbApiEndpoints.MultiplayerModes, IgdbApiEndpoints.Platforms, IgdbApiEndpoints.Themes);
-            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate, IgdbApiEndpoints.PlatformFamilies, IgdbApiEndpoints.PlatformLogos);
+            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate, IgdbApiEndpoints.GameModes, 
+                IgdbApiEndpoints.MultiplayerModes, IgdbApiEndpoints.Platforms, IgdbApiEndpoints.Themes, IgdbApiEndpoints.Artworks, IgdbApiEndpoints.Screenshots);
+
+            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms,  updatedOnStartDate, IgdbApiEndpoints.PlatformFamily, IgdbApiEndpoints.PlatformLogo);
         }
 
         private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate, params string[] subEndpoints) where T : class 
@@ -211,13 +213,13 @@ namespace VideoGameGuy.Core
                 while (true)
                 {
                     string requestUri = $"{_settings.Value.ApiUrl}/{endpoint}";
-                    long unixStartTime = updatedOnStartDate != default ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
+                    long unixStartTime = (updatedOnStartDate != null && updatedOnStartDate != DateTime.MinValue) ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
 
                     // Build query
                     StringBuilder query = new StringBuilder($"fields *");
 
                     if (subEndpoints?.Any() ?? false)
-                        query.Append(string.Join(',', subEndpoints.Select(x => $"{x}.*")));
+                        query.Append("," + string.Join(',', subEndpoints.Select(x => $"{x}.*")));
 
                     query.Append(';');
 
@@ -286,12 +288,23 @@ namespace VideoGameGuy.Core
                             await _igdbThemesRepository.AddOrUpdateRangeAsync(game.themes);
 
                             // Join tables
-                            await _igdbGames_GameModesRepository.AddOrUpdateRangeAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }));    
-                            await _igdbGames_MultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }));    
-                            await _igdbGames_PlatformsRepository.AddOrUpdateRangeAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }));    
-                            await _igdbGames_ThemesRepository.AddOrUpdateRangeAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }));    
-                            await _igdbGames_ArtworksRepository.AddOrUpdateRangeAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }));    
-                            await _igdbGames_ScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }));    
+                            if (game.game_modes != null)
+                                await _igdbGames_GameModesRepository.AddOrUpdateRangeAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }));
+                           
+                            if (game.multiplayer_modes != null)
+                                await _igdbGames_MultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }));
+
+                            if (game.platforms != null)
+                                await _igdbGames_PlatformsRepository.AddOrUpdateRangeAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }));
+
+                            if (game.themes != null)
+                                await _igdbGames_ThemesRepository.AddOrUpdateRangeAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }));
+
+                            if (game.artworks != null)
+                                await _igdbGames_ArtworksRepository.AddOrUpdateRangeAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }));
+
+                            if (game.screenshots != null)
+                                await _igdbGames_ScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }));    
                         }
 
                         await _igdbGamesRepository.AddOrUpdateRangeAsync(apiGames);
@@ -299,12 +312,18 @@ namespace VideoGameGuy.Core
                     case IEnumerable<IgdbApiPlatform> apiPlatforms:
                         foreach (var platform in apiPlatforms)
                         {
-                            await _igdbPlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { platform.platform_family });
-                            await _igdbPlatformLogosRepository.AddOrUpdateRangeAsync(new[] { platform.platform_logo });
+                            if (platform.platform_family != null)
+                                await _igdbPlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { platform.platform_family });
+
+                            if (platform.platform_logo != null)
+                                await _igdbPlatformLogosRepository.AddOrUpdateRangeAsync(new[] { platform.platform_logo });
 
                             // Join tables
-                            await _iIgdbPlatforms_PlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformFamilies() { Platforms_SourceId = platform.id, PlatformFamilies_SourceId = platform.platform_family.id } });
-                            await _iIgdbPlatforms_PlatformLogosRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformLogos() { Platforms_SourceId = platform.id, PlatformLogos_SourceId = platform.platform_logo.id } });
+                            if (platform.platform_family != null)
+                                await _iIgdbPlatforms_PlatformFamiliesRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformFamilies() { Platforms_SourceId = platform.id, PlatformFamilies_SourceId = platform.platform_family.id } });
+
+                            if (platform.platform_logo != null)
+                                await _iIgdbPlatforms_PlatformLogosRepository.AddOrUpdateRangeAsync(new[] { new IgdbPlatforms_PlatformLogos() { Platforms_SourceId = platform.id, PlatformLogos_SourceId = platform.platform_logo.id } });
                         }
 
                         await _igdbPlatformsRepository.AddOrUpdateRangeAsync(apiPlatforms);

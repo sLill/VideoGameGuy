@@ -7,9 +7,6 @@
         public long SourceId { get; set; }
         public Guid Checksum { get; set; }
 
-        public long IgdbPlatformFamilyId { get; set; }
-        public long IgdbPlatformLogoId { get; set; }
-
         public string Name { get; set; }
         public string Category { get; set; }
 
