@@ -74,8 +74,8 @@ namespace VideoGameGuy.Controllers
                 if (!isCorrect)
                 {
                     // Reset on incorrect
-                    reviewScoresViewModel.GameRounds.Clear();
-                    reviewScoresSessionData.GameRounds.Clear();
+                    reviewScoresViewModel.ReviewScoresRounds.Clear();
+                    reviewScoresSessionData.ReviewScoresRounds.Clear();
                 }
 
                 _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
@@ -122,17 +122,17 @@ namespace VideoGameGuy.Controllers
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
             reviewScoresViewModel.LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue;
 
-            foreach (var gameRound in reviewScoresSessionData.GameRounds)
+            foreach (var round in reviewScoresSessionData.ReviewScoresRounds)
             {
-                var gameOneData = await _rawgGamesRepository.GetGameFromGameIdAsync(gameRound.GameOneId);
-                var gameTwoData = await _rawgGamesRepository.GetGameFromGameIdAsync(gameRound.GameTwoId);
+                var gameOneData = await _rawgGamesRepository.GetGameFromGameIdAsync(round.GameOneId);
+                var gameTwoData = await _rawgGamesRepository.GetGameFromGameIdAsync(round.GameTwoId);
 
-                reviewScoresViewModel.GameRounds.Add(new GameRoundViewModel()
+                reviewScoresViewModel.ReviewScoresRounds.Add(new ReviewScoresRoundViewModel()
                 {
                     GameOne = gameOneData,
                     GameTwo = gameTwoData,
-                    UserChoice = gameRound.UserChoiceId,
-                    WinningGameId = gameRound.WinningGameId
+                    UserChoice = round.UserChoiceId,
+                    WinningGameId = round.WinningGameId
                 });
             }
 
@@ -145,7 +145,7 @@ namespace VideoGameGuy.Controllers
 
             if (games?.Any() ?? false)
             {
-                reviewScoresSessionData.GameRounds.Add(new ReviewScoresSessionData.GameRound()
+                reviewScoresSessionData.ReviewScoresRounds.Add(new ReviewScoresSessionData.ReviewScoresRound()
                 {
                     GameOneId = games[0].RawgGameId,
                     GameTwoId = games[1].RawgGameId

@@ -1,0 +1,26 @@
+﻿@model VideoGameGuy.Data.DescriptionsViewModel
+
+@{
+    ViewData["Title"] = "Descriptions";
+}
+
+<div id="descriptions_Grid">
+
+    @* Content *@
+    <div id="content_Grid">
+        <div id="gameDescription">@Model.CurrentRound.GameDescription</div>
+        <input id="userInput" />
+    </div>
+
+    @* Footer *@
+    <div id="descriptions_Footer">
+        <div id="updatedOn">
+            Last updated @Model.LastUpdateOn.ToShortDateString()
+        </div>
+
+        <div id="dataSource">
+            Data made available by <a href="https://www.igdb.com/">igdb.com</a>
+        </div>
+    </div>
+
+</div>

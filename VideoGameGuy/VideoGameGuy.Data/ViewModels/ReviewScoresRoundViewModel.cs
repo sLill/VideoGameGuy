@@ -1,6 +1,6 @@
 namespace VideoGameGuy.Data
 {
-    public class GameRoundViewModel
+    public class ReviewScoresRoundViewModel
     {
         #region Properties..
         public RawgGame GameOne { get; init; }

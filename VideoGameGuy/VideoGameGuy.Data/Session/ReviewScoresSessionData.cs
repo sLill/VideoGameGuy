@@ -2,11 +2,8 @@ namespace VideoGameGuy.Data
 {
     public class ReviewScoresSessionData : SessionDataBase
     {
-        #region Fields..
-        #endregion Fields..
-
         #region Records..
-        public record GameRound
+        public record ReviewScoresRound
         {
             public Guid GameOneId { get; init; }
             public Guid GameTwoId { get; init; }
@@ -16,18 +13,12 @@ namespace VideoGameGuy.Data
         #endregion Records..
 
         #region Properties..
-        public List<GameRound> GameRounds { get; set; } = new List<GameRound>();
+        public List<ReviewScoresRound> ReviewScoresRounds { get; set; } = new List<ReviewScoresRound>();
 
         public int HighestStreak { get; set; }
 
-        public GameRound CurrentRound
-            => GameRounds.FirstOrDefault(x => x.UserChoiceId == Guid.Empty);
+        public ReviewScoresRound CurrentRound
+            => ReviewScoresRounds.FirstOrDefault(x => x.UserChoiceId == Guid.Empty);
         #endregion Properties..
-
-        #region Constructors..
-        #endregion Constructors..
-
-        #region Methods..
-        #endregion Methods..
     }
 }

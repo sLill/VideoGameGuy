@@ -6,6 +6,12 @@ namespace VideoGameGuy.Data
         Task<bool> AddOrUpdateAsync(IgdbApiGame apiGame, bool suspendSaveChanges = false);
 
         Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames);
+
+        Task<IgdbGame> GetRandomGameWithStorylineAsync(int minimumNumberOfRatings);
+
+        Task<IgdbArtwork> GetArtworkFromGameAsync(IgdbGame game);
+
+        Task<IgdbScreenshot> GetScreenshotFromGameAsync(IgdbGame game);
         #endregion Methods..
     }
 }
