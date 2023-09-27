@@ -14,13 +14,37 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbThemesRepository(ILogger<IgdbThemesRepository> logger,
                                     IgdbDbContext igdbDbContext)
-            : base(logger)
+            : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var themes = new List<IgdbTheme>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var theme = new IgdbTheme();
+                    theme.Initialize((IgdbApiTheme)entity);
+                    themes.Add(theme);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(themes, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiTheme> apiThemes, bool suspendSaveChanges = false)
         {
             bool success = true;
@@ -54,63 +78,6 @@ namespace VideoGameGuy.Data
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
                 success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> SaveBulkChangesAsync()
-        {
-            bool success = true;
-
-            try
-            {
-                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
-                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
-                //await _igdbDbContext.BulkSaveChangesAsync();
-
-                _bulkItemsToUpdate.Clear();
-                _bulkItemsToAdd.Clear();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiTheme> apiThemes)
-        {
-            bool success = true;
-
-            foreach (var apiTheme in apiThemes)
-            {
-                try
-                {
-                    var existingTheme = await _igdbDbContext.Themes.FirstOrDefaultAsync(x => x.SourceId == apiTheme.id);
-
-                    // Add
-                    if (existingTheme == default)
-                    {
-                        var newItem = new IgdbTheme();
-                        newItem.Initialize(apiTheme);
-                        _bulkItemsToAdd.Add(newItem);
-                    }
-
-                    // Update
-                    else
-                    {
-                        existingTheme.Initialize(apiTheme);
-                        _bulkItemsToUpdate.Add(existingTheme);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                    success = false;
-                }
             }
 
             return success;

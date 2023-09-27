@@ -12,7 +12,7 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public SystemStatusRepository(ILogger<RawgGamesRepository> logger, 
                                       MainDbContext mainDbContext)
-            : base(logger)
+            : base(logger, mainDbContext)
         {
             _mainDbContext = mainDbContext;
         }

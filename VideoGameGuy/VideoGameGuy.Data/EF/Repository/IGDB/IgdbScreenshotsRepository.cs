@@ -14,13 +14,37 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbScreenshotsRepository(ILogger<IgdbScreenshotsRepository> logger,
                                          IgdbDbContext igdbDbContext)
-            : base(logger)
+            : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var screenshots = new List<IgdbScreenshot>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var screenshot = new IgdbScreenshot();
+                    screenshot.Initialize((IgdbApiScreenshot)entity);
+                    screenshots.Add(screenshot);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(screenshots, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiScreenshot> apiScreenshots, bool suspendSaveChanges = false)
         {
             bool success = true;
@@ -54,63 +78,6 @@ namespace VideoGameGuy.Data
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
                 success = false;
-            }
-
-            return success;
-        }
-   
-        public async Task<bool> SaveBulkChangesAsync()
-        {
-            bool success = true;
-
-            try
-            {
-                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
-                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
-                //await _igdbDbContext.BulkSaveChangesAsync();
-
-                _bulkItemsToUpdate.Clear();
-                _bulkItemsToAdd.Clear();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiScreenshot> apiScreenshots)
-        {
-            bool success = true;
-
-            foreach (var apiScreenshot in apiScreenshots)
-            {
-                try
-                {
-                    var existingScreenshot = await _igdbDbContext.Screenshots.FirstOrDefaultAsync(x => x.SourceId == apiScreenshot.id);
-
-                    // Add
-                    if (existingScreenshot == default)
-                    {
-                        var newItem = new IgdbScreenshot();
-                        newItem.Initialize(apiScreenshot);
-                        _bulkItemsToAdd.Add(newItem);
-                    }
-
-                    // Update
-                    else
-                    {
-                        existingScreenshot.Initialize(apiScreenshot);
-                        _bulkItemsToUpdate.Add(existingScreenshot);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                    success = false;
-                }
             }
 
             return success;

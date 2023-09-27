@@ -14,7 +14,7 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbGames_PlatformsRepository(ILogger<IgdbGames_PlatformsRepository> logger,
                                              IgdbDbContext igdbDbContext)
-         : base(logger)
+         : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
@@ -50,56 +50,6 @@ namespace VideoGameGuy.Data
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
                 success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> SaveBulkChangesAsync()
-        {
-            bool success = true;
-
-            try
-            {
-                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
-                //await _igdbDbContext.BulkSaveChangesAsync();
-
-                _bulkItemsToAdd.Clear();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbGames_Platforms> igdbGames_Platforms)
-        {
-            bool success = true;
-
-            foreach (var entry in igdbGames_Platforms)
-            {
-                try
-                {
-                    var existingEntry = await _igdbDbContext.Games_Platforms.FirstOrDefaultAsync(x => x.Games_SourceId == entry.Games_SourceId
-                                                  && x.Platforms_SourceId == entry.Platforms_SourceId);
-                    // Add
-                    if (existingEntry == default)
-                        _bulkItemsToAdd.Add(entry);
-
-                    // Update
-                    else
-                    {
-                        // Nothing to update on join tables
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                    success = false;
-                }
             }
 
             return success;

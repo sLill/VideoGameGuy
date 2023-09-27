@@ -14,13 +14,37 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbGameModesRepository(ILogger<IgdbGameModesRepository> logger,
                                        IgdbDbContext igdbDbContext)
-            : base(logger)
+            : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var gameModes = new List<IgdbGameMode>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var gameMode = new IgdbGameMode();
+                    gameMode.Initialize((IgdbApiGameMode)entity);
+                    gameModes.Add(gameMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(gameModes, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGameMode> apiGameModes, bool suspendSaveChanges = false)
         {
             bool success = true;
@@ -54,63 +78,6 @@ namespace VideoGameGuy.Data
             {
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
                 success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> SaveBulkChangesAsync()
-        {
-            bool success = true;
-
-            try
-            {
-                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
-                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
-                //await _igdbDbContext.BulkSaveChangesAsync();
-
-                _bulkItemsToUpdate.Clear();
-                _bulkItemsToAdd.Clear();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiGameMode> apiGameModes)
-        {
-            bool success = true;
-
-            foreach (var apiGameMode in apiGameModes)
-            {
-                try
-                {
-                    var existingGameMode = await _igdbDbContext.GameModes.FirstOrDefaultAsync(x => x.SourceId == apiGameMode.id);
-
-                    // Add
-                    if (existingGameMode == default)
-                    {
-                        var newItem = new IgdbGameMode();
-                        newItem.Initialize(apiGameMode);
-                        _bulkItemsToAdd.Add(newItem);
-                    }
-
-                    // Update
-                    else
-                    {
-                        existingGameMode.Initialize(apiGameMode);
-                        _bulkItemsToUpdate.Add(existingGameMode);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                    success = false;
-                }
             }
 
             return success;

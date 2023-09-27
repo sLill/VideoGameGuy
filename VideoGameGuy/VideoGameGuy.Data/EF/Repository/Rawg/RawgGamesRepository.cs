@@ -15,7 +15,7 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public RawgGamesRepository(ILogger<RawgGamesRepository> logger, 
                                    RawgDbContext rawgDbContext)
-            : base(logger) 
+            : base(logger, rawgDbContext) 
         { 
             _rawgDbContext = rawgDbContext;
         }

@@ -14,13 +14,37 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbMultiplayerModesRepository(ILogger<IgdbMultiplayerModesRepository> logger,
                                               IgdbDbContext igdbDbContext)
-            : base(logger)
+            : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var multiplayerModes = new List<IgdbMultiplayerMode>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var multiplayerMode = new IgdbMultiplayerMode();
+                    multiplayerMode.Initialize((IgdbApiMultiplayerMode)entity);
+                    multiplayerModes.Add(multiplayerMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(multiplayerModes, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiMultiplayerMode> apiMultiplayerModes, bool suspendSaveChanges = false)
         {
             bool success = true;

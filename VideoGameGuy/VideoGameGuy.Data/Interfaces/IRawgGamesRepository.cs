@@ -1,6 +1,6 @@
 namespace VideoGameGuy.Data
 {
-    public interface IRawgGamesRepository
+    public interface IRawgGamesRepository : IRepositoryBase
     {
         #region Methods..
         Task<RawgGame> GetGameFromGameIdAsync(Guid gameId);

@@ -1,6 +1,6 @@
 namespace VideoGameGuy.Data
 {
-    public interface IIgdbPlatformFamiliesRepository
+    public interface IIgdbPlatformFamiliesRepository : IRepositoryBase
     {
         #region Methods..
         Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiPlatformFamily> apiPlatformFamilies);

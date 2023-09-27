@@ -1,11 +1,9 @@
 namespace VideoGameGuy.Data
 {
-    public interface IIgdbArtworksRepository
+    public interface IIgdbArtworksRepository : IRepositoryBase
     {
         #region Methods..
         Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiArtwork> apiArtworks, bool suspendSaveChanges = false);
-        Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiArtwork> apiArtworks);
-        Task<bool> SaveBulkChangesAsync();
         #endregion Methods..
     }
 }

@@ -14,14 +14,38 @@ namespace VideoGameGuy.Data
 
         #region Constructors..
         public IgdbGamesRepository(ILogger<IgdbGamesRepository> logger,
-                                   IgdbDbContext rawgDbContext)
-            : base(logger)
+                                   IgdbDbContext igdbDbContext)
+            : base(logger, igdbDbContext)
         {
-            _igdbDbContext = rawgDbContext;
+            _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var games = new List<IgdbGame>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var game = new IgdbGame();
+                    game.Initialize((IgdbApiGame)entity);
+                    games.Add(game);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(games, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateAsync(IgdbApiGame apiGame, bool suspendSaveChanges = false)
         {
             bool success = true;
@@ -57,71 +81,15 @@ namespace VideoGameGuy.Data
             return success;
         }
 
-        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames)
+        public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames, bool suspendSaveChanges = false)
         {
             bool success = true;
 
             foreach (var apiGame in apiGames)
                 await AddOrUpdateAsync(apiGame, true);
 
-            await _igdbDbContext.SaveChangesAsync();
-
-            return success;
-        }
-
-        public async Task<bool> SaveBulkChangesAsync()
-        {
-            bool success = true;
-
-            try
-            {
-                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
-                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
-                //await _igdbDbContext.BulkSaveChangesAsync();
-
-                _bulkItemsToUpdate.Clear();
-                _bulkItemsToAdd.Clear();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                success = false;
-            }
-
-            return success;
-        }
-
-        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiGame> apiGames)
-        {
-            bool success = true;
-
-            foreach (var apiGame in apiGames)
-            {
-                try
-                {
-                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.SourceId == apiGame.id);
-
-                    // Add
-                    if (existingGame == default)
-                    {
-                        var newItem = new IgdbGame();
-                        newItem.Initialize(apiGame);
-                        _bulkItemsToAdd.Add(newItem);
-                    }
-
-                    // Update
-                    else
-                    {
-                        existingGame.Initialize(apiGame);
-                        _bulkItemsToUpdate.Add(existingGame);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-                    success = false;
-                }
-            }
+            if (!suspendSaveChanges)
+                await _igdbDbContext.SaveChangesAsync();
 
             return success;
         }

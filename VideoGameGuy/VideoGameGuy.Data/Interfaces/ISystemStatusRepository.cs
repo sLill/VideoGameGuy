@@ -1,6 +1,6 @@
 namespace VideoGameGuy.Data
 {
-    public interface ISystemStatusRepository
+    public interface ISystemStatusRepository : IRepositoryBase
     {
         #region Methods..
         Task<SystemStatus> GetCurrentStatusAsync();

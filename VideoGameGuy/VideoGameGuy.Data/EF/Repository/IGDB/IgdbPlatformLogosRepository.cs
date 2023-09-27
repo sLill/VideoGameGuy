@@ -14,13 +14,37 @@ namespace VideoGameGuy.Data
         #region Constructors..
         public IgdbPlatformLogosRepository(ILogger<IgdbPlatformLogosRepository> logger,
                                            IgdbDbContext igdbDbContext)
-            : base(logger)
+            : base(logger, igdbDbContext)
         {
             _igdbDbContext = igdbDbContext;
         }
         #endregion Constructors..
 
         #region Methods..
+        public async override Task<bool> AddRangeAsync(IEnumerable<object> entities, bool suspendSaveChanges = false)
+        {
+            bool success = true;
+            var platformLogos = new List<IgdbPlatformLogo>();
+
+            try
+            {
+                foreach (var entity in entities)
+                {
+                    var platformLogo = new IgdbPlatformLogo();
+                    platformLogo.Initialize((IgdbApiPlatformLogo)entity);
+                    platformLogos.Add(platformLogo);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            success &= await base.AddRangeAsync(platformLogos, suspendSaveChanges);
+            return success;
+        }
+
         public async Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiPlatformLogo> apiPlatformLogos)
         {
             bool success = true;
