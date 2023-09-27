@@ -4,6 +4,9 @@ namespace VideoGameGuy.Data
     {
         #region Methods..
         Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGameMode> apiGameModes, bool suspendSaveChanges = false);
+
+        Task<bool> SaveBulkChangesAsync();
+        Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiGameMode> apiGameModes);
         #endregion Methods..
     }
 }

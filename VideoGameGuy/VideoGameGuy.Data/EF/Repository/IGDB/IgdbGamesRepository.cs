@@ -33,9 +33,9 @@ namespace VideoGameGuy.Data
                 // Add
                 if (existingGame == default)
                 {
-                    var game = new IgdbGame();
-                    game.Initialize(apiGame);
-                    _igdbDbContext.Games.Add(game);
+                    var newItem = new IgdbGame();
+                    newItem.Initialize(apiGame);
+                    _igdbDbContext.Games.Add(newItem);
                 }
 
                 // Update
@@ -65,6 +65,63 @@ namespace VideoGameGuy.Data
                 await AddOrUpdateAsync(apiGame, true);
 
             await _igdbDbContext.SaveChangesAsync();
+
+            return success;
+        }
+
+        public async Task<bool> SaveBulkChangesAsync()
+        {
+            bool success = true;
+
+            try
+            {
+                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
+                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
+                //await _igdbDbContext.BulkSaveChangesAsync();
+
+                _bulkItemsToUpdate.Clear();
+                _bulkItemsToAdd.Clear();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            return success;
+        }
+
+        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiGame> apiGames)
+        {
+            bool success = true;
+
+            foreach (var apiGame in apiGames)
+            {
+                try
+                {
+                    var existingGame = await _igdbDbContext.Games.FirstOrDefaultAsync(x => x.SourceId == apiGame.id);
+
+                    // Add
+                    if (existingGame == default)
+                    {
+                        var newItem = new IgdbGame();
+                        newItem.Initialize(apiGame);
+                        _bulkItemsToAdd.Add(newItem);
+                    }
+
+                    // Update
+                    else
+                    {
+                        existingGame.Initialize(apiGame);
+                        _bulkItemsToUpdate.Add(existingGame);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                    success = false;
+                }
+            }
 
             return success;
         }

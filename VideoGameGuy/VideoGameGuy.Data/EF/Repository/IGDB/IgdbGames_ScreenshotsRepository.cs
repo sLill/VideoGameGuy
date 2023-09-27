@@ -54,6 +54,56 @@ namespace VideoGameGuy.Data
 
             return success;
         }
+
+        public async Task<bool> SaveBulkChangesAsync()
+        {
+            bool success = true;
+
+            try
+            {
+                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
+                //await _igdbDbContext.BulkSaveChangesAsync();
+
+                _bulkItemsToAdd.Clear();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            return success;
+        }
+
+        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbGames_Screenshots> igdbGames_Screenshots)
+        {
+            bool success = true;
+
+            foreach (var entry in igdbGames_Screenshots)
+            {
+                try
+                {
+                    var existingEntry = await _igdbDbContext.Games_Screenshots.FirstOrDefaultAsync(x => x.Games_SourceId == entry.Games_SourceId
+                                                  && x.Screenshots_SourceId == entry.Screenshots_SourceId);
+                    // Add
+                    if (existingEntry == default)
+                        _bulkItemsToAdd.Add(entry);
+
+                    // Update
+                    else
+                    {
+                        // Nothing to update on join tables
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                    success = false;
+                }
+            }
+
+            return success;
+        }
         #endregion Methods..
     }
 }

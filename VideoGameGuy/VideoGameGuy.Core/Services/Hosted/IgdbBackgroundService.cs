@@ -203,7 +203,7 @@ namespace VideoGameGuy.Core
 
                 Stopwatch requestRateTimer = Stopwatch.StartNew();
 
-                int offset = 193000;
+                int offset = 193800;
                 int resultsPerRequest = 500;
 
                 // Loop until no more data is returned
@@ -282,34 +282,46 @@ namespace VideoGameGuy.Core
                     case IEnumerable<IgdbApiGame> apiGames:
                         foreach (var game in apiGames)
                         {
-                            await _igdbGameModesRepository.AddOrUpdateRangeAsync(game.game_modes, true);
-                            await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes, true);
-                            await _igdbPlatformsRepository.AddOrUpdateRangeAsync(game.platforms, true);
-                            await _igdbThemesRepository.AddOrUpdateRangeAsync(game.themes, true);
-                            await _igdbArtworksRepository.AddOrUpdateRangeAsync(game.artworks, true);
-                            await _igdbScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots, true);
+                            await _igdbGameModesRepository.StageBulkChangesAsync(game.game_modes);
+                            await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes);
+                            await _igdbPlatformsRepository.AddOrUpdateRangeAsync(game.platforms);
+                            await _igdbThemesRepository.StageBulkChangesAsync(game.themes);
+                            await _igdbArtworksRepository.StageBulkChangesAsync(game.artworks);
+                            await _igdbScreenshotsRepository.StageBulkChangesAsync(game.screenshots);
 
                             // Join tables
                             if (game.game_modes != null)
-                                await _igdbGames_GameModesRepository.AddOrUpdateRangeAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }), true);
+                                await _igdbGames_GameModesRepository.StageBulkChangesAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }));
                            
                             if (game.multiplayer_modes != null)
-                                await _igdbGames_MultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }), true);
+                                await _igdbGames_MultiplayerModesRepository.StageBulkChangesAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }));
 
                             if (game.platforms != null)
-                                await _igdbGames_PlatformsRepository.AddOrUpdateRangeAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }), true);
+                                await _igdbGames_PlatformsRepository.StageBulkChangesAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }));
 
                             if (game.themes != null)
-                                await _igdbGames_ThemesRepository.AddOrUpdateRangeAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }), true);
+                                await _igdbGames_ThemesRepository.StageBulkChangesAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }));
 
                             if (game.artworks != null)
-                                await _igdbGames_ArtworksRepository.AddOrUpdateRangeAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }), true);
+                                await _igdbGames_ArtworksRepository.StageBulkChangesAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }));
 
                             if (game.screenshots != null)
-                                await _igdbGames_ScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }), true);    
+                                await _igdbGames_ScreenshotsRepository.StageBulkChangesAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }));    
                         }
 
-                        await _igdbGamesRepository.AddOrUpdateRangeAsync(apiGames);
+                        await _igdbGameModesRepository.SaveBulkChangesAsync();
+                        await _igdbThemesRepository.SaveBulkChangesAsync();
+                        await _igdbArtworksRepository.SaveBulkChangesAsync();
+                        await _igdbScreenshotsRepository.SaveBulkChangesAsync();
+                        await _igdbGames_GameModesRepository.SaveBulkChangesAsync();
+                        await _igdbGames_MultiplayerModesRepository.SaveBulkChangesAsync();
+                        await _igdbGames_PlatformsRepository.SaveBulkChangesAsync();
+                        await _igdbGames_ThemesRepository.SaveBulkChangesAsync();
+                        await _igdbGames_ArtworksRepository.SaveBulkChangesAsync();
+                        await _igdbGames_ScreenshotsRepository.SaveBulkChangesAsync();
+
+                        await _igdbGamesRepository.StageBulkChangesAsync(apiGames);
+                        await _igdbGamesRepository.SaveBulkChangesAsync();
                         break;
                     case IEnumerable<IgdbApiPlatform> apiPlatforms:
                         await _igdbPlatformsRepository.AddOrUpdateRangeAsync(apiPlatforms);

@@ -58,6 +58,63 @@ namespace VideoGameGuy.Data
 
             return success;
         }
+
+        public async Task<bool> SaveBulkChangesAsync()
+        {
+            bool success = true;
+
+            try
+            {
+                await _igdbDbContext.BulkUpdateAsync(_bulkItemsToUpdate);
+                await _igdbDbContext.BulkInsertAsync(_bulkItemsToAdd);
+                //await _igdbDbContext.BulkSaveChangesAsync();
+
+                _bulkItemsToUpdate.Clear();
+                _bulkItemsToAdd.Clear();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                success = false;
+            }
+
+            return success;
+        }
+
+        public async Task<bool> StageBulkChangesAsync(IEnumerable<IgdbApiArtwork> apiArtworks)
+        {
+            bool success = true;
+
+            foreach (var apiArtwork in apiArtworks)
+            {
+                try
+                {
+                    var existingArtwork = await _igdbDbContext.Artworks.FirstOrDefaultAsync(x => x.SourceId == apiArtwork.id);
+
+                    // Add
+                    if (existingArtwork == default)
+                    {
+                        var newItem = new IgdbArtwork();
+                        newItem.Initialize(apiArtwork);
+                        _bulkItemsToAdd.Add(newItem);
+                    }
+
+                    // Update
+                    else
+                    {
+                        existingArtwork.Initialize(apiArtwork);
+                        _bulkItemsToUpdate.Add(existingArtwork);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+                    success = false;
+                }
+            }
+
+            return success;
+        }
         #endregion Methods..
     }
 }
