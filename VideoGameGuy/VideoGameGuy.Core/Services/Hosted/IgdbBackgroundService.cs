@@ -95,7 +95,7 @@ namespace VideoGameGuy.Core
                         ? DateTime.MinValue : (currentSystemStatus.Igdb_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
 
                     //await ImportGameDataAsync_DEBUG();
-                    //await PollAndCacheAsync(startDate);
+                    await PollAndCacheAsync(startDate);
 
                     currentSystemStatus.Igdb_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
@@ -202,9 +202,8 @@ namespace VideoGameGuy.Core
                 _logger.LogInformation($"[IGDB] Updating {apiObjectType} data..");
 
                 Stopwatch requestRateTimer = Stopwatch.StartNew();
-                int requestsThisSecond = 0;
 
-                int offset = 0;
+                int offset = 193000;
                 int resultsPerRequest = 500;
 
                 // Loop until no more data is returned
@@ -224,11 +223,10 @@ namespace VideoGameGuy.Core
                     if (updatedOnStartDate != null)
                         query.Append($"where updated_at >= {unixStartTime};");
 
-                    query.Append($"limit {resultsPerRequest};" +
-                                 $"offset {offset};");
+                    query.Append($"limit {resultsPerRequest};");
                      
                     // Limit the number of requests per second
-                    if (requestsThisSecond >= _settings.Value.RateLimit || requestRateTimer.ElapsedMilliseconds >= 1000)
+                    if (requestRateTimer.ElapsedMilliseconds >= 1000)
                     {
                         // Wait out the rest of the second before allowing requests to continue
                         int timeRemaining = 1000 - (int)requestRateTimer.ElapsedMilliseconds;
@@ -236,28 +234,35 @@ namespace VideoGameGuy.Core
                             await Task.Delay(timeRemaining);
 
                         requestRateTimer.Restart();
-                        requestsThisSecond = 0;
                     }
 
-                    requestsThisSecond++;
+                    var responses = await Task.WhenAll(ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset};".ToString()),
+                                                       ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset + resultsPerRequest};".ToString()),
+                                                       ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset + (resultsPerRequest * 2)};".ToString()),
+                                                       ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset + (resultsPerRequest * 3)};".ToString()));
 
-                    string responseJson = await ExecuteRequestAsync(token, requestUri, query.ToString());
-                    if (responseJson != null)
+                    offset += (resultsPerRequest * 4);
+
+                    if (responses.Any())
                     {
-                        List<T> apiObjects = ParseJsonArray<T>(responseJson);
-                        if (apiObjects?.Any() ?? false)
-                            await SaveEndpointDataAsync(apiObjects);
+                        List<T> apiObjectCollection = new List<T>();
+                        responses.ForEach(x =>
+                        {
+                            if (x != null)
+                            {
+                                var apiObjects = ParseJsonArray<T>(x);
+                                if (apiObjects?.Any() ?? false)
+                                    apiObjectCollection.AddRange(apiObjects);
+                            }
+                        });
 
-                        // If the number of items returned does not match the number of items requested, then we have reached the end
-                        if (apiObjects.Count() == resultsPerRequest)
-                            offset += resultsPerRequest;
-                        else
+                        if (apiObjectCollection?.Any() ?? false)
+                            await SaveEndpointDataAsync(apiObjectCollection);
+
+                        // End of data
+                        if (apiObjectCollection.Count != (resultsPerRequest * 4))
                             break;
                     }
-
-                    // Whether it's a timeout or an error, take a break for a awhile
-                    else
-                        break;
                 }
 
                 _logger.LogInformation($"[IGDB] Update {apiObjectType} data complete");

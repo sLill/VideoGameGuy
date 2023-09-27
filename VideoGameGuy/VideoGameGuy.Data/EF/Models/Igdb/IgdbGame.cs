@@ -31,6 +31,10 @@ namespace VideoGameGuy.Data
         public string? Storyline { get; set; }
         public string? Summary { get; set; }
 
+        // Pre-computed to reduce query times later on
+        public bool HasScreenshots { get; set; }
+        public bool HasArtworks { get; set; }
+
         public long? ReleaseDate_Unix { get; set; }
         public long? Source_CreatedOn_Unix { get; set; }
         public long? Source_UpdatedOn_Unix { get; set; }
@@ -60,6 +64,9 @@ namespace VideoGameGuy.Data
 
             Storyline = game.storyline;
             Summary = game.summary;
+
+            HasArtworks = game.artworks?.Any() ?? false;
+            HasScreenshots = game.screenshots?.Any() ?? false;
 
             ReleaseDate_Unix = game.first_release_date;
             Source_CreatedOn_Unix = game.created_at;

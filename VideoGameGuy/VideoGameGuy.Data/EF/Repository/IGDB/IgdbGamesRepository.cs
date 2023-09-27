@@ -69,29 +69,25 @@ namespace VideoGameGuy.Data
             return success;
         }
 
-        public async Task<IgdbGame> GetRandomGameWithStorylineAsync(int minimumNumberOfRatings)
+        public async Task<List<IgdbGame>> GetGamesWithStorylinesAndMediaAsync(int minimumNumberOfRatings)
         {
-            IgdbGame game = default;
+            List<IgdbGame> games = default;
 
             try
             {
-                if (_igdbDbContext.Games.Any() && _igdbDbContext.Artworks.Any() && _igdbDbContext.Screenshots.Any())
+                if (_igdbDbContext.Games.Any())
                 {
-                    // Filter for games with Screenshots and Artwork
-                    var gameIdsWithMedia = await (from gs in _igdbDbContext.Games_Screenshots
-                                                  join ga in _igdbDbContext.Games_Artworks on gs.Games_SourceId equals ga.Games_SourceId
-                                                  select gs.Games_SourceId)?.Distinct()?.ToListAsync();
-
                     var eligibleGames = await (from g in _igdbDbContext.Games
-                                               join media in gameIdsWithMedia on g.SourceId equals media
                                                where g.Storyline != null
                                                   && g.Category == "main_game"
                                                   && g.TotalRating_Count != null
                                                   && g.TotalRating_Count >= minimumNumberOfRatings
+                                                  && g.HasScreenshots
+                                                  && g.HasArtworks
                                                select g).ToListAsync();
 
                     if (eligibleGames.Any())
-                        game = eligibleGames.TakeRandom(1).FirstOrDefault();
+                        games = eligibleGames;
                 }
             }
             catch (Exception ex)
@@ -99,7 +95,7 @@ namespace VideoGameGuy.Data
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
             }
 
-            return game;
+            return games;
         }
 
         public async Task<IgdbArtwork> GetArtworkFromGameAsync(IgdbGame game)

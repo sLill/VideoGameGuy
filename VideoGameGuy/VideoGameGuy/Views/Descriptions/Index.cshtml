@@ -8,8 +8,8 @@
 
     @* Content *@
     <div id="content_Grid">
-        <div id="gameDescription">@Model.CurrentRound.GameDescription</div>
-        <input id="userInput" />
+        <div id="gameDescription">@Model.CurrentRound?.GameDescription</div>
+        <input id="userInput" type="text" placeholder="[Enter Title]"/>
     </div>
 
     @* Footer *@
@@ -24,3 +24,14 @@
     </div>
 
 </div>
+@* JS *@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#userInput').on('input', function () {
+            var inputValue = $(this).val();
+
+            console.log('Input Value Changed:', inputValue);
+        });
+    });
+</script>

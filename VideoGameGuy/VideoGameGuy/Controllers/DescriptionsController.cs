@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
+using VideoGameGuy.Common;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
 
@@ -14,6 +15,7 @@ namespace VideoGameGuy.Controllers
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
 
+        private List<IgdbGame> _games;
         private Random _random = new Random();
         #endregion Fields..
 
@@ -38,6 +40,9 @@ namespace VideoGameGuy.Controllers
             var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
             if (descriptionsSessionData == null)
                 descriptionsSessionData = new DescriptionsSessionData();
+
+            // Preload game data
+            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(500);
 
             if (descriptionsSessionData.CurrentRound == null)
                 await StartNewRoundAsync(descriptionsSessionData);
@@ -70,7 +75,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(DescriptionsSessionData descriptionsSessionData)
         {
-            IgdbGame game = await _igdbGamesRepository.GetRandomGameWithStorylineAsync(500);
+            IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
             if (game != default)
             {
                 string mediaUrl = string.Empty;
