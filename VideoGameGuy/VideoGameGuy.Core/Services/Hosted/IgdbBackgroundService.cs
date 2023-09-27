@@ -95,7 +95,7 @@ namespace VideoGameGuy.Core
                         ? DateTime.MinValue : (currentSystemStatus.Igdb_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
 
                     //await ImportGameDataAsync_DEBUG();
-                    await PollAndCacheAsync(startDate);
+                    //await PollAndCacheAsync(startDate);
 
                     currentSystemStatus.Igdb_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);

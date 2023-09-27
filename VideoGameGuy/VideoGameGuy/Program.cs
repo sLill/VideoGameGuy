@@ -105,12 +105,11 @@ namespace VideoGameGuy
             app.UseAuthorization();
             app.UseSession();
 
-            //app.MapControllerRoute(
-            //    name: "default",
-            //    pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(name: "default",
+                                   pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapControllerRoute(name: "ReviewScores",
-                                   pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
+            //app.MapControllerRoute(name: "ReviewScores",
+            //                       pattern: "{controller=ReviewScores}/{action=Index}/{id?}");
 
             CheckAndPerformDatabaseMigrations(app, serviceScope);
             LogApplicationStarted(app, serviceScope);

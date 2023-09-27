@@ -20,7 +20,7 @@ html
 
 html
 {
-    position: relative;
+    height: 100%;
     min-height: 100%;
     min-width: 100%;
     font-family: "Inter";
@@ -28,17 +28,27 @@ html
 
 *:not(.fa-solid):not(fa):not(.e-icons)
 {
-    font-family: "Inter";
+    /*font-family: "Inter";*/
 }
 
 body
 {
-    display: flex;
-    margin-bottom: 60px;
-    background-color: #12161d;
+    height: 100%;
     color: white;
-    min-height: 100%;
-    min-width: 100%;
+    background-color: #12161d;
+}
+
+header 
+{
+    width: fit-content;
+    height: fit-content;
+}
+
+.header_Logo 
+{
+    background-color: transparent;
+    max-height: 50px;
+    width: auto;
 }
 
 main
@@ -101,12 +111,86 @@ main
 
 /*#endregion Global*/
 
+/*#region Home
+*/
+#home_Grid
+{
+    display: grid;
+    grid-template-rows: 2% 1fr 6%;
+    grid-template-columns: 25% 1fr 25%;
+    
+    height: 100vh;
+    width: 100%;
+}
+
+#home_Nav
+{
+    grid-row: 2;
+    grid-column: 2;
+
+    margin-top:10%;
+
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
+    grid-gap: 20px;
+}
+
+.home_navButton
+{
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+    display: inline-block;
+    outline: 0;
+    overflow: hidden;
+    font-family: 'VT323', monospace;
+    color: #dcdcdc;
+    text-align: center;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 100%;
+    z-index: 10;
+    border: 0;
+    transition: box-shadow .2s;
+    cursor: pointer;
+}
+    .home_navButton:active
+    {
+        box-shadow: rgba(253, 255, 255, 0.5) 0 3px 8px;
+    }
+
+.description_Button 
+{
+  background-color: darkorange;
+  background-image: url('/images/Controller.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 5vw;
+  font-weight:600;
+}
+
+.reviews_Button 
+{
+  background-color: #4a8941;
+  background-image: url('/images/Review.png');
+  background-size: 100% 140%;
+  background-position: 10vw;
+  background-repeat: no-repeat;
+  font-size: 4vw;
+  font-weight:600;
+}
+/*#endregion Home*/
+
 /*#region Review Scores
 */
 #reviewScores_Grid
 {
     display: grid;
-    grid-template-rows: 6% 1fr 6%;
+    grid-template-rows: 2% 1fr 6%;
     grid-template-columns: 6% 1fr 1fr 1fr 1fr 1fr 6%;
     
     height: 100vh;
@@ -163,6 +247,14 @@ main
 }
 
 .currentStreak
+{
+    color: white;
+    font-family: "Inter";
+    font-size: 0.9vw;
+    font-weight: 400;
+}
+
+.highestStreak
 {
     color: white;
     font-family: "Inter";

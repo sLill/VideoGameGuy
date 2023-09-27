@@ -7,6 +7,7 @@ namespace VideoGameGuy.Controllers
     public class ReviewScoresController : Controller
     {
         #region Fields..
+        private readonly ILogger<ReviewScoresController> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ISessionService _sessionService;
         private readonly IRawgGamesRepository _rawgGamesRepository;
@@ -14,11 +15,13 @@ namespace VideoGameGuy.Controllers
         #endregion Fields..
 
         #region Constructors..
-        public ReviewScoresController(IWebHostEnvironment webHostEnvironment,
+        public ReviewScoresController(ILogger<ReviewScoresController> logger,
+                                      IWebHostEnvironment webHostEnvironment,
                                       ISessionService sessionService,
                                       IRawgGamesRepository rawgGamesRepository,
                                       ISystemStatusRepository systemStatusRepository)
         {
+            _logger = logger;
             _webHostEnvironment = webHostEnvironment;
             _sessionService = sessionService;
             _rawgGamesRepository = rawgGamesRepository;
