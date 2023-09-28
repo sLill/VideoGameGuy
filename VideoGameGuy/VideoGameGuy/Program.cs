@@ -30,9 +30,11 @@ namespace VideoGameGuy
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();
             builder.Services.AddTransient<ISessionService, SessionService>();
+            builder.Services.AddSingleton<ICountdownTimerService, CountdownTimerService>();
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHostedService<IgdbBackgroundService>();
             builder.Services.AddHttpClient();
+            builder.Services.AddSignalR();
             builder.Services.AddControllersWithViews();
             builder.Services.AddSession(sessionOptions => sessionOptions.IdleTimeout = TimeSpan.FromMinutes(30));
 
@@ -105,6 +107,7 @@ namespace VideoGameGuy
             app.UseAuthorization();
             app.UseSession();
 
+            app.MapHub<CountdownTimerHub>("/timerHub");
             app.MapControllerRoute(name: "default",
                                    pattern: "{controller=Home}/{action=Index}/{id?}");
 
