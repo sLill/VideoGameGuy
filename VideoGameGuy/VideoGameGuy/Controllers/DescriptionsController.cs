@@ -10,6 +10,8 @@ namespace VideoGameGuy.Controllers
     public class DescriptionsController : Controller
     {
         #region Fields..
+        public const int ROUND_TIME_LIMIT_MINUTES = 2;
+
         private readonly ILogger<DescriptionsController> _logger;
         private readonly ISessionService _sessionService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
@@ -93,7 +95,8 @@ namespace VideoGameGuy.Controllers
                     GameTitle = round.GameTitle,
                     GameMediaUrl = round.GameMediaUrl,
                     GameDescription = round.GameDescription,
-                    IsSolved = round.IsSolved
+                    IsSolved = round.IsSolved,
+                    TimeRemaining = round.TimeRemaining
                 });
             }
 
@@ -126,7 +129,8 @@ namespace VideoGameGuy.Controllers
                 {
                     GameTitle = game.Name,
                     GameMediaUrl = mediaUrl,
-                    GameDescription = game.Storyline
+                    GameDescription = game.Storyline,
+                    TimeRemaining = TimeSpan.FromMinutes(ROUND_TIME_LIMIT_MINUTES)
                 });
             }
 

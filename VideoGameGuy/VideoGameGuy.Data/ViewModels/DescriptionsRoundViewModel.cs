@@ -7,6 +7,7 @@
         public string GameMediaUrl { get; set; }
         public string GameDescription { get; set; } 
         public bool IsSolved { get; set; }
+        public TimeSpan TimeRemaining { get; set; }
         #endregion Properties..
     }
 }

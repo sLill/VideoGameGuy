@@ -8,10 +8,21 @@
 
     @* Content *@
     <div id="content_Grid">
+
+        @* Status *@
+        <div id="status_Grid">
+            <div id="timer">@Model.CurrentRound.TimeRemaining.ToString(@"mm\:ss")</div>
+        </div>
+
+        @* Description *@
         <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
         <div id="gameDescription">@Model.CurrentRound?.GameDescription</div>
-        <input id="userInput" type="text" placeholder="[Enter Title]" autofocus/>
 
+        @* // User Input *@
+        <input id="userInput" type="text" placeholder="[Enter Title]" autofocus/>
+        <i id="correctCheckmark" class="fa-solid fa-square-check fa-2xl"></i>
+
+        @* // Buttons *@
         <form id="next_Form" asp-action="GoNext" method="post">
             <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
         </form>
@@ -32,6 +43,7 @@
     </div>
 
 </div>
+
 @* JS *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -41,17 +53,36 @@
             var inputValue = $(this).val().replace(/[^a-zA-Z0-9]/g, '');
 
             if (gameTitle.toLowerCase() === inputValue.toLowerCase()) {
-                $.ajax({
-                    type: 'POST',
-                    url: '/Descriptions/Validate',
-                    // data: { userChoiceId: gameOneId },
-                    success: function (data) {
-                        $('#next_Form').css('display', 'block');
-                        $('#userInput').attr('readonly', true);
-                        $('#userInput').css('opacity', 0.6);
+                validate();
+
+                this.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        goNext();
                     }
                 });
             }
         });
     });
+
+    // Call action via AJAX 
+    function validate() {
+        fetch('/Descriptions/Validate', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#next_Form').css('display', 'block');
+            $('#correctCheckmark').css('display', 'block');
+            $('#skipButton').prop('disabled', true);
+            $('#userInput').attr('readonly', true);
+            $('#userInput').css('opacity', 0.6);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function goNext() {
+        window.location.href = '/Descriptions/Index';
+    }
 </script>
