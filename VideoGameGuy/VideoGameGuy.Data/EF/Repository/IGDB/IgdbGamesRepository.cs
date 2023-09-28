@@ -107,8 +107,6 @@ namespace VideoGameGuy.Data
                                                   && g.Category == "main_game"
                                                   && g.TotalRating_Count != null
                                                   && g.TotalRating_Count >= minimumNumberOfRatings
-                                                  && g.HasScreenshots
-                                                  && g.HasArtworks
                                                select g).ToListAsync();
 
                     if (eligibleGames.Any())

@@ -8,8 +8,16 @@
 
     @* Content *@
     <div id="content_Grid">
+        <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
         <div id="gameDescription">@Model.CurrentRound?.GameDescription</div>
-        <input id="userInput" type="text" placeholder="[Enter Title]"/>
+        <input id="userInput" type="text" placeholder="[Enter Title]" autofocus/>
+
+        <form id="next_Form" asp-action="GoNext" method="post">
+            <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
+        </form>
+        <form id="skip_Form" asp-action="Skip" method="post">
+            <button id="skipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
+        </form>
     </div>
 
     @* Footer *@
@@ -29,9 +37,21 @@
 <script>
     $(document).ready(function () {
         $('#userInput').on('input', function () {
-            var inputValue = $(this).val();
+            let gameTitle = $('#gameTitle').val().replace(/[^a-zA-Z0-9]/g, '');
+            var inputValue = $(this).val().replace(/[^a-zA-Z0-9]/g, '');
 
-            console.log('Input Value Changed:', inputValue);
+            if (gameTitle.toLowerCase() === inputValue.toLowerCase()) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Descriptions/Validate',
+                    // data: { userChoiceId: gameOneId },
+                    success: function (data) {
+                        $('#next_Form').css('display', 'block');
+                        $('#userInput').attr('readonly', true);
+                        $('#userInput').css('opacity', 0.6);
+                    }
+                });
+            }
         });
     });
 </script>

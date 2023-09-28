@@ -41,14 +41,41 @@ namespace VideoGameGuy.Controllers
             if (descriptionsSessionData == null)
                 descriptionsSessionData = new DescriptionsSessionData();
 
-            // Preload game data
-            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(500);
+
 
             if (descriptionsSessionData.CurrentRound == null)
                 await StartNewRoundAsync(descriptionsSessionData);
 
             DescriptionsViewModel descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
             return View(descriptionsViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult GoNext(DescriptionsViewModel descriptionsViewModel)
+        {
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Skip(DescriptionsViewModel descriptionsViewModel)
+        {
+            var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
+            await StartNewRoundAsync(descriptionsSessionData);
+
+            descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
+            return RedirectToAction("Index", descriptionsViewModel);
+        }
+
+        public async Task<ActionResult> Validate()
+        {
+            var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
+            if (descriptionsSessionData.CurrentRound != null)
+            {
+                descriptionsSessionData.CurrentRound.IsSolved = true;
+                _sessionService.SetSessionData(descriptionsSessionData, HttpContext);
+            }
+
+            return Json(new { });
         }
 
         public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(DescriptionsSessionData descriptionsSessionData)
@@ -66,7 +93,7 @@ namespace VideoGameGuy.Controllers
                     GameTitle = round.GameTitle,
                     GameMediaUrl = round.GameMediaUrl,
                     GameDescription = round.GameDescription,
-                    IsCorrect = round.IsCorrect
+                    IsSolved = round.IsSolved
                 });
             }
 
@@ -75,7 +102,9 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(DescriptionsSessionData descriptionsSessionData)
         {
+            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(500);
             IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
+
             if (game != default)
             {
                 string mediaUrl = string.Empty;

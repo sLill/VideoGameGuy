@@ -170,14 +170,14 @@ main
     font-family: 'VT323', monospace;
     color: #dcdcdc;
     text-align: center;
-    line-height:120px;
+    line-height:140px;
     align-self:center;
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
     white-space: nowrap;
     width: 100%;
-    height: 120px;
+    height: 140px;
     z-index: 10;
     border: 0;
     transition: box-shadow .2s;
@@ -200,7 +200,7 @@ main
   background-size: 80%;
   background-position: center;
   background-repeat: no-repeat;
-  font-size: 5vw;
+  font-size: 4.6vw;
   font-weight:600;
 }
 
@@ -209,7 +209,7 @@ main
   background-color: #4a8941;
   background-image: url('/images/Review.png');
   background-size: 100% 160%;
-  background-position: 10vw;
+  background-position: 20vw;
   background-repeat: no-repeat;
   font-size: 4.2vw;
   font-weight:600;
@@ -235,26 +235,133 @@ main
     row-gap: 40px;
 
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     grid-template-columns: 1fr;
 }
 
 #gameDescription
 {
     grid-row: 1;
+
+    font-family: Inter;
+    opacity: 0.8;
 }
 
 #userInput
 {
     grid-row: 2;
 
+    opacity: 0.85;
     vertical-align:top;
+    font-family: Inter;
     height: 1vh;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+#next_Form
+{
+    grid-row: 3;
+
+    display: none;
+    justify-self: center;
+}
+
+#nextButton
+{
+    backface-visibility: hidden;
+    background: #3e677d;
+    border: 0;
+    border-radius: .375rem;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Inter;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    height: 6rem;
+    width: 10rem;
+    padding: .6rem .6rem .6rem .6rem;
+    text-align: center;
+    text-decoration: none;
+    transform: translateZ(0) scale(1);
+    transition: transform .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+    #nextButton:disabled {
+      color: #787878;
+      cursor: auto;
+    }
+
+    #nextButton i {
+    }
+
+    #nextButton:not(:disabled):hover {
+      transform: scale(1.015);
+    }
+
+    #nextButton:not(:disabled):hover:active {
+      transform: scale(1.015);
+    }
+
+
+#skip_Form
+{
+    grid-row: 3;
+
+    justify-self: end;
+}
+
+#skipButton
+{
+    backface-visibility: hidden;
+    background: #3e677d;
+    border: 0;
+    border-radius: .375rem;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Inter;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    height: 6rem;
+    width: 10rem;
+    padding: .6rem .6rem .6rem .6rem;
+    text-align: center;
+    text-decoration: none;
+    transform: translateZ(0) scale(1);
+    transition: transform .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+    #skipButton:disabled 
+    {
+        color: #787878;
+        cursor: auto;
+    }
+
+    #skipButton i 
+    {
+    }
+
+    #skipButton:not(:disabled):hover 
+    {
+        transform: scale(1.015);
+    }
+
+    #skipButton:not(:disabled):hover:active
+    {
+        transform: scale(1.015);
+    }
 
 #descriptions_Footer
 {
@@ -537,3 +644,4 @@ main
     grid-column: 7;
 }
 /*#endregion Review Scores*/
+

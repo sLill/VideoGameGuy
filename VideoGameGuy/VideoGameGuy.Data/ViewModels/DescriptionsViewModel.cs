@@ -5,10 +5,15 @@
         #region Properties..
         public List<DescriptionsRoundViewModel> DescriptionsRounds { get; set; } = new List<DescriptionsRoundViewModel>();
 
-        public DescriptionsRoundViewModel CurrentRound
-            => DescriptionsRounds.LastOrDefault();
-
         public DateTime LastUpdateOn { get; set; }
+
+        public int HighestStreak { get; set; }
+
+        public int Streak
+            => DescriptionsRounds.Count(x => x.IsSolved);
+
+        public DescriptionsRoundViewModel CurrentRound
+            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved);
         #endregion Properties..
     }
 }
