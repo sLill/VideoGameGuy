@@ -42,7 +42,7 @@ namespace VideoGameGuy.Core
             if (clientCountdownTimer.TimeRemaining <= TimeSpan.Zero)
                 _clientCountdownTimers.Remove(clientConnectionId, out _);
 
-            await _hubContext.Clients.Client(clientConnectionId).SendAsync("TimeReceived", clientCountdownTimer.TimeRemaining);
+            await _hubContext.Clients.Client(clientConnectionId).SendAsync("TimeReceived", clientCountdownTimer.TimeRemaining.ToString(@"mm\:ss"));
         }
         #endregion EventHandlers..
 

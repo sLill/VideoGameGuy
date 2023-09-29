@@ -46,7 +46,13 @@
 
 @* JS *@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.9/signalr.min.js"></script>
+
 <script>
+    window.onload = function() {
+        initializeSignalR();
+    }
+
     $(document).ready(function () {
         $('#userInput').on('input', function () {
             let gameTitle = $('#gameTitle').val().replace(/[^a-zA-Z0-9]/g, '');
@@ -64,7 +70,55 @@
         });
     });
 
-    // Call action via AJAX 
+    function initializeSignalR() 
+    {
+        // Countdown timer
+        var timerConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/countdownTimerHub")
+            .withAutomaticReconnect()
+            .build();
+
+        timerConnection.on("TimeReceived", function (time) 
+        {
+            $("#timer").text(time);
+        });
+
+        timerConnection.onre
+
+        timerConnection.onreconnecting(error => 
+        {
+            console.assert(connection.state === signalR.HubConnectionState.Reconnecting);
+        });
+
+        timerConnection.onclose(error =>
+        {
+            console.assert(connection.state === signalR.HubConnectionState.Disconnected);
+        });
+
+        timerConnection
+        .start()
+        .then(function ()
+        {
+            console.log("connected");
+
+            try 
+            {
+                timerConnection.invoke("StartCountdownForUser");
+            } 
+            catch (err) 
+            {
+                console.error(err);
+            }
+        })
+        .catch(function (err) 
+        {
+            console.error(err.toString());
+            setTimeout(() => start(), 5000);
+        });
+    }
+
+
+    // AJAX validation
     function validate() {
         fetch('/Descriptions/Validate', {
             method: 'POST',
@@ -85,19 +139,4 @@
     function goNext() {
         window.location.href = '/Descriptions/Index';
     }
-
-    // SignalR
-    var timerConnection = new signalR.HubConnectionBuilder().withUrl("/timerHub").build();
-    timerConnection.DoThing();
-
-    timerConnection.on("TimeReceived", function (time) {
-        var timerElement = document.getElementById("timer");
-        timerElement.innerText = time;
-    });
-
-    timerConnection.start().then(function () {
-        console.log("connected");
-    }).catch(function (err) {
-        return console.error(err.toString());
-    });
 </script>

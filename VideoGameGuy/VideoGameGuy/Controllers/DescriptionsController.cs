@@ -35,7 +35,7 @@ namespace VideoGameGuy.Controllers
         #endregion Constructors..
 
         #region Methods..
-        // GET: Index
+        #region Actions..
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
@@ -79,6 +79,11 @@ namespace VideoGameGuy.Controllers
 
             return Json(new { });
         }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+            => View(new { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        #endregion Actions..
 
         public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(DescriptionsSessionData descriptionsSessionData)
         {
@@ -135,12 +140,6 @@ namespace VideoGameGuy.Controllers
             }
 
             _sessionService.SetSessionData(descriptionsSessionData, HttpContext);
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         #endregion Methods..
     }

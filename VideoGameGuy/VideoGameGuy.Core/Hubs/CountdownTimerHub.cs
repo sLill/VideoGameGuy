@@ -36,9 +36,9 @@ namespace VideoGameGuy.Core
         }
         #endregion Event Handlers..		
 
-        public void DoThing()
+        public async Task StartCountdownForUser()
         {
-
+            _countdownTimerService.AddClient(Context.ConnectionId, TimeSpan.FromSeconds(1));
         }
         #endregion Methods..
     }

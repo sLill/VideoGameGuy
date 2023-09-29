@@ -107,7 +107,7 @@ namespace VideoGameGuy
             app.UseAuthorization();
             app.UseSession();
 
-            app.MapHub<CountdownTimerHub>("/timerHub");
+            app.MapHub<CountdownTimerHub>("/countdownTimerHub");
             app.MapControllerRoute(name: "default",
                                    pattern: "{controller=Home}/{action=Index}/{id?}");
 
