@@ -4,10 +4,9 @@
     {
         #region Properties..
         public string GameTitle { get; set; }
-        public string GameMediaUrl { get; set; }
         public string GameDescription { get; set; } 
         public bool IsSolved { get; set; }
-        public TimeSpan TimeRemaining { get; set; }
+        public bool IsSkipped { get; set; }
         #endregion Properties..
     }
 }

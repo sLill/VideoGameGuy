@@ -94,7 +94,7 @@ namespace VideoGameGuy.Data
             return success;
         }
 
-        public async Task<List<IgdbGame>> GetGamesWithStorylinesAndMediaAsync(int minimumNumberOfRatings)
+        public async Task<List<IgdbGame>> GetGamesWithStorylines(int minimumNumberOfRatings)
         {
             List<IgdbGame> games = default;
 

@@ -17,7 +17,7 @@ namespace VideoGameGuy.Controllers
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
 
-        private List<IgdbGame> _games;
+        private static List<IgdbGame> _games;
         private Random _random = new Random();
         #endregion Fields..
 
@@ -51,18 +51,20 @@ namespace VideoGameGuy.Controllers
         }
 
         [HttpPost]
-        public IActionResult GoNext(DescriptionsViewModel descriptionsViewModel)
+        public IActionResult GoNext()
         {
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<ActionResult> Skip(DescriptionsViewModel descriptionsViewModel)
+        public async Task<ActionResult> Skip()
         {
             var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
-            await StartNewRoundAsync(descriptionsSessionData);
+            descriptionsSessionData.CurrentRound.IsSkipped = true;
 
-            descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
+            await StartNewRoundAsync(descriptionsSessionData);
+            DescriptionsViewModel descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
+
             return RedirectToAction("Index", descriptionsViewModel);
         }
 
@@ -96,10 +98,9 @@ namespace VideoGameGuy.Controllers
                 descriptionsViewModel.DescriptionsRounds.Add(new DescriptionsRoundViewModel()
                 {
                     GameTitle = round.GameTitle,
-                    GameMediaUrl = round.GameMediaUrl,
                     GameDescription = round.GameDescription,
                     IsSolved = round.IsSolved,
-                    TimeRemaining = round.TimeRemaining,
+                    IsSkipped = round.IsSkipped,
                 });
             }
 
@@ -108,32 +109,15 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(DescriptionsSessionData descriptionsSessionData)
         {
-            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(400);
+            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylines(200);
             IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
 
             if (game != default)
             {
-                string mediaUrl = string.Empty;
-
-                // Randomly choose a screenshot or artwork
-                switch(_random.Next(0, 2))
-                {
-                    case 0:
-                        var artwork = await _igdbGamesRepository.GetArtworkFromGameAsync(game);
-                        mediaUrl = artwork?.Url;
-                        break;
-                    case 1:
-                        var screenshot = await _igdbGamesRepository.GetScreenshotFromGameAsync(game);
-                        mediaUrl = screenshot?.Url;
-                        break;
-                }
-
                 descriptionsSessionData.DescriptionsRounds.Add(new DescriptionsSessionData.DescriptionsRound()
                 {
                     GameTitle = game.Name,
-                    GameMediaUrl = mediaUrl,
                     GameDescription = game.Storyline,
-                    TimeRemaining = TimeSpan.FromMinutes(ROUND_TIME_LIMIT_MINUTES)
                 });
             }
 

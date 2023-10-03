@@ -15,7 +15,7 @@
             => DescriptionsRounds.Count(x => x.IsSolved);
 
         public DescriptionsRoundViewModel CurrentRound
-            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved);
+            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved && !x.IsSkipped);
         #endregion Properties..
     }
 }

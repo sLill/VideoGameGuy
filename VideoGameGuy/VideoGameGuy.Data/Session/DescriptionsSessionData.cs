@@ -6,10 +6,9 @@
         public record DescriptionsRound
         {
             public string GameTitle { get; set; }
-            public string GameMediaUrl { get; set; }
             public string GameDescription { get; set; }
             public bool IsSolved { get; set; }
-            public TimeSpan TimeRemaining { get; set; } 
+            public bool IsSkipped { get; set; }
         }
         #endregion Records..
 
@@ -21,7 +20,7 @@
         public int HighestStreak { get; set; }
 
         public DescriptionsRound CurrentRound
-            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved);
+            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved && !x.IsSkipped);
         #endregion Properties..
     }
 }

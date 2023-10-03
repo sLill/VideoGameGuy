@@ -12,7 +12,7 @@
         @* Status *@
         <div id="status_Grid">
             <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
-            <div id="timer">@Model.CurrentRound.TimeRemaining.ToString(@"mm\:ss")</div>
+            <div id="timer">--</div>
         </div>
 
         @* Description *@
@@ -53,12 +53,17 @@
     <script src="~/js/countdownTimer.js" asp-append-version="true"></script>
 
     <script>
+        const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
+
+        var gameTitle = $('#gameTitle').val();
+        var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');
+
         $(document).ready(function () {
             $('#userInput').on('input', function () {
-                let gameTitle = $('#gameTitle').val().replace(/[^a-zA-Z0-9]/g, '');
-                var inputValue = $(this).val().replace(/[^a-zA-Z0-9]/g, '');
 
-                if (gameTitle.toLowerCase() === inputValue.toLowerCase()) {
+                var inputValue = $(this).val().toLowerCase().replace(titleExpression, '');
+
+                if (gameTitleFormatted === inputValue) {
                     validate();
 
                     this.addEventListener('keydown', function (event) {
@@ -77,6 +82,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                $('#userInput').val(gameTitle);
                 $('#next_Form').css('display', 'block');
                 $('#correctCheckmark').css('display', 'block');
                 $('#skipButton').prop('disabled', true);
