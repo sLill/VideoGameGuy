@@ -14,6 +14,8 @@
         #endregion Records..
 
         #region Properties..
+        public Guid SessionId { get; set; } = Guid.NewGuid();
+
         public List<DescriptionsRound> DescriptionsRounds { get; set; } = new List<DescriptionsRound>();
 
         public int HighestStreak { get; set; }

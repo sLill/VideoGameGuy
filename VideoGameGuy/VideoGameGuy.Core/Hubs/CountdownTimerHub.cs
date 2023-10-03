@@ -1,25 +1,30 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace VideoGameGuy.Core
 {
     public class CountdownTimerHub : Hub
     {
         #region Fields..
-        private readonly CountdownTimerService _countdownTimerService;
+        private ICountdownTimerService _countdownTimerService;
         #endregion Fields..
 
         #region Properties..
         #endregion Properties..
 
-        #region Constructors..
-        //public CountdownTimerHub(CountdownTimerService countdownTimerService)
-        //{
-        //    _countdownTimerService = countdownTimerService;
-        //}
-
-        public CountdownTimerHub()
+        #region Structs..
+        private struct CountdownData
         {
+            public Guid SessionId;
+            public int CountdownSeconds;
+        }
+        #endregion Structs..
 
+        #region Constructors..
+        public CountdownTimerHub(ICountdownTimerService countdownTimerService)
+        {
+            _countdownTimerService = countdownTimerService;
         }
         #endregion Constructors..
 
@@ -28,22 +33,18 @@ namespace VideoGameGuy.Core
         public override Task OnConnectedAsync()
         {
             return base.OnConnectedAsync();
-
-            //_countdownTimerService.AddClient(Context.ConnectionId, TimeSpan.FromSeconds(1));
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            //if (!string.IsNullOrEmpty(Context.ConnectionId))
-            //    _countdownTimerService.RemoveClient(Context.ConnectionId);
-
             return base.OnDisconnectedAsync(exception);
         }
         #endregion Event Handlers..		
 
-        public async Task StartCountdownForUser()
+        public async Task StartCountdownForUser(object data)
         {
-            _countdownTimerService.AddClient(Context.ConnectionId, TimeSpan.FromSeconds(1));
+            var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
+            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context.ConnectionId, countdownData.CountdownSeconds);
         }
         #endregion Methods..
     }

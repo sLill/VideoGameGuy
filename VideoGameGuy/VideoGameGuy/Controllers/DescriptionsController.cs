@@ -43,8 +43,6 @@ namespace VideoGameGuy.Controllers
             if (descriptionsSessionData == null)
                 descriptionsSessionData = new DescriptionsSessionData();
 
-
-
             if (descriptionsSessionData.CurrentRound == null)
                 await StartNewRoundAsync(descriptionsSessionData);
 
@@ -88,7 +86,7 @@ namespace VideoGameGuy.Controllers
         public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(DescriptionsSessionData descriptionsSessionData)
         {
             // Load viewmodel from existing session data
-            DescriptionsViewModel descriptionsViewModel = new DescriptionsViewModel() { };
+            DescriptionsViewModel descriptionsViewModel = new DescriptionsViewModel() { SessionId = descriptionsSessionData.SessionId };
 
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
             descriptionsViewModel.LastUpdateOn = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue;
@@ -101,7 +99,7 @@ namespace VideoGameGuy.Controllers
                     GameMediaUrl = round.GameMediaUrl,
                     GameDescription = round.GameDescription,
                     IsSolved = round.IsSolved,
-                    TimeRemaining = round.TimeRemaining
+                    TimeRemaining = round.TimeRemaining,
                 });
             }
 
@@ -110,7 +108,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(DescriptionsSessionData descriptionsSessionData)
         {
-            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(500);
+            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylinesAndMediaAsync(400);
             IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
 
             if (game != default)

@@ -9,9 +9,11 @@ namespace VideoGameGuy.Core
         private const int TIMER_INTERVAL_SECONDS = 1;
 
         private readonly IHubContext<CountdownTimerHub> _hubContext;
-
-        private ConcurrentDictionary<string, ClientCountdownTimer> _clientCountdownTimers = new ConcurrentDictionary<string, ClientCountdownTimer>();
+        private ConcurrentDictionary<Guid, (string ConnectionId, ClientCountdownTimer Timer)> _clientCountdownTimers = new ConcurrentDictionary<Guid, (string ConnectionId, ClientCountdownTimer Timer)>();
         #endregion Fields..
+
+        #region Properties..
+        #endregion Properties..
 
         #region Records..
         private record ClientCountdownTimer
@@ -29,32 +31,45 @@ namespace VideoGameGuy.Core
         #endregion Constructors..
 
         #region Methods..
-        #region EventHandlers..
+        #region Event Handlers..
         private async void clientCountdownTimer_Elapsed(object sender)
         {
-            var clientConnectionId = sender as string;
+            Guid sessionId = (Guid)sender;
 
-            if (!_clientCountdownTimers.TryGetValue(clientConnectionId, out var clientCountdownTimer)) 
+            if (!_clientCountdownTimers.TryGetValue(sessionId, out var clientTimer))
                 return;
 
-            clientCountdownTimer.TimeRemaining -= TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS);
+            clientTimer.Timer.TimeRemaining -= TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS);
 
-            if (clientCountdownTimer.TimeRemaining <= TimeSpan.Zero)
-                _clientCountdownTimers.Remove(clientConnectionId, out _);
+            if (clientTimer.Timer.TimeRemaining <= TimeSpan.Zero)
+                _clientCountdownTimers.Remove(sessionId, out _);
 
-            await _hubContext.Clients.Client(clientConnectionId).SendAsync("UpdateTimer", clientCountdownTimer.TimeRemaining.ToString(@"mm\:ss"));
+            await _hubContext.Clients.Client(clientTimer.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
         }
-        #endregion EventHandlers..
+        #endregion Event Handlers..
 
-        public void AddClient(string clientConnectionId, TimeSpan countdownTime)
+        public async Task StartCountdownForUser(Guid sessionId, string connectionId, int countdownSeconds)
         {
-            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, clientConnectionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
-            _clientCountdownTimers[clientConnectionId] = new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer };  
+            // If a timer already exists for this sessionId, just update the associated connectionId
+            _clientCountdownTimers.TryGetValue(sessionId, out var clientTimer);
+            if (clientTimer != default)
+            {
+                clientTimer.ConnectionId = connectionId;
+                _clientCountdownTimers[sessionId] = clientTimer;
+            }
+            else
+                AddClientTimer(sessionId, connectionId, TimeSpan.FromSeconds(countdownSeconds));
         }
 
-        public void RemoveClient(string clientConnectionId)
+        private void AddClientTimer(Guid sessionId, string clientConnectionId, TimeSpan countdownTime)
         {
-            _clientCountdownTimers.Remove(clientConnectionId, out _);
+            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, sessionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
+            _clientCountdownTimers[sessionId] = (clientConnectionId, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
+        }
+
+        private void RemoveClientTimer(Guid sessionId)
+        {
+            _clientCountdownTimers.Remove(sessionId, out _);
         }
         #endregion Methods..
     }

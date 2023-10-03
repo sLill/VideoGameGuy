@@ -11,6 +11,7 @@
 
         @* Status *@
         <div id="status_Grid">
+            <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
             <div id="timer">@Model.CurrentRound.TimeRemaining.ToString(@"mm\:ss")</div>
         </div>
 

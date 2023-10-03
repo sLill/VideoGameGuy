@@ -3,6 +3,8 @@
     public class DescriptionsViewModel
     {
         #region Properties..
+        public Guid SessionId { get; set; }
+
         public List<DescriptionsRoundViewModel> DescriptionsRounds { get; set; } = new List<DescriptionsRoundViewModel>();
 
         public DateTime LastUpdateOn { get; set; }

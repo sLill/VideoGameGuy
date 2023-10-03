@@ -3,8 +3,7 @@
     public interface ICountdownTimerService
     {
         #region Methods..
-        void AddClient(string clientConnectionId, TimeSpan countdownTime);
-        void RemoveClient(string clientConnectionId);
+        Task StartCountdownForUser(Guid sessionId, string connectionId, int countdownSeconds);
         #endregion Methods..
     }
 }

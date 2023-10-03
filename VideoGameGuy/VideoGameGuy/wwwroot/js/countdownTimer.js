@@ -1,7 +1,10 @@
-﻿var timerConnection = new signalR.HubConnectionBuilder()
+﻿var sessionId = $('#sessionId').val();
+var timerConnection = new signalR.HubConnectionBuilder()
     .withUrl("/countdownTimerHub")
     .withAutomaticReconnect()
     .build();
+
+var countdownSeconds = 300;
 
 timerConnection.on("UpdateTimer", (time) => {
     $("#timer").text(time);
@@ -9,6 +12,7 @@ timerConnection.on("UpdateTimer", (time) => {
 
 timerConnection.onreconnecting(error => {
     console.log("reconnecting");
+    timerConnection.invoke("StartCountdownForUser", { sessionId: sessionId, countdownSeconds: countdownSeconds });
 });
 
 timerConnection.onclose(error => {
@@ -17,6 +21,7 @@ timerConnection.onclose(error => {
 
 function start_fulfilled() {
     console.log("connection accepted");
+    timerConnection.invoke("StartCountdownForUser", { sessionId: sessionId, countdownSeconds: countdownSeconds });
 }
 
 function start_rejected() {
