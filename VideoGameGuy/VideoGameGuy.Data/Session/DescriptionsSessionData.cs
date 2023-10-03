@@ -17,7 +17,10 @@
 
         public List<DescriptionsRound> DescriptionsRounds { get; set; } = new List<DescriptionsRound>();
 
-        public int HighestStreak { get; set; }
+        public int HighestScore { get; set; }
+
+        public int CurrentScore
+            => DescriptionsRounds.Count(x => x.IsSolved);
 
         public DescriptionsRound CurrentRound
             => DescriptionsRounds.LastOrDefault(x => !x.IsSolved && !x.IsSkipped);

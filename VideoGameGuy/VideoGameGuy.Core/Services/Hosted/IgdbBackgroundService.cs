@@ -98,8 +98,7 @@ namespace VideoGameGuy.Core
                     DateTime startDate = currentSystemStatus.Igdb_UpdatedOnUtc == default
                         ? DateTime.MinValue : (currentSystemStatus.Igdb_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
 
-                    //await ImportGameDataAsync_DEBUG();
-                   // await PollAndCacheAsync(startDate);
+                    //await PollAndCacheAsync(startDate);
 
                     currentSystemStatus.Igdb_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
@@ -189,15 +188,15 @@ namespace VideoGameGuy.Core
 
         private async Task UpdateDataAsync(IgdbApiAccessToken token, DateTime? updatedOnStartDate)
         {
-            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate, IgdbApiEndpoints.GameModes, 
+            await UpdateEndpointDataAsync<IgdbApiGame>(token, IgdbApiEndpoints.Games,  updatedOnStartDate, "total_rating_count > 100", IgdbApiEndpoints.GameModes, 
                 IgdbApiEndpoints.MultiplayerModes, IgdbApiEndpoints.Platforms, IgdbApiEndpoints.Themes, IgdbApiEndpoints.Artworks, IgdbApiEndpoints.Screenshots);
 
-            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies, null);
-            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos, null);
-            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms, updatedOnStartDate);
+            await UpdateEndpointDataAsync<IgdbApiPlatformFamily>(token, IgdbApiEndpoints.PlatformFamilies, null, null);
+            await UpdateEndpointDataAsync<IgdbApiPlatformLogo>(token, IgdbApiEndpoints.PlatformLogos, null, null);
+            await UpdateEndpointDataAsync<IgdbApiPlatform>(token, IgdbApiEndpoints.Platforms, updatedOnStartDate, null);
         }
 
-        private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate, params string[] subEndpoints) where T : class 
+        private async Task UpdateEndpointDataAsync<T>(IgdbApiAccessToken token, string endpoint, DateTime? updatedOnStartDate, string? whereClause, params string[] subEndpoints) where T : class 
         {
             Type apiObjectType = typeof(T);
 
@@ -226,8 +225,17 @@ namespace VideoGameGuy.Core
 
                     query.Append(';');
 
+                    // WHERE clause
+                    var whereConditions = new List<string>();
+
+                    if (whereClause != null)
+                        whereConditions.Add(whereClause);
+
                     if (updatedOnStartDate != null)
-                        query.Append($"where updated_at >= {unixStartTime};");
+                        whereConditions.Add($"updated_at >= {unixStartTime}");
+
+                    if (whereConditions.Any())
+                        query.Append($"where {string.Join(" & ", whereConditions)};");
 
                     query.Append($"limit {resultsPerRequest};");
                      

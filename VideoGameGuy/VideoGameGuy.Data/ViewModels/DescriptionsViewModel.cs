@@ -9,9 +9,9 @@
 
         public DateTime LastUpdateOn { get; set; }
         
-        public int HighestStreak { get; set; }
+        public int HighestScore { get; set; }
 
-        public int Streak
+        public int CurrentScore
             => DescriptionsRounds.Count(x => x.IsSolved);
 
         public DescriptionsRoundViewModel CurrentRound

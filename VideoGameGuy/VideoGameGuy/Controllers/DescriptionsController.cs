@@ -77,7 +77,7 @@ namespace VideoGameGuy.Controllers
                 _sessionService.SetSessionData(descriptionsSessionData, HttpContext);
             }
 
-            return Json(new { });
+            return Json(new { descriptionsSessionData.CurrentScore });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

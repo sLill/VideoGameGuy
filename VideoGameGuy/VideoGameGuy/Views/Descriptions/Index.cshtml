@@ -12,6 +12,9 @@
         @* Status *@
         <div id="status_Grid">
             <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
+            <input id="scoreValue" type="hidden" name="scoreValue" value="@Model.CurrentScore" />
+
+            <div id="scoreDisplay">Score: @Model.CurrentScore</div>
             <div id="timer">--</div>
         </div>
 
@@ -88,6 +91,7 @@
                 $('#skipButton').prop('disabled', true);
                 $('#userInput').attr('readonly', true);
                 $('#userInput').css('opacity', 0.6);
+                $('#scoreDisplay').text('Score: ' + data.currentScore);
             })
             .catch((error) => {
                 console.error('Error:', error);
