@@ -17,7 +17,7 @@ namespace VideoGameGuy.Core
         private struct CountdownData
         {
             public Guid SessionId;
-            public int CountdownSeconds;
+            public int Seconds;
         }
         #endregion Structs..
 
@@ -44,7 +44,13 @@ namespace VideoGameGuy.Core
         public async Task StartCountdownForUser(object data)
         {
             var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
-            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context.ConnectionId, countdownData.CountdownSeconds);
+            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context.ConnectionId, countdownData.Seconds);
+        }
+
+        public async Task SubtractTimeForUser(object data)
+        {
+            var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
+            _countdownTimerService.SubtractTimeForUser(countdownData.SessionId, Context.ConnectionId, countdownData.Seconds);
         }
         #endregion Methods..
     }

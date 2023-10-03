@@ -124,6 +124,11 @@ main
     background: linear-gradient(to bottom, rgba(34, 34, 54), rgba(102, 102, 136));
 }
 
+.color_red
+{
+    color: red;
+}
+
 /*Misc*/    
 .non-highlightable
 {
@@ -132,7 +137,6 @@ main
     -ms-user-select: none;
     user-select: none;
 }
-
 /*#endregion Global*/
 
 /*#region Home
@@ -222,7 +226,7 @@ main
 {
     display: grid;
     grid-template-rows: 2% 1fr 6%;
-    grid-template-columns: 20% 1fr 20%;
+    grid-template-columns: 15% 1fr 15%;
 
     height: 100vh;
     width: 100%;
@@ -245,18 +249,38 @@ main
          grid-row: 1;
          grid-column: 1 / -1;
 
+         display: grid;
+         grid-template-rows: 1fr;
+         grid-template-columns: 1fr 1fr;
+
          height: auto;
-         justify-self: right;
+         justify-self: stretch;
          margin-right: 2vw;
     }
 
+        #score_Container
+        {
+            justify-self:left;
+        }
+            .scoreText
+            {
+                 height: auto;
+                 font-family: Inter;
+                 font-size: 1.25rem;
+                 font-weight: 600;
+                 color: #935e96;
+            }
+
         #timer
         {
-             height: auto;
-             font-family: Inter;
-             font-size: 1.4rem;
-             font-weight: 600;
-             color: #935e96;
+            height: auto;
+            font-family: Inter;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #935e96;
+            justify-self:right;
+            align-self:end;
+            transition: color 0.5s ease;
         }
 
     #gameDescription
@@ -265,7 +289,7 @@ main
         grid-column: 1 / -1;
 
         font-family: Inter;
-        font-size: 1.4rem;
+        font-size: 1.25rem;
         opacity: 0.8;
     }
 
@@ -405,7 +429,7 @@ main
 #descriptions_Footer
 {
     grid-row: 3;
-    grid-column: 3;
+    grid-column: 2;
 }
 /*#endregion Descriptions*/
 

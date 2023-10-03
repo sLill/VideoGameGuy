@@ -13,9 +13,13 @@
         <div id="status_Grid">
             <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
             <input id="scoreValue" type="hidden" name="scoreValue" value="@Model.CurrentScore" />
+            <input id="highestScoreValue" type="hidden" name="highestScoreValue" value="@Model.HighestScore" />
 
-            <div id="scoreDisplay">Score: @Model.CurrentScore</div>
-            <div id="timer">--</div>
+        <div id="score_Container">
+            <div id="highestScoreDisplay" class="scoreText">Highest Score: @Model.HighestScore</div>
+            <div id="scoreDisplay" class="scoreText">Score: @Model.CurrentScore</div>
+        </div>
+        <div id="timer">--</div>
         </div>
 
         @* Description *@
@@ -62,6 +66,7 @@
         var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');
 
         $(document).ready(function () {
+            // User key press
             $('#userInput').on('input', function () {
 
                 var inputValue = $(this).val().toLowerCase().replace(titleExpression, '');
@@ -75,6 +80,20 @@
                         }
                     });
                 }
+            });
+
+            // Skip button
+            $('#skipButton').click(function () {
+                
+                // Briefly flash red
+                $('#timer').addClass('color_red');
+
+                // Remove 20 seconds from timer
+                countdownTimer_SubtractTime(20);
+
+                setTimeout(function () {
+                    $('#timer').removeClass('color_red');
+                }, 500);
             });
         });
 

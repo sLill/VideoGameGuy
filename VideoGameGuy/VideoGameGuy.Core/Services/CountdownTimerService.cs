@@ -42,11 +42,27 @@ namespace VideoGameGuy.Core
             clientTimer.Timer.TimeRemaining -= TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS);
 
             if (clientTimer.Timer.TimeRemaining <= TimeSpan.Zero)
-                _clientCountdownTimers.Remove(sessionId, out _);
+            {
+                clientTimer.Timer.TimeRemaining = TimeSpan.Zero;
+                await RemoveClientTimerAsync(sessionId);
+            }
 
             await _hubContext.Clients.Client(clientTimer.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
         }
         #endregion Event Handlers..
+
+        private void AddClientTimer(Guid sessionId, string clientConnectionId, TimeSpan countdownTime)
+        {
+            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, sessionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
+            _clientCountdownTimers[sessionId] = (clientConnectionId, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
+        }
+
+        private async Task RemoveClientTimerAsync(Guid sessionId)
+        {
+            _clientCountdownTimers.Remove(sessionId, out var clientTimer);
+            await clientTimer.Timer.Timer.DisposeAsync();
+            clientTimer.Timer = default;
+        }
 
         public async Task StartCountdownForUser(Guid sessionId, string connectionId, int countdownSeconds)
         {
@@ -61,15 +77,16 @@ namespace VideoGameGuy.Core
                 AddClientTimer(sessionId, connectionId, TimeSpan.FromSeconds(countdownSeconds));
         }
 
-        private void AddClientTimer(Guid sessionId, string clientConnectionId, TimeSpan countdownTime)
+        public async Task SubtractTimeForUser(Guid sessionId, string connectionId, int seconds)
         {
-            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, sessionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
-            _clientCountdownTimers[sessionId] = (clientConnectionId, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
-        }
-
-        private void RemoveClientTimer(Guid sessionId)
-        {
-            _clientCountdownTimers.Remove(sessionId, out _);
+            // If a timer already exists for this sessionId, just update the associated connectionId
+            _clientCountdownTimers.TryGetValue(sessionId, out var clientTimer);
+            if (clientTimer != default)
+            {
+                clientTimer.ConnectionId = connectionId;
+                clientTimer.Timer.TimeRemaining = clientTimer.Timer.TimeRemaining - TimeSpan.FromSeconds(seconds);
+                _clientCountdownTimers[sessionId] = clientTimer;
+            }
         }
         #endregion Methods..
     }
