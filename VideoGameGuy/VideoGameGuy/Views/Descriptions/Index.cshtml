@@ -45,98 +45,50 @@
 </div>
 
 @* JS *@
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.9/signalr.min.js"></script>
+@section Scripts
+{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/countdownTimer.js" asp-append-version="true"></script>
 
-<script>
-    window.onload = function() {
-        initializeSignalR();
-    }
+    <script>
+        $(document).ready(function () {
+            $('#userInput').on('input', function () {
+                let gameTitle = $('#gameTitle').val().replace(/[^a-zA-Z0-9]/g, '');
+                var inputValue = $(this).val().replace(/[^a-zA-Z0-9]/g, '');
 
-    $(document).ready(function () {
-        $('#userInput').on('input', function () {
-            let gameTitle = $('#gameTitle').val().replace(/[^a-zA-Z0-9]/g, '');
-            var inputValue = $(this).val().replace(/[^a-zA-Z0-9]/g, '');
+                if (gameTitle.toLowerCase() === inputValue.toLowerCase()) {
+                    validate();
 
-            if (gameTitle.toLowerCase() === inputValue.toLowerCase()) {
-                validate();
-
-                this.addEventListener('keydown', function (event) {
-                    if (event.key === 'Enter') {
-                        goNext();
-                    }
-                });
-            }
-        });
-    });
-
-    function initializeSignalR() 
-    {
-        // Countdown timer
-        var timerConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/countdownTimerHub")
-            .withAutomaticReconnect()
-            .build();
-
-        timerConnection.on("TimeReceived", function (time) 
-        {
-            $("#timer").text(time);
+                    this.addEventListener('keydown', function (event) {
+                        if (event.key === 'Enter') {
+                            goNext();
+                        }
+                    });
+                }
+            });
         });
 
-        timerConnection.onre
+        // AJAX validation
+        function validate() {
+            fetch('/Descriptions/Validate', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                $('#next_Form').css('display', 'block');
+                $('#correctCheckmark').css('display', 'block');
+                $('#skipButton').prop('disabled', true);
+                $('#userInput').attr('readonly', true);
+                $('#userInput').css('opacity', 0.6);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
 
-        timerConnection.onreconnecting(error => 
-        {
-            console.assert(connection.state === signalR.HubConnectionState.Reconnecting);
-        });
-
-        timerConnection.onclose(error =>
-        {
-            console.assert(connection.state === signalR.HubConnectionState.Disconnected);
-        });
-
-        timerConnection
-        .start()
-        .then(function ()
-        {
-            console.log("connected");
-
-            try 
-            {
-                timerConnection.invoke("StartCountdownForUser");
-            } 
-            catch (err) 
-            {
-                console.error(err);
-            }
-        })
-        .catch(function (err) 
-        {
-            console.error(err.toString());
-            setTimeout(() => start(), 5000);
-        });
-    }
-
-
-    // AJAX validation
-    function validate() {
-        fetch('/Descriptions/Validate', {
-            method: 'POST',
-        })
-        .then(response => response.json())
-        .then(data => {
-            $('#next_Form').css('display', 'block');
-            $('#correctCheckmark').css('display', 'block');
-            $('#skipButton').prop('disabled', true);
-            $('#userInput').attr('readonly', true);
-            $('#userInput').css('opacity', 0.6);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-
-    function goNext() {
-        window.location.href = '/Descriptions/Index';
-    }
-</script>
+        function goNext() {
+            window.location.href = '/Descriptions/Index';
+        }
+    </script>
+}

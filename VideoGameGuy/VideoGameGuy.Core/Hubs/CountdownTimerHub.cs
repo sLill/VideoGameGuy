@@ -12,27 +12,32 @@ namespace VideoGameGuy.Core
         #endregion Properties..
 
         #region Constructors..
-        public CountdownTimerHub(CountdownTimerService countdownTimerService)
+        //public CountdownTimerHub(CountdownTimerService countdownTimerService)
+        //{
+        //    _countdownTimerService = countdownTimerService;
+        //}
+
+        public CountdownTimerHub()
         {
-            _countdownTimerService = countdownTimerService;
+
         }
         #endregion Constructors..
 
         #region Methods..
         #region Event Handlers..
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
-            await base.OnConnectedAsync();
+            return base.OnConnectedAsync();
 
-            _countdownTimerService.AddClient(Context.ConnectionId, TimeSpan.FromSeconds(1));
+            //_countdownTimerService.AddClient(Context.ConnectionId, TimeSpan.FromSeconds(1));
         }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        public override Task OnDisconnectedAsync(Exception? exception)
         {
-            if (!string.IsNullOrEmpty(Context.ConnectionId))
-                _countdownTimerService.RemoveClient(Context.ConnectionId);
+            //if (!string.IsNullOrEmpty(Context.ConnectionId))
+            //    _countdownTimerService.RemoveClient(Context.ConnectionId);
 
-            await base.OnDisconnectedAsync(exception);
+            return base.OnDisconnectedAsync(exception);
         }
         #endregion Event Handlers..		
 
