@@ -24,7 +24,7 @@ namespace VideoGameGuy
             // Logging
             builder.Services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, builder.Configuration.GetConnectionString("ConnectionString_Dev_Main")));
+                loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, builder.Configuration.GetConnectionString("ConnectionString_Main")));
             });
 
             // Services
@@ -41,15 +41,14 @@ namespace VideoGameGuy
             // Data
             builder.Services.AddDbContext<MainDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Main"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Main"));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
-
             });
 
             builder.Services.AddDbContext<RawgDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Rawg"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Rawg"));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 
@@ -57,7 +56,7 @@ namespace VideoGameGuy
 
             builder.Services.AddDbContext<IgdbDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Dev_Igdb"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Igdb"));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 

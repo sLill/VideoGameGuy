@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using VideoGameGuy.Data;
 
 namespace VideoGameGuy.Core
 {
@@ -9,7 +10,9 @@ namespace VideoGameGuy.Core
         private const int TIMER_INTERVAL_SECONDS = 1;
 
         private readonly IHubContext<CountdownTimerHub> _hubContext;
-        private ConcurrentDictionary<Guid, (string ConnectionId, ClientCountdownTimer Timer)> _clientCountdownTimers = new ConcurrentDictionary<Guid, (string ConnectionId, ClientCountdownTimer Timer)>();
+        private readonly ISessionService _sessionService;
+
+        private ConcurrentDictionary<Guid, (HubCallerContext Context, ClientCountdownTimer Timer)> _clientCountdownTimers = new ConcurrentDictionary<Guid, (HubCallerContext Context, ClientCountdownTimer Timer)>();
         #endregion Fields..
 
         #region Properties..
@@ -24,9 +27,11 @@ namespace VideoGameGuy.Core
         #endregion Records..
 
         #region Constructors..
-        public CountdownTimerService(IHubContext<CountdownTimerHub> hubContext)
+        public CountdownTimerService(IHubContext<CountdownTimerHub> hubContext,
+                                     ISessionService sessionService)
         {
             _hubContext = hubContext;
+            _sessionService = sessionService;
         }
         #endregion Constructors..
 
@@ -47,14 +52,15 @@ namespace VideoGameGuy.Core
                 await RemoveClientTimerAsync(sessionId);
             }
 
-            await _hubContext.Clients.Client(clientTimer.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
+            _sessionService.SetSessionData<CountdownSessionData>(new CountdownSessionData() { TimeRemaining = clientTimer.Timer.TimeRemaining }, clientTimer.Context.GetHttpContext());
+            await _hubContext.Clients.Client(clientTimer.Context.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
         }
         #endregion Event Handlers..
 
-        private void AddClientTimer(Guid sessionId, string clientConnectionId, TimeSpan countdownTime)
+        private void AddClientTimer(Guid sessionId, HubCallerContext context, TimeSpan countdownTime)
         {
             var countdownTimer = new Timer(clientCountdownTimer_Elapsed, sessionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
-            _clientCountdownTimers[sessionId] = (clientConnectionId, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
+            _clientCountdownTimers[sessionId] = (context, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
         }
 
         private async Task RemoveClientTimerAsync(Guid sessionId)
@@ -64,26 +70,26 @@ namespace VideoGameGuy.Core
             clientTimer.Timer = default;
         }
 
-        public async Task StartCountdownForUser(Guid sessionId, string connectionId, int countdownSeconds)
+        public async Task StartCountdownForUser(Guid sessionId, HubCallerContext context, int countdownSeconds)
         {
             // If a timer already exists for this sessionId, just update the associated connectionId
             _clientCountdownTimers.TryGetValue(sessionId, out var clientTimer);
             if (clientTimer != default)
             {
-                clientTimer.ConnectionId = connectionId;
+                clientTimer.Context = context;
                 _clientCountdownTimers[sessionId] = clientTimer;
             }
             else
-                AddClientTimer(sessionId, connectionId, TimeSpan.FromSeconds(countdownSeconds));
+                AddClientTimer(sessionId, context, TimeSpan.FromSeconds(countdownSeconds));
         }
 
-        public async Task SubtractTimeForUser(Guid sessionId, string connectionId, int seconds)
+        public async Task SubtractTimeForUser(Guid sessionId, HubCallerContext context, int seconds)
         {
             // If a timer already exists for this sessionId, just update the associated connectionId
             _clientCountdownTimers.TryGetValue(sessionId, out var clientTimer);
             if (clientTimer != default)
             {
-                clientTimer.ConnectionId = connectionId;
+                clientTimer.Context = context;
                 clientTimer.Timer.TimeRemaining = clientTimer.Timer.TimeRemaining - TimeSpan.FromSeconds(seconds);
                 _clientCountdownTimers[sessionId] = clientTimer;
             }

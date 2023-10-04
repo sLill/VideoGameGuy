@@ -44,13 +44,13 @@ namespace VideoGameGuy.Core
         public async Task StartCountdownForUser(object data)
         {
             var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
-            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context.ConnectionId, countdownData.Seconds);
+            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context, countdownData.Seconds);
         }
 
         public async Task SubtractTimeForUser(object data)
         {
             var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
-            _countdownTimerService.SubtractTimeForUser(countdownData.SessionId, Context.ConnectionId, countdownData.Seconds);
+            _countdownTimerService.SubtractTimeForUser(countdownData.SessionId, Context, countdownData.Seconds);
         }
         #endregion Methods..
     }
