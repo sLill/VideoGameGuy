@@ -83,6 +83,7 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
+            await _sessionService.LoadSessionDataAsync(HttpContext);
             var sessionData = _sessionService.GetSessionData(HttpContext);
             
             if (sessionData.ReviewScoresSessionItem.CurrentRound == null)

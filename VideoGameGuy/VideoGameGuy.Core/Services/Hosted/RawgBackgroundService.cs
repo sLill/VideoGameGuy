@@ -60,7 +60,7 @@ namespace VideoGameGuy.Core
 
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    //await PollAndCacheAsync(startDate, endDate);
+                    await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
