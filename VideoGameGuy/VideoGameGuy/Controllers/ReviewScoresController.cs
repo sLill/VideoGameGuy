@@ -36,7 +36,7 @@ namespace VideoGameGuy.Controllers
             object? result = null;
 
             // Ignore vote if user has already voted for this set of games before
-            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
+            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionItem>(HttpContext);
             if (reviewScoresSessionData.CurrentRound != null)
             {
                 var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
@@ -78,7 +78,7 @@ namespace VideoGameGuy.Controllers
                     reviewScoresSessionData.ReviewScoresRounds.Clear();
                 }
 
-                _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
+                _sessionService.UpdateSessionData(reviewScoresSessionData, HttpContext);
             }
 
             return Json(result);
@@ -88,9 +88,9 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
-            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionData>(HttpContext);
+            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionItem>(HttpContext);
             if (reviewScoresSessionData == null)
-                reviewScoresSessionData = new ReviewScoresSessionData();
+                reviewScoresSessionData = new ReviewScoresSessionItem();
 
             if (reviewScoresSessionData.CurrentRound == null)
                 await StartNewRoundAsync(reviewScoresSessionData);
@@ -111,7 +111,7 @@ namespace VideoGameGuy.Controllers
                 return NotFound();
         }
 
-        public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionData reviewScoresSessionData)
+        public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionItem reviewScoresSessionData)
         {
             // Load viewmodel from existing session data
             ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel()
@@ -139,13 +139,13 @@ namespace VideoGameGuy.Controllers
             return reviewScoresViewModel;
         }
 
-        private async Task StartNewRoundAsync(ReviewScoresSessionData reviewScoresSessionData)
+        private async Task StartNewRoundAsync(ReviewScoresSessionItem reviewScoresSessionData)
         {
             List<RawgGame> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
 
             if (games?.Any() ?? false)
             {
-                reviewScoresSessionData.ReviewScoresRounds.Add(new ReviewScoresSessionData.ReviewScoresRound()
+                reviewScoresSessionData.ReviewScoresRounds.Add(new ReviewScoresSessionItem.ReviewScoresRound()
                 {
                     GameOneId = games[0].RawgGameId,
                     GameTwoId = games[1].RawgGameId

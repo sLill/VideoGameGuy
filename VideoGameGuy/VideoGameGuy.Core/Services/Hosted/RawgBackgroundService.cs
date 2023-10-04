@@ -60,7 +60,6 @@ namespace VideoGameGuy.Core
 
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    //await ImportGameDataAsync_DEBUG();
                     //await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
@@ -189,46 +188,6 @@ namespace VideoGameGuy.Core
 
             if (batch.Any())
                 await _rawgGamesRepository.AddOrUpdateRangeAsync(batch);
-        }
-
-        private async Task ImportGameDataAsync_DEBUG()
-        {
-            var stopwatch = Stopwatch.StartNew();
-            var rawgGames = new List<RawgApiGame>();
-
-            int batchSize = 1000;
-
-            var dataFiles = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "RAWG_Data")).ToList();
-            foreach (string filepath in dataFiles)
-            {
-                string jsonRaw = File.ReadAllText(filepath);
-                JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
-
-                var resultTokens = responseObject.GetValue("results")?.ToList() ?? new List<JToken>();
-
-                foreach (JToken token in resultTokens)
-                {
-                    try
-                    {
-                        var rawgGame = token.ToObject<RawgApiGame>();
-                        rawgGames.Add(rawgGame);
-
-                        if (rawgGames.Count >= batchSize)
-                        {
-                            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames);
-                            rawgGames.Clear();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"[RAWG] {ex.Message} - {ex.StackTrace}");
-                    }
-                }
-            }
-
-            await _rawgGamesRepository.AddOrUpdateRangeAsync(rawgGames);
-
-            stopwatch.Stop();
         }
         #endregion Methods..
     }

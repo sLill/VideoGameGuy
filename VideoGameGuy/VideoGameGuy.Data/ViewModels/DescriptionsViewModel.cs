@@ -1,21 +1,21 @@
-﻿namespace VideoGameGuy.Data
+﻿using static VideoGameGuy.Data.DescriptionsSessionItem;
+
+namespace VideoGameGuy.Data
 {
     public class DescriptionsViewModel
     {
         #region Properties..
-        public Guid SessionId { get; set; }
+        public Guid SessionId { get; set; } = Guid.NewGuid();
 
-        public List<DescriptionsRoundViewModel> DescriptionsRounds { get; set; } = new List<DescriptionsRoundViewModel>();
+        public DateTime Igdb_UpdatedOnUtc { get; set; } = DateTime.MinValue;
 
-        public DateTime LastUpdateOn { get; set; }
-        
+        public TimeSpan TimeRemaining { get; set; }
+
         public int HighestScore { get; set; }
 
-        public int CurrentScore
-            => DescriptionsRounds.Count(x => x.IsSolved);
+        public int CurrentScore { get; set; } = 0;
 
-        public DescriptionsRoundViewModel CurrentRound
-            => DescriptionsRounds.LastOrDefault(x => !x.IsSolved && !x.IsSkipped);
+        public DescriptionsRound CurrentRound { get; set; }
         #endregion Properties..
     }
 }

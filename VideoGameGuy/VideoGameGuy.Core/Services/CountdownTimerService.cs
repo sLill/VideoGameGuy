@@ -52,7 +52,7 @@ namespace VideoGameGuy.Core
                 await RemoveClientTimerAsync(sessionId);
             }
 
-            _sessionService.SetSessionData<CountdownSessionData>(new CountdownSessionData() { TimeRemaining = clientTimer.Timer.TimeRemaining }, clientTimer.Context.GetHttpContext());
+            //_sessionService.SetSessionData<CountdownSessionData>(new CountdownSessionData() { TimeRemaining = clientTimer.Timer.TimeRemaining }, clientTimer.Context.GetHttpContext());
             await _hubContext.Clients.Client(clientTimer.Context.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
         }
         #endregion Event Handlers..

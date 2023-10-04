@@ -20,15 +20,21 @@ namespace VideoGameGuy.Core
         #endregion Constructors..
 
         #region Methods..
-        public T GetSessionData<T>(HttpContext httpContext) where T : SessionDataBase
+        public SessionData GetSessionData(HttpContext httpContext) 
         {
-            T sessionData = null;
+            SessionData sessionData = default;
 
             try
             {
-                var sessionDataString = httpContext.Session.GetString(nameof(T));
+                var sessionDataString = httpContext.Session.GetString(nameof(SessionData));
+
                 if (!string.IsNullOrEmpty(sessionDataString))
-                    sessionData = JsonConvert.DeserializeObject<T>(sessionDataString);
+                    sessionData = JsonConvert.DeserializeObject<SessionData>(sessionDataString);
+                else
+                {
+                    sessionData = new SessionData();
+                    UpdateSessionData(sessionData, httpContext);
+                }
             }
             catch (Exception ex)
             {
@@ -38,11 +44,11 @@ namespace VideoGameGuy.Core
             return sessionData;
         }
 
-        public void SetSessionData<T>(T sessionDataBase, HttpContext httpContext) where T : SessionDataBase
+        public void UpdateSessionData(SessionData sessionData, HttpContext httpContext) 
         {
             try
             {
-                httpContext.Session.SetString(nameof(T), JsonConvert.SerializeObject(sessionDataBase));
+                httpContext.Session.SetString(nameof(SessionData), JsonConvert.SerializeObject(sessionData));
             }
             catch (Exception ex)
             {

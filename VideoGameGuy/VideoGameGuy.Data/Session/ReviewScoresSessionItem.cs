@@ -1,6 +1,8 @@
+using VideoGameGuy.Data;
+
 namespace VideoGameGuy.Data
 {
-    public class ReviewScoresSessionData : SessionDataBase
+    public class ReviewScoresSessionItem : SessionItemBase
     {
         #region Records..
         public record ReviewScoresRound

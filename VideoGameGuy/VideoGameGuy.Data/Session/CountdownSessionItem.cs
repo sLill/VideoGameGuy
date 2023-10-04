@@ -1,6 +1,6 @@
 ﻿namespace VideoGameGuy.Data
 {
-    public class CountdownSessionData : SessionDataBase
+    public class CountdownSessionItem : SessionItemBase
     {
         #region Properties..
         public TimeSpan TimeRemaining { get; set; }

@@ -39,14 +39,13 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
-            var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
-            if (descriptionsSessionData == null)
-                descriptionsSessionData = new DescriptionsSessionData();
+            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
 
-            if (descriptionsSessionData.CurrentRound == null)
-                await StartNewRoundAsync(descriptionsSessionData);
+            if (descriptionSessionItem.CurrentRound == null)
+                await StartNewRoundAsync(descriptionSessionItem);
 
-            DescriptionsViewModel descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
+            var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return View(descriptionsViewModel);
         }
 
@@ -59,25 +58,28 @@ namespace VideoGameGuy.Controllers
         [HttpPost]
         public async Task<ActionResult> Skip()
         {
-            var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
-            descriptionsSessionData.CurrentRound.IsSkipped = true;
+            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
 
-            await StartNewRoundAsync(descriptionsSessionData);
-            DescriptionsViewModel descriptionsViewModel = await GetViewModelFromSessionDataAsync(descriptionsSessionData);
+            descriptionSessionItem.CurrentRound.IsSkipped = true;
+            await StartNewRoundAsync(descriptionSessionItem);
 
+            var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return RedirectToAction("Index", descriptionsViewModel);
         }
 
         public async Task<ActionResult> Validate()
         {
-            var descriptionsSessionData = _sessionService.GetSessionData<DescriptionsSessionData>(HttpContext);
-            if (descriptionsSessionData.CurrentRound != null)
+            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
+
+            if (descriptionSessionItem.CurrentRound != null)
             {
-                descriptionsSessionData.CurrentRound.IsSolved = true;
-                _sessionService.SetSessionData(descriptionsSessionData, HttpContext);
+                descriptionSessionItem.CurrentRound.IsSolved = true;
+                _sessionService.UpdateSessionData(sessionData, HttpContext);
             }
 
-            return Json(new { descriptionsSessionData.CurrentScore });
+            return Json(new { descriptionSessionItem.CurrentScore });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -85,43 +87,43 @@ namespace VideoGameGuy.Controllers
             => View(new { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         #endregion Actions..
 
-        public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(DescriptionsSessionData descriptionsSessionData)
+        public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(SessionData sessionData)
         {
-            // Load viewmodel from existing session data
-            DescriptionsViewModel descriptionsViewModel = new DescriptionsViewModel() { SessionId = descriptionsSessionData.SessionId };
+            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
+            var countdownSessionItem = sessionData.GetSessionItem<CountdownSessionItem>();
 
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
-            descriptionsViewModel.LastUpdateOn = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue;
 
-            foreach (var round in descriptionsSessionData.DescriptionsRounds)
+            var descriptionsViewModel = new DescriptionsViewModel()
             {
-                descriptionsViewModel.DescriptionsRounds.Add(new DescriptionsRoundViewModel()
-                {
-                    GameTitle = round.GameTitle,
-                    GameDescription = round.GameDescription,
-                    IsSolved = round.IsSolved,
-                    IsSkipped = round.IsSkipped,
-                });
-            }
+                SessionId = sessionData.SessionId,
+                HighestScore = descriptionSessionItem.HighestScore,
+                CurrentScore = descriptionSessionItem.CurrentScore,
+                CurrentRound = descriptionSessionItem.CurrentRound,
+                TimeRemaining = countdownSessionItem.TimeRemaining,
+                Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
+            };
 
             return descriptionsViewModel;
         }
 
-        private async Task StartNewRoundAsync(DescriptionsSessionData descriptionsSessionData)
+        private async Task StartNewRoundAsync(DescriptionsSessionItem descriptionsSessionItem)
         {
             _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylines(200);
             IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
 
             if (game != default)
             {
-                descriptionsSessionData.DescriptionsRounds.Add(new DescriptionsSessionData.DescriptionsRound()
+                descriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
                 {
                     GameTitle = game.Name,
                     GameDescription = game.Storyline,
                 });
-            }
 
-            _sessionService.SetSessionData(descriptionsSessionData, HttpContext);
+                var sessionData = _sessionService.GetSessionData(HttpContext);
+                sessionData.SetSessionItem(descriptionsSessionItem);
+                _sessionService.UpdateSessionData(sessionData, HttpContext);
+            }
         }
         #endregion Methods..
     }

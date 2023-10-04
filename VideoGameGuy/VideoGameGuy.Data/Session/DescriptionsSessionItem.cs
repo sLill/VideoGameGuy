@@ -1,6 +1,6 @@
 ﻿namespace VideoGameGuy.Data
 {
-    public class DescriptionsSessionData : SessionDataBase
+    public class DescriptionsSessionItem : SessionItemBase
     {
         #region Records..
         public record DescriptionsRound
@@ -13,8 +13,6 @@
         #endregion Records..
 
         #region Properties..
-        public Guid SessionId { get; set; } = Guid.NewGuid();
-
         public List<DescriptionsRound> DescriptionsRounds { get; set; } = new List<DescriptionsRound>();
 
         public int HighestScore { get; set; }
