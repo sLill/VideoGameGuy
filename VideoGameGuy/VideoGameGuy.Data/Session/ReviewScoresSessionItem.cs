@@ -19,8 +19,11 @@ namespace VideoGameGuy.Data
 
         public int HighestStreak { get; set; }
 
+        public int Streak 
+            => ReviewScoresRounds.Count(x => x.UserChoiceId != default && x.UserChoiceId == x.WinningGameId);
+
         public ReviewScoresRound CurrentRound
-            => ReviewScoresRounds.FirstOrDefault(x => x.UserChoiceId == Guid.Empty);
+           => ReviewScoresRounds.FirstOrDefault(x => x.UserChoiceId == Guid.Empty);
         #endregion Properties..
     }
 }

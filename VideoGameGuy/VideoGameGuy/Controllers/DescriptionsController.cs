@@ -39,11 +39,13 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
+            await _sessionService.LoadSessionDataAsync(HttpContext);
             var sessionData = _sessionService.GetSessionData(HttpContext);
-            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
 
-            if (descriptionSessionItem.CurrentRound == null)
-                await StartNewRoundAsync(descriptionSessionItem);
+            bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
+
+            if (outOfTime || sessionData.DescriptionsSessionItem.CurrentRound == null)
+                await StartNewRoundAsync(sessionData);
 
             var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return View(descriptionsViewModel);
@@ -59,10 +61,11 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> Skip()
         {
             var sessionData = _sessionService.GetSessionData(HttpContext);
-            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
-
-            descriptionSessionItem.CurrentRound.IsSkipped = true;
-            await StartNewRoundAsync(descriptionSessionItem);
+            
+            if (sessionData.DescriptionsSessionItem.CurrentRound != null)
+                sessionData.DescriptionsSessionItem.CurrentRound.IsSkipped = true;
+            
+            await StartNewRoundAsync(sessionData);
 
             var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return RedirectToAction("Index", descriptionsViewModel);
@@ -71,15 +74,14 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> Validate()
         {
             var sessionData = _sessionService.GetSessionData(HttpContext);
-            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
 
-            if (descriptionSessionItem.CurrentRound != null)
+            if (sessionData.DescriptionsSessionItem.CurrentRound != null)
             {
-                descriptionSessionItem.CurrentRound.IsSolved = true;
-                _sessionService.UpdateSessionData(sessionData, HttpContext);
+                sessionData.DescriptionsSessionItem.CurrentRound.IsSolved = true;
+                _sessionService.SetSessionData(sessionData, HttpContext);
             }
 
-            return Json(new { descriptionSessionItem.CurrentScore });
+            return Json(new { sessionData.DescriptionsSessionItem.CurrentScore });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -89,40 +91,35 @@ namespace VideoGameGuy.Controllers
 
         public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(SessionData sessionData)
         {
-            var descriptionSessionItem = sessionData.GetSessionItem<DescriptionsSessionItem>();
-            var countdownSessionItem = sessionData.GetSessionItem<CountdownSessionItem>();
-
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
 
             var descriptionsViewModel = new DescriptionsViewModel()
             {
                 SessionId = sessionData.SessionId,
-                HighestScore = descriptionSessionItem.HighestScore,
-                CurrentScore = descriptionSessionItem.CurrentScore,
-                CurrentRound = descriptionSessionItem.CurrentRound,
-                TimeRemaining = countdownSessionItem.TimeRemaining,
+                HighestScore = sessionData.DescriptionsSessionItem.HighestScore,
+                CurrentScore = sessionData.DescriptionsSessionItem.CurrentScore,
+                CurrentRound = sessionData.DescriptionsSessionItem.CurrentRound,
+                TimeRemaining = sessionData.CountdownSessionItem.TimeRemaining,
                 Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
             };
 
             return descriptionsViewModel;
         }
 
-        private async Task StartNewRoundAsync(DescriptionsSessionItem descriptionsSessionItem)
+        private async Task StartNewRoundAsync(SessionData sessionData)
         {
             _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylines(200);
             IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
 
             if (game != default)
             {
-                descriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
+                sessionData.DescriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
                 {
                     GameTitle = game.Name,
                     GameDescription = game.Storyline,
                 });
 
-                var sessionData = _sessionService.GetSessionData(HttpContext);
-                sessionData.SetSessionItem(descriptionsSessionItem);
-                _sessionService.UpdateSessionData(sessionData, HttpContext);
+                _sessionService.SetSessionData(sessionData, HttpContext);
             }
         }
         #endregion Methods..

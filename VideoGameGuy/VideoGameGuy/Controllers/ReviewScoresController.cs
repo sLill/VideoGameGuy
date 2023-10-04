@@ -30,72 +30,65 @@ namespace VideoGameGuy.Controllers
         #endregion Constructors..
 
         #region Methods..
+        #region Actions..
         [HttpPost]
         public async Task<ActionResult> UserVote(Guid userChoiceId)
         {
             object? result = null;
 
             // Ignore vote if user has already voted for this set of games before
-            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionItem>(HttpContext);
-            if (reviewScoresSessionData.CurrentRound != null)
+            var sessionData = _sessionService.GetSessionData(HttpContext);
+            
+            if (sessionData.ReviewScoresSessionItem.CurrentRound != null)
             {
-                var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
-                Guid? winningGameId = await GetWinningGameIdAsync(reviewScoresViewModel);
+                //var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(sessionData);
+                RawgGame gameOne = await _rawgGamesRepository.GetGameFromGameIdAsync(sessionData.ReviewScoresSessionItem.CurrentRound.GameOneId);
+                RawgGame gameTwo = await _rawgGamesRepository.GetGameFromGameIdAsync(sessionData.ReviewScoresSessionItem.CurrentRound.GameTwoId);
 
-                reviewScoresViewModel.CurrentRound.WinningGameId = winningGameId;
+                Guid? winningGameId = await GetWinningGameIdAsync(gameOne, gameTwo);
+                sessionData.ReviewScoresSessionItem.CurrentRound.WinningGameId = winningGameId;
+                sessionData.ReviewScoresSessionItem.CurrentRound.UserChoiceId = userChoiceId;
 
-                result = new
-                {
-                    winningGameId = reviewScoresViewModel.CurrentRound.WinningGameId,
-
-                    gameOneMetacriticScore = reviewScoresViewModel.CurrentRound.GameOne.MetacriticScore,
-                    gameOneUserScore = reviewScoresViewModel.CurrentRound.GameOne.AverageUserScore,
-                    gameOneScore = reviewScoresViewModel.CurrentRound.GameOne.GetAverageOverallRating(),
-
-                    gameTwoMetacriticScore = reviewScoresViewModel.CurrentRound.GameTwo.MetacriticScore,
-                    gameTwoUserScore = reviewScoresViewModel.CurrentRound.GameTwo.AverageUserScore,
-                    gameTwoScore = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating()
-                };
-
-                // Update Session and ViewModel data
-                reviewScoresSessionData.CurrentRound.WinningGameId = winningGameId;
-                reviewScoresSessionData.CurrentRound.UserChoiceId = userChoiceId;
-                reviewScoresViewModel.CurrentRound.UserChoice = userChoiceId;
-
-                // Highest streak 
-                if (reviewScoresViewModel.Streak > reviewScoresViewModel.HighestStreak)
-                {
-                    reviewScoresViewModel.HighestStreak = reviewScoresViewModel.Streak;
-                    reviewScoresSessionData.HighestStreak = reviewScoresViewModel.Streak;
-                }
+                // Update highest streak 
+                if (sessionData.ReviewScoresSessionItem.Streak > sessionData.ReviewScoresSessionItem.HighestStreak)
+                    sessionData.ReviewScoresSessionItem.HighestStreak = sessionData.ReviewScoresSessionItem.Streak;
 
                 // Streak
                 bool isCorrect = winningGameId == null || winningGameId == userChoiceId;
                 if (!isCorrect)
                 {
                     // Reset on incorrect
-                    reviewScoresViewModel.ReviewScoresRounds.Clear();
-                    reviewScoresSessionData.ReviewScoresRounds.Clear();
+                    sessionData.ReviewScoresSessionItem.ReviewScoresRounds.Clear();
                 }
 
-                _sessionService.UpdateSessionData(reviewScoresSessionData, HttpContext);
+                _sessionService.SetSessionData(sessionData, HttpContext);
+
+                result = new
+                {
+                    winningGameId = sessionData.ReviewScoresSessionItem.CurrentRound.WinningGameId,
+
+                    gameOneMetacriticScore = gameOne.MetacriticScore,
+                    gameOneUserScore = gameOne.AverageUserScore,
+                    gameOneScore = gameOne.GetAverageOverallRating(),
+
+                    gameTwoMetacriticScore = gameTwo.MetacriticScore,
+                    gameTwoUserScore = gameTwo.AverageUserScore,
+                    gameTwoScore = gameTwo.GetAverageOverallRating()
+                };
             }
 
             return Json(result);
         }
 
-        // GET: Index
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
-            var reviewScoresSessionData = _sessionService.GetSessionData<ReviewScoresSessionItem>(HttpContext);
-            if (reviewScoresSessionData == null)
-                reviewScoresSessionData = new ReviewScoresSessionItem();
+            var sessionData = _sessionService.GetSessionData(HttpContext);
+            
+            if (sessionData.ReviewScoresSessionItem.CurrentRound == null)
+                await StartNewRoundAsync(sessionData.ReviewScoresSessionItem);
 
-            if (reviewScoresSessionData.CurrentRound == null)
-                await StartNewRoundAsync(reviewScoresSessionData);
-
-            ReviewScoresViewModel reviewScoresViewModel = await GetViewModelFromSessionDataAsync(reviewScoresSessionData);
+            var reviewScoresViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return View(reviewScoresViewModel);
         }
 
@@ -109,32 +102,31 @@ namespace VideoGameGuy.Controllers
             }
             else
                 return NotFound();
-        }
+        } 
+        #endregion Actions..
 
-        public async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(ReviewScoresSessionItem reviewScoresSessionData)
+        private async Task<ReviewScoresViewModel> GetViewModelFromSessionDataAsync(SessionData sessionData)
         {
-            // Load viewmodel from existing session data
+            var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+
+            var gameOneData = await _rawgGamesRepository.GetGameFromGameIdAsync(sessionData.ReviewScoresSessionItem.CurrentRound.GameOneId);
+            var gameTwoData = await _rawgGamesRepository.GetGameFromGameIdAsync(sessionData.ReviewScoresSessionItem.CurrentRound.GameTwoId);
+
             ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel()
             {
-                HighestStreak = reviewScoresSessionData.HighestStreak
+                SessionId = sessionData.SessionId,
+                LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue,
+                HighestStreak = sessionData.ReviewScoresSessionItem.HighestStreak,
+                Streak = sessionData.ReviewScoresSessionItem.Streak,
+
+                GameOneName = gameOneData.Name,
+                GameTwoName = gameTwoData.Name,
+
+                GameOneImageUri = gameOneData.ImageUri,
+                GameTwoImageUri = gameTwoData.ImageUri,
+
+                CurrentRound = sessionData.ReviewScoresSessionItem.CurrentRound
             };
-
-            var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
-            reviewScoresViewModel.LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue;
-
-            foreach (var round in reviewScoresSessionData.ReviewScoresRounds)
-            {
-                var gameOneData = await _rawgGamesRepository.GetGameFromGameIdAsync(round.GameOneId);
-                var gameTwoData = await _rawgGamesRepository.GetGameFromGameIdAsync(round.GameTwoId);
-
-                reviewScoresViewModel.ReviewScoresRounds.Add(new ReviewScoresRoundViewModel()
-                {
-                    GameOne = gameOneData,
-                    GameTwo = gameTwoData,
-                    UserChoice = round.UserChoiceId,
-                    WinningGameId = round.WinningGameId
-                });
-            }
 
             return reviewScoresViewModel;
         }
@@ -150,22 +142,23 @@ namespace VideoGameGuy.Controllers
                     GameOneId = games[0].RawgGameId,
                     GameTwoId = games[1].RawgGameId
                 });
-            }
 
-            _sessionService.SetSessionData(reviewScoresSessionData, HttpContext);
+                var sessionData = _sessionService.GetSessionData(HttpContext);
+                _sessionService.SetSessionData(sessionData, HttpContext);
+            }
         }
 
-        private async Task<Guid?> GetWinningGameIdAsync(ReviewScoresViewModel reviewScoresViewModel)
+        private async Task<Guid?> GetWinningGameIdAsync(RawgGame gameOne, RawgGame gameTwo)
         {
             Guid? result = null;
 
-            var gameOneAverageTotalRating = reviewScoresViewModel.CurrentRound.GameOne.GetAverageOverallRating();
-            var gameTwoAverageTotalRating = reviewScoresViewModel.CurrentRound.GameTwo.GetAverageOverallRating();
+            var gameOneAverageTotalRating = gameOne.GetAverageOverallRating();
+            var gameTwoAverageTotalRating = gameTwo.GetAverageOverallRating();
 
             if (gameOneAverageTotalRating > gameTwoAverageTotalRating)
-                result = reviewScoresViewModel.CurrentRound.GameOne.RawgGameId;
+                result = gameOne.RawgGameId;
             else if (gameTwoAverageTotalRating > gameOneAverageTotalRating)
-                result = reviewScoresViewModel.CurrentRound.GameTwo.RawgGameId;
+                result = gameTwo.RawgGameId;
 
             return result;
         }

@@ -1,19 +1,22 @@
+using static VideoGameGuy.Data.ReviewScoresSessionItem;
+
 namespace VideoGameGuy.Data
 {
     public class ReviewScoresViewModel
     {
         #region Properties..
-        public List<ReviewScoresRoundViewModel> ReviewScoresRounds { get; set; } = new List<ReviewScoresRoundViewModel>();
-
+        public Guid SessionId { get; set; } = Guid.NewGuid();
         public DateTime LastUpdateOn { get; set; }
-
         public int HighestStreak { get; set; }
+        public int Streak { get; set; }
 
-        public int Streak
-            => ReviewScoresRounds.Count(x => x.UserChoice != default && x.UserChoice == x.WinningGameId);
+        public string GameOneName { get; set; }
+        public string GameTwoName { get; set; }
 
-        public ReviewScoresRoundViewModel CurrentRound
-            => ReviewScoresRounds.LastOrDefault();
+        public string GameOneImageUri { get; set; }
+        public string GameTwoImageUri { get; set; }
+
+        public ReviewScoresRound CurrentRound { get; set; }
         #endregion Properties..
     }
 }

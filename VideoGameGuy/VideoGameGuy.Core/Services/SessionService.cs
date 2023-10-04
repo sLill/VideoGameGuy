@@ -20,7 +20,31 @@ namespace VideoGameGuy.Core
         #endregion Constructors..
 
         #region Methods..
-        public SessionData GetSessionData(HttpContext httpContext) 
+        public async Task CommitSessionDataAsync(HttpContext httpContext)
+        {
+            try
+            {
+                await httpContext.Session.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+        }
+
+        public async Task LoadSessionDataAsync(HttpContext httpContext)
+        {
+            try
+            {
+                await httpContext.Session.LoadAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+        }
+
+        public SessionData GetSessionData(HttpContext httpContext)
         {
             SessionData sessionData = default;
 
@@ -33,7 +57,7 @@ namespace VideoGameGuy.Core
                 else
                 {
                     sessionData = new SessionData();
-                    UpdateSessionData(sessionData, httpContext);
+                    SetSessionData(sessionData, httpContext);
                 }
             }
             catch (Exception ex)
@@ -44,7 +68,7 @@ namespace VideoGameGuy.Core
             return sessionData;
         }
 
-        public void UpdateSessionData(SessionData sessionData, HttpContext httpContext) 
+        public void SetSessionData(SessionData sessionData, HttpContext httpContext) 
         {
             try
             {
