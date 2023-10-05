@@ -98,7 +98,7 @@ namespace VideoGameGuy.Core
                     DateTime startDate = currentSystemStatus.Igdb_UpdatedOnUtc == default
                         ? DateTime.MinValue : (currentSystemStatus.Igdb_UpdatedOnUtc.Value.Date - TimeSpan.FromDays(1));
 
-                    await PollAndCacheAsync(startDate);
+                    //await PollAndCacheAsync(startDate);
 
                     currentSystemStatus.Igdb_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
@@ -209,7 +209,6 @@ namespace VideoGameGuy.Core
                 int offset = 0;
                 int resultsPerRequest = 500;
 
-                bool isFirstLoad = updatedOnStartDate == DateTime.MinValue;
                 long unixStartTime = (updatedOnStartDate != null && updatedOnStartDate != DateTime.MinValue) ? ((DateTimeOffset)updatedOnStartDate.Value).ToUnixTimeSeconds() : 0;
 
                 // Loop until no more data is returned
@@ -250,29 +249,21 @@ namespace VideoGameGuy.Core
                         requestRateTimer.Restart();
                     }
 
-                    var responses = await Task.WhenAll(ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset};".ToString()),
-                                                       ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset + resultsPerRequest};".ToString()));
+                    var response = await ExecuteRequestAsync(token, requestUri, query.ToString() + $"offset {offset};".ToString());
+                    offset += resultsPerRequest;
 
-                    offset += (resultsPerRequest * 2);
-
-                    if (responses.Any())
+                    if (response != null)
                     {
                         List<T> apiObjectCollection = new List<T>();
-                        responses.ForEach(x =>
-                        {
-                            if (x != null)
-                            {
-                                var apiObjects = ParseJsonArray<T>(x);
-                                if (apiObjects?.Any() ?? false)
-                                    apiObjectCollection.AddRange(apiObjects);
-                            }
-                        });
+                        var apiObjects = ParseJsonArray<T>(response);
+                        if (apiObjects?.Any() ?? false)
+                            apiObjectCollection.AddRange(apiObjects);
 
                         if (apiObjectCollection?.Any() ?? false)
-                            await SaveEndpointDataAsync(apiObjectCollection, isFirstLoad);
+                            await SaveEndpointDataAsync(apiObjectCollection);
 
                         // End of data
-                        if (apiObjectCollection.Count != (resultsPerRequest * 2))
+                        if (apiObjectCollection.Count != resultsPerRequest)
                             break;
                     }
                 }
@@ -285,61 +276,10 @@ namespace VideoGameGuy.Core
             }
         }
 
-        private async Task SaveEndpointDataAsync<U>(IEnumerable<U> modelObjects, bool isFirstLoad) where U : class
+        private async Task SaveEndpointDataAsync<U>(IEnumerable<U> modelObjects) where U : class
         {
             if (modelObjects?.Any() ?? false)
             {
-                // The first time loading data from the api into a fresh db can be strenuous. We can help take some 
-                // pressure off of the system by skipping checking for updated entities
-                if (isFirstLoad)
-                {
-                    switch (modelObjects)
-                    {
-                        case IEnumerable<IgdbApiGame> apiGames:
-                            foreach (var game in apiGames)
-                            {
-                                await _igdbGameModesRepository.AddRangeAsync(game.game_modes, true);
-                                await _igdbMultiplayerModesRepository.AddRangeAsync(game.multiplayer_modes, true);
-                                await _igdbPlatformsRepository.AddRangeAsync(game.platforms, true);
-                                await _igdbThemesRepository.AddRangeAsync(game.themes, true);
-                                await _igdbArtworksRepository.AddRangeAsync(game.artworks, true);
-                                await _igdbScreenshotsRepository.AddRangeAsync(game.screenshots, true);
-
-                                // Join tables
-                                if (game.game_modes != null)
-                                    await _igdbGames_GameModesRepository.AddRangeAsync(game.game_modes.Select(x => new IgdbGames_GameModes() { GameModes_SourceId = x.id, Games_SourceId = game.id }), true);
-
-                                if (game.multiplayer_modes != null)
-                                    await _igdbGames_MultiplayerModesRepository.AddRangeAsync(game.multiplayer_modes.Select(x => new IgdbGames_MultiplayerModes() { MultiplayerModes_SourceId = x.id, Games_SourceId = game.id }), true);
-
-                                if (game.platforms != null)
-                                    await _igdbGames_PlatformsRepository.AddRangeAsync(game.platforms.Select(x => new IgdbGames_Platforms() { Platforms_SourceId = x.id, Games_SourceId = game.id }), true);
-
-                                if (game.themes != null)
-                                    await _igdbGames_ThemesRepository.AddRangeAsync(game.themes.Select(x => new IgdbGames_Themes() { Themes_SourceId = x.id, Games_SourceId = game.id }), true);
-
-                                if (game.artworks != null)
-                                    await _igdbGames_ArtworksRepository.AddRangeAsync(game.artworks.Select(x => new IgdbGames_Artworks() { Artworks_SourceId = x.id, Games_SourceId = game.id }), true);
-
-                                if (game.screenshots != null)
-                                    await _igdbGames_ScreenshotsRepository.AddRangeAsync(game.screenshots.Select(x => new IgdbGames_Screenshots() { Screenshots_SourceId = x.id, Games_SourceId = game.id }), true);
-                            }
-
-                            await _igdbGamesRepository.AddRangeAsync(apiGames, true);
-                            await _idgbDbContext.BulkSaveChangesAsync();
-                            break;
-                        case IEnumerable<IgdbApiPlatform> apiPlatforms:
-                            await _igdbPlatformsRepository.AddRangeAsync(apiPlatforms);
-                            break;
-                        case IEnumerable<IgdbApiPlatformFamily> apiPlatformFamilies:
-                            await _igdbPlatformFamiliesRepository.AddRangeAsync(apiPlatformFamilies);
-                            break;
-                        case IEnumerable<IgdbApiPlatformLogo> apiPlatformLogos:
-                            await _igdbPlatformLogosRepository.AddRangeAsync(apiPlatformLogos);
-                            break;
-                    }
-                }
-
                 switch (modelObjects)
                 {
                     case IEnumerable<IgdbApiGame> apiGames:
@@ -347,7 +287,6 @@ namespace VideoGameGuy.Core
                         {
                             await _igdbGameModesRepository.AddOrUpdateRangeAsync(game.game_modes, true);
                             await _igdbMultiplayerModesRepository.AddOrUpdateRangeAsync(game.multiplayer_modes, true);
-                            await _igdbPlatformsRepository.AddOrUpdateRangeAsync(game.platforms, true);
                             await _igdbThemesRepository.AddOrUpdateRangeAsync(game.themes, true);
                             await _igdbArtworksRepository.AddOrUpdateRangeAsync(game.artworks, true);
                             await _igdbScreenshotsRepository.AddOrUpdateRangeAsync(game.screenshots, true);
@@ -373,7 +312,7 @@ namespace VideoGameGuy.Core
                         }
 
                         await _igdbGamesRepository.AddOrUpdateRangeAsync(apiGames, true);
-                        await _idgbDbContext.BulkSaveChangesAsync();
+                        await _idgbDbContext.SaveChangesAsync();
                         break;
                     case IEnumerable<IgdbApiPlatform> apiPlatforms:
                         await _igdbPlatformsRepository.AddOrUpdateRangeAsync(apiPlatforms);

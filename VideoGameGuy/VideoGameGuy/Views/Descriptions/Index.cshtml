@@ -34,9 +34,8 @@
         <form id="next_Form" asp-action="GoNext" method="post">
             <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
         </form>
-        <form id="skip_Form" asp-action="Skip" method="post">
-            <button id="skipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
-        </form>
+        
+        <button id="skipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
     </div>
 
     @* Footer *@
@@ -84,32 +83,53 @@
 
             // Skip button
             $('#skipButton').click(function () {
-                
-                // Briefly flash red
-                $('#timer').addClass('color_red');
-
-                // Remove 20 seconds from timer
-                countdownTimer_SubtractTime(20);
-
-                setTimeout(function () {
-                    $('#timer').removeClass('color_red');
-                }, 500);
+                skip();
             });
         });
 
-        // AJAX validation
+        function skip() {
+            // Pause timer
+            $.ajax({
+                type: 'POST',
+                url: '/Descriptions/PauseTimer'
+            });
+
+            fetch('/Descriptions/Skip', {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Briefly flash red
+                    $('#timer').addClass('color_red');
+
+                    // Remove 20 seconds from timer
+                    countdownTimer_SubtractTime(20);
+                    revealAnswer();
+
+                    setTimeout(function () {
+                        $('#timer').removeClass('color_red');
+                    }, 500);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+               
+        }
+
         function validate() {
             fetch('/Descriptions/Validate', {
                 method: 'POST',
             })
             .then(response => response.json())
             .then(data => {
-                $('#userInput').val(gameTitle);
-                $('#next_Form').css('display', 'block');
-                $('#correctCheckmark').css('display', 'block');
-                $('#skipButton').prop('disabled', true);
-                $('#userInput').attr('readonly', true);
-                $('#userInput').css('opacity', 0.6);
+
+                // Pause timer
+                $.ajax({
+                    type: 'POST',
+                    url: '/Descriptions/PauseTimer'
+                });
+
+                revealAnswer();
                 $('#scoreDisplay').text('Score: ' + data.currentScore);
             })
             .catch((error) => {
@@ -117,8 +137,24 @@
             });
         }
 
+        function revealAnswer() {
+            $('#userInput').val(gameTitle);
+            $('#next_Form').css('display', 'block');
+            $('#correctCheckmark').css('display', 'block');
+            $('#skipButton').prop('disabled', true);
+            $('#userInput').attr('readonly', true);
+            $('#userInput').css('opacity', 0.6);
+        }
+
         function goNext() {
-            window.location.href = '/Descriptions/Index';
+            // Unpause timer
+            $.ajax({
+                type: 'POST',
+                url: '/Descriptions/UnpauseTimer',
+                success: function (data) { 
+                    window.location.href = '/Descriptions/Index';
+                }
+            });
         }
     </script>
 }

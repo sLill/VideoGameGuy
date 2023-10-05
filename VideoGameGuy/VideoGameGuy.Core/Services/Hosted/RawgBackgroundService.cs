@@ -60,7 +60,7 @@ namespace VideoGameGuy.Core
 
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    await PollAndCacheAsync(startDate, endDate);
+                    //await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
@@ -110,12 +110,12 @@ namespace VideoGameGuy.Core
                         {
                             // Cache response to db
                             string responseString = await response.Content.ReadAsStringAsync();
-                            await CacheGameDataAsync(responseString);
+                            JObject responseObject = JsonConvert.DeserializeObject<JObject>(responseString);
+
+                            await CacheGameDataAsync(responseObject);
 
                             // Check for next page
-                            JObject json = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                            var nextToken = json["next"];
+                            var nextToken = responseObject["next"];
                             if (nextToken.Type == JTokenType.Null)
                                 break;
                             else
@@ -159,12 +159,11 @@ namespace VideoGameGuy.Core
             }
         }
 
-        private async Task CacheGameDataAsync(string jsonRaw)
+        private async Task CacheGameDataAsync(JObject responseObject)
         {
             var batch = new List<RawgApiGame>();
             int batchSize = 1000;
 
-            JObject responseObject = JsonConvert.DeserializeObject<JObject>(jsonRaw);
             var resultTokens = responseObject.GetValue("results")?.ToList() ?? new List<JToken>();
 
             foreach (JToken token in resultTokens)

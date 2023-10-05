@@ -377,17 +377,13 @@ main
               transform: scale(1.015);
             }
 
-
-    #skip_Form
-    {
-        grid-row: 4;
-
-        display: flex;
-        justify-self: end;
-    }
-
         #skipButton
         {
+            grid-row: 4;
+
+            display: flex;
+            justify-self: end;
+
             backface-visibility: hidden;
             background: #3e677d;
             border: 0;

@@ -20,7 +20,45 @@ namespace VideoGameGuy.Core
         #endregion Constructors..
 
         #region Methods..
-        public async Task CommitSessionDataAsync(HttpContext httpContext)
+        public async Task<SessionData> GetSessionDataAsync(HttpContext httpContext)
+        {
+            SessionData sessionData = default;
+
+            try
+            {
+                await LoadSessionDataAsync(httpContext);
+                var sessionDataString = httpContext.Session.GetString(nameof(SessionData));
+
+                if (!string.IsNullOrEmpty(sessionDataString))
+                    sessionData = JsonConvert.DeserializeObject<SessionData>(sessionDataString);
+                else
+                {
+                    sessionData = new SessionData();
+                    SetSessionDataAsync(sessionData, httpContext);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return sessionData;
+        }
+
+        public async Task SetSessionDataAsync(SessionData sessionData, HttpContext httpContext)
+        {
+            try
+            {
+                httpContext.Session.SetString(nameof(SessionData), JsonConvert.SerializeObject(sessionData));
+                await CommitSessionDataAsync(httpContext);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+        }
+
+        private async Task CommitSessionDataAsync(HttpContext httpContext)
         {
             try
             {
@@ -32,7 +70,7 @@ namespace VideoGameGuy.Core
             }
         }
 
-        public async Task LoadSessionDataAsync(HttpContext httpContext)
+        private async Task LoadSessionDataAsync(HttpContext httpContext)
         {
             try
             {
@@ -43,42 +81,6 @@ namespace VideoGameGuy.Core
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
             }
         }
-
-        public SessionData GetSessionData(HttpContext httpContext)
-        {
-            SessionData sessionData = default;
-
-            try
-            {
-                var sessionDataString = httpContext.Session.GetString(nameof(SessionData));
-
-                if (!string.IsNullOrEmpty(sessionDataString))
-                    sessionData = JsonConvert.DeserializeObject<SessionData>(sessionDataString);
-                else
-                {
-                    sessionData = new SessionData();
-                    SetSessionData(sessionData, httpContext);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-            }
-
-            return sessionData;
-        }
-
-        public void SetSessionData(SessionData sessionData, HttpContext httpContext) 
-        {
-            try
-            {
-                httpContext.Session.SetString(nameof(SessionData), JsonConvert.SerializeObject(sessionData));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
-            }
-}
         #endregion Methods..
     }
 }

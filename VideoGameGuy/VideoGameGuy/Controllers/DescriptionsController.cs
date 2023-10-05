@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using VideoGameGuy.Common;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
@@ -14,6 +15,7 @@ namespace VideoGameGuy.Controllers
 
         private readonly ILogger<DescriptionsController> _logger;
         private readonly ISessionService _sessionService;
+        private readonly ICountdownTimerService _countdownTimerService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
 
@@ -24,11 +26,13 @@ namespace VideoGameGuy.Controllers
         #region Constructors..
         public DescriptionsController(ILogger<DescriptionsController> logger,
                                       ISessionService sessionService,
+                                      ICountdownTimerService countdownTimerService,
                                       IIgdbGamesRepository igdbGamesRepository,
                                       ISystemStatusRepository systemStatusRepository)
         {
             _logger = logger;
             _sessionService = sessionService;
+            _countdownTimerService = countdownTimerService;
             _igdbGamesRepository = igdbGamesRepository;
             _systemStatusRepository = systemStatusRepository;
         }
@@ -39,8 +43,7 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
-            await _sessionService.LoadSessionDataAsync(HttpContext);
-            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
             bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
 
@@ -52,33 +55,63 @@ namespace VideoGameGuy.Controllers
         }
 
         [HttpPost]
-        public IActionResult GoNext()
+        public async Task<IActionResult> GoNext()
         {
+            await UnpauseTimer();
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<ActionResult> Skip()
         {
-            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
             
             if (sessionData.DescriptionsSessionItem.CurrentRound != null)
                 sessionData.DescriptionsSessionItem.CurrentRound.IsSkipped = true;
-            
-            await StartNewRoundAsync(sessionData);
 
-            var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
-            return RedirectToAction("Index", descriptionsViewModel);
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PauseTimer()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            _countdownTimerService.PauseClientTimer(sessionData.SessionId);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UnpauseTimer()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            _countdownTimerService.UnpauseClientTimer(sessionData.SessionId);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateTimer(string timeRemaining)
+        {
+            // Update session data
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            sessionData.CountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
+            return Json(new { });
         }
 
         public async Task<ActionResult> Validate()
         {
-            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
             if (sessionData.DescriptionsSessionItem.CurrentRound != null)
             {
                 sessionData.DescriptionsSessionItem.CurrentRound.IsSolved = true;
-                _sessionService.SetSessionData(sessionData, HttpContext);
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
 
             return Json(new { sessionData.DescriptionsSessionItem.CurrentScore });
@@ -119,7 +152,7 @@ namespace VideoGameGuy.Controllers
                     GameDescription = game.Storyline,
                 });
 
-                _sessionService.SetSessionData(sessionData, HttpContext);
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
         }
         #endregion Methods..

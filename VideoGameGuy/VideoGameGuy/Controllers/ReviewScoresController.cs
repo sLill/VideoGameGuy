@@ -37,7 +37,7 @@ namespace VideoGameGuy.Controllers
             object? result = null;
 
             // Ignore vote if user has already voted for this set of games before
-            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
             
             if (sessionData.ReviewScoresSessionItem.CurrentRound != null)
             {
@@ -61,7 +61,7 @@ namespace VideoGameGuy.Controllers
                     sessionData.ReviewScoresSessionItem.ReviewScoresRounds.Clear();
                 }
 
-                _sessionService.SetSessionData(sessionData, HttpContext);
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
 
                 result = new
                 {
@@ -83,8 +83,7 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> Index()
         {
             // Try load existing session data or create a new one
-            await _sessionService.LoadSessionDataAsync(HttpContext);
-            var sessionData = _sessionService.GetSessionData(HttpContext);
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
             
             if (sessionData.ReviewScoresSessionItem.CurrentRound == null)
                 await StartNewRoundAsync(sessionData.ReviewScoresSessionItem);
@@ -144,8 +143,8 @@ namespace VideoGameGuy.Controllers
                     GameTwoId = games[1].RawgGameId
                 });
 
-                var sessionData = _sessionService.GetSessionData(HttpContext);
-                _sessionService.SetSessionData(sessionData, HttpContext);
+                var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
         }
 

@@ -29,7 +29,7 @@ namespace VideoGameGuy
 
             // Services
             builder.Services.AddTransient<ISecretService, SecretService>();
-            builder.Services.AddTransient<ISessionService, SessionService>();
+            builder.Services.AddSingleton<ISessionService, SessionService>();
             builder.Services.AddSingleton<ICountdownTimerService, CountdownTimerService>();
             builder.Services.AddHostedService<RawgBackgroundService>();
             builder.Services.AddHostedService<IgdbBackgroundService>();

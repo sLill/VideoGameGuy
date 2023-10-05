@@ -1,4 +1,4 @@
-﻿var countdownSeconds = 30;
+﻿var countdownSeconds = 300;
 var sessionId = $('#sessionId').val();
 var scoreValue = $('#scoreValue').val();
 var highestScoreValue = $('#highestScoreValue').val();
@@ -19,6 +19,12 @@ function start_rejected() {
 
 timerConnection.on("UpdateTimer", (time) => {
     $("#timer").text(time);
+
+    $.ajax({
+        type: 'POST',
+        url: '/Descriptions/UpdateTimer',
+        data: { timeRemaining: time }
+    });
 
     // Game Over
     if (time == '00:00') {

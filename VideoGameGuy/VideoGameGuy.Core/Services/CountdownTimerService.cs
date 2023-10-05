@@ -21,6 +21,7 @@ namespace VideoGameGuy.Core
         #region Records..
         private record ClientCountdownTimer
         {
+            public bool IsPaused { get; set; }
             public TimeSpan TimeRemaining { get; set; }
             public Timer Timer { get; set; }
         }
@@ -39,31 +40,24 @@ namespace VideoGameGuy.Core
         #region Event Handlers..
         private async void clientCountdownTimer_Elapsed(object sender)
         {
-            Guid sessionId = (Guid)sender;
+            Guid clientSessionId = (Guid)sender;
 
-            if (!_clientCountdownTimers.TryGetValue(sessionId, out var clientTimer))
+            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
                 return;
 
-            clientTimer.Timer.TimeRemaining -= TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS);
-
-            if (clientTimer.Timer.TimeRemaining <= TimeSpan.Zero)
+            if (!clientTimer.Timer.IsPaused)
             {
-                clientTimer.Timer.TimeRemaining = TimeSpan.Zero;
-                await RemoveClientTimerAsync(sessionId);
+                clientTimer.Timer.TimeRemaining -= TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS);
+
+                if (clientTimer.Timer.TimeRemaining <= TimeSpan.Zero)
+                {
+                    clientTimer.Timer.TimeRemaining = TimeSpan.Zero;
+                    await RemoveClientTimerAsync(clientSessionId);
+                }
+
+                // Message client
+                await _hubContext.Clients.Client(clientTimer.Context.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
             }
-
-            // Update session data
-            if (!clientTimer.Context.ConnectionAborted.IsCancellationRequested)
-            {
-                var sessionData = _sessionService.GetSessionData(clientTimer.Context.GetHttpContext());
-                sessionData.CountdownSessionItem.TimeRemaining = clientTimer.Timer.TimeRemaining;
-
-                _sessionService.SetSessionData(sessionData, clientTimer.Context.GetHttpContext());
-                await _sessionService.CommitSessionDataAsync(clientTimer.Context.GetHttpContext());
-            }
-
-            // Message client
-            await _hubContext.Clients.Client(clientTimer.Context.ConnectionId).SendAsync("UpdateTimer", clientTimer.Timer.TimeRemaining.ToString(@"mm\:ss"));
         }
         #endregion Event Handlers..
 
@@ -78,6 +72,22 @@ namespace VideoGameGuy.Core
             _clientCountdownTimers.Remove(sessionId, out var clientTimer);
             await clientTimer.Timer.Timer.DisposeAsync();
             clientTimer.Timer = default;
+        }
+
+        public void PauseClientTimer(Guid clientSessionId)
+        {
+            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
+                return;
+
+            clientTimer.Timer.IsPaused = true;
+        }
+
+        public void UnpauseClientTimer(Guid clientSessionId)
+        {
+            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
+                return;
+
+            clientTimer.Timer.IsPaused = false;
         }
 
         public async Task StartCountdownForUser(Guid sessionId, HubCallerContext context, int countdownSeconds)
