@@ -28,7 +28,8 @@
 
         @* // User Input *@
         <input id="userInput" type="text" placeholder="[Enter Title]" autofocus/>
-        <i id="correctCheckmark" class="fa-solid fa-square-check fa-2xl"></i>
+        <i id="correctIcon" class="fa-solid fa-square-check fa-2xl"></i>
+        <i id="incorrectIcon" class="fa-solid fa-square-xmark fa-2xl" style="color: #db2a0a;"></i>
 
         @* // Buttons *@
         <form id="next_Form" asp-action="GoNext" method="post">
@@ -99,6 +100,8 @@
             })
                 .then(response => response.json())
                 .then(data => {
+                    $('#incorrectIcon').css('display', 'block');
+
                     // Briefly flash red
                     $('#timer').addClass('color_red');
 
@@ -130,6 +133,8 @@
                 });
 
                 revealAnswer();
+
+                $('#correctIcon').css('display', 'block');
                 $('#scoreDisplay').text('Score: ' + data.currentScore);
             })
             .catch((error) => {
@@ -140,7 +145,6 @@
         function revealAnswer() {
             $('#userInput').val(gameTitle);
             $('#next_Form').css('display', 'block');
-            $('#correctCheckmark').css('display', 'block');
             $('#skipButton').prop('disabled', true);
             $('#userInput').attr('readonly', true);
             $('#userInput').css('opacity', 0.6);

@@ -144,7 +144,7 @@ main
 #home_Grid
 {
     display: grid;
-    grid-template-rows: 2% 1fr 6%;
+    grid-template-rows: 2% 1fr auto 6%;
     grid-template-columns: 25% 1fr 25%;
     
     height: 100vh;
@@ -162,6 +162,30 @@ main
     grid-template-rows: auto auto 1fr 1fr;
     grid-template-columns: 1fr;
     grid-gap: 20px;
+}
+
+#footer_Grid
+{
+    grid-row: 3;
+    grid-column: 2;
+
+    display: grid;
+    grid-template-columns: 1fr auto auto 1fr;
+    grid-column-gap: 15px;
+}
+
+#github_Link
+{
+    grid-column:2;
+
+    color: #8f8f8f;
+}
+
+#linkedIn_Link
+{
+    grid-column:3;
+    color: #8f8f8f;
+
 }
 
 .home_navButton
@@ -315,7 +339,20 @@ main
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    #correctCheckmark{
+    #correctIcon{
+        grid-row: 3;
+        grid-column: 1 / -1;
+
+        display: none;
+        color: #3d9b36;
+        margin-right: 12px;
+        align-self: center;
+        justify-self: right;
+        z-index: 12;
+        pointer-events: none;
+    }
+
+     #incorrectIcon{
         grid-row: 3;
         grid-column: 1 / -1;
 
