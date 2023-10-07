@@ -159,7 +159,7 @@ main
     margin-top:10%;
 
     display: grid;
-    grid-template-rows: auto auto 1fr 1fr;
+    grid-template-rows: auto auto auto 1fr 1fr;
     grid-template-columns: 1fr;
     grid-gap: 20px;
 }
@@ -221,7 +221,7 @@ main
         box-shadow: rgba(253, 255, 255, 0.5) 0 3px 8px;
     }
 
-.description_Button 
+.descriptions_Button 
 {
   background-color: darkorange;
   background-image: url('/images/Controller.png');
@@ -235,16 +235,22 @@ main
 .reviews_Button 
 {
   background-color: #4a8941;
-
-  /*background-image: url('/images/Review.png');*/
-  /*background-size: 100% 160%;*/
-  /*background-position: 20vw;*/
   background-image: url('/images/Controller.png');
   background-size: 80%;
   background-position: center;
-
   background-repeat: no-repeat;
-  font-size: 4.2vw;
+  font-size: 4.6vw;
+  font-weight:600;
+}
+
+.screenshots_Button 
+{
+  background-color: #7aa1cc;
+  background-image: url('/images/Controller.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 4.6vw;
   font-weight:600;
 }
 /*#endregion Home*/
