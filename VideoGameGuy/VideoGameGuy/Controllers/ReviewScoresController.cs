@@ -65,7 +65,7 @@ namespace VideoGameGuy.Controllers
 
                 result = new
                 {
-                    winningGameId = sessionData.ReviewScoresSessionItem.CurrentRound.WinningGameId,
+                    winningGameId = winningGameId,
 
                     gameOneMetacriticScore = gameOne.MetacriticScore,
                     gameOneUserScore = gameOne.AverageUserScore,
@@ -143,7 +143,9 @@ namespace VideoGameGuy.Controllers
                     GameTwoId = games[1].RawgGameId
                 });
 
+                // Update session data
                 var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+                sessionData.ReviewScoresSessionItem = reviewScoresSessionData;
                 await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
         }
