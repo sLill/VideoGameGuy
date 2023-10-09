@@ -17,15 +17,14 @@
         #endregion Records..
 
         #region Properties..
-        public List<ScreenshotsRound> ScreenshotsRounds { get; set; } = new List<ScreenshotsRound>();
+        public List<ScreenshotsRound> ScreenshotsRounds { get; set; }
+
+        public int SelectedRoundIndex { get; set; }
 
         public int HighestScore { get; set; }
 
         public int CurrentScore
-            => ScreenshotsRounds.Count(x => x.IsSolved);
-
-        public ScreenshotsRound CurrentRound
-            => ScreenshotsRounds.LastOrDefault(x => !x.IsSolved);
+            => ScreenshotsRounds?.Count(x => x.IsSolved) ?? 0;
         #endregion Properties..
     }
 }

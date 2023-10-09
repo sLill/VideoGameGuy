@@ -358,7 +358,7 @@ main
         pointer-events: none;
     }
 
-     #incorrectIcon{
+    #incorrectIcon{
         grid-row: 3;
         grid-column: 1 / -1;
 
@@ -768,45 +768,213 @@ main
 {
     grid-row:2;
     grid-column:2;
-    row-gap: 30px;
+    row-gap: 10px;
 
     display: grid;
-    grid-template-rows: 1fr;
+    grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
 }
 
-#screenshotCarousel_Container 
+#screenshotSkipButton
+{
+    grid-row: 4;
+
+    display: flex;
+    justify-self: end;
+
+    backface-visibility: hidden;
+    background: #3e677d;
+    border: 0;
+    border-radius: .375rem;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Inter;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    height: 5rem;
+    width: 10rem;
+    padding: .4rem .4rem .4rem .4rem;
+    text-align: center;
+    text-decoration: none;
+    transform: translateZ(0) scale(1);
+    transition: transform .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+    #screenshotSkipButton:not(:disabled):hover 
+    {
+        transform: scale(1.015);
+    }
+
+    #screenshotSkipButton:not(:disabled):hover:active
+    {
+        transform: scale(1.015);
+    }
+
+/*#region Rounds Carousel
+*/
+#roundsCarousel_Container 
  {
     grid-row: 1;
-    grid-column: 1;
+    /*grid-column: 1 / -1;*/
 
     align-self: center;
     justify-self: center;
     vertical-align: central;
 
-    height: 100%;
     width: 100%;
+    height: 100%;
 
     /*background-color: none;*/
 }
 
-    .e-carousel .screenshot_slideContent
+#roundsCarousel
+{
+
+}
+    .e-carousel-slide-container
+    {
+        display: grid;
+
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    .e-carousel-items
+    {
+        grid-row: 1;
+    }
+
+    .e-carousel .rounds_slideContent
     {
         align-items: center;
-        display: flex;
-        font-size: 1.25rem;
-        height: 100%;
-        width: stretch;
         justify-content: center;
-
         background-size: cover;
         background-repeat: no-repeat;
-        height: 100%;
-        width: 100%;
+        height: 95%;
+        width: stretch;
     }
+
+    .e-carousel .e-carousel-indicators
+    {
+        grid-row: 1;
+
+        align-self: start;
+        align-items: end;
+    }
+
+    .e-carousel .e-carousel-indicators .e-indicator-bars .e-indicator-bar
+    {
+        /*background-color: #345079bf;*/
+        border-radius: 5px;
+
+        align-content: start;
+        align-self: start;
+        align-items: start;
+        vertical-align: top;
+        justify-items: start;
+        justify-self: start;
+    }
+
+    .e-carousel .e-carousel-indicators .e-indicator-bars .e-indicator-bar .e-indicator
+    {
+
+    }
+
+    .e-carousel .e-carousel-navigators
+    {
+
+    }
+/*#endregion Rounds Carousel*/
+
+/*#region Screenshot Carousel
+*/
+#screenshotCarousel_Container 
+ {
+    grid-row: 2;
+    /*grid-column: 1 / -1;*/
+
+    align-self: center;
+    justify-self: center;
+    vertical-align: central;
+
+    width: 100%;
+    height: 100%;
+
+    /*background-color: none;*/
+}
 
 #screenshotCarousel
 {
-   
+
 }
+    .e-carousel-slide-container
+    {
+        display: grid;
+
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    .e-carousel-items
+    {
+        grid-row: 1;
+    }
+
+    .e-carousel .screenshot_slideContent
+    {
+        align-items: center;
+        justify-content: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 95%;
+        width: stretch;
+    }
+
+    .e-carousel .e-carousel-indicators
+    {
+        grid-row: 1;
+
+        align-self: start;
+        align-items: end;
+    }
+
+    .e-carousel .e-carousel-indicators .e-indicator-bars .e-indicator-bar
+    {
+        /*background-color: #345079bf;*/
+        border-radius: 5px;
+
+        align-content: start;
+        align-self: start;
+        align-items: start;
+        vertical-align: top;
+        justify-items: start;
+        justify-self: start;
+    }
+
+    .e-carousel .e-carousel-indicators .e-indicator-bars .e-indicator-bar .e-indicator
+    {
+
+    }
+
+    .e-carousel .e-carousel-navigators
+    {
+
+    }
+
+    .e-carousel .e-carousel-navigators .e-previous
+    {
+
+    }
+
+    .e-carousel .e-carousel-navigators .e-next
+    {
+
+    }
+/*#endregion Screenshot Carousel*/
 /*#endregion Screenshots*/

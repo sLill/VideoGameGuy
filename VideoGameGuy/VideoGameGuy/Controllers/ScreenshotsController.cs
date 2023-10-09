@@ -10,6 +10,9 @@ namespace VideoGameGuy.Controllers
     public class ScreenshotsController : Controller
     {
         #region Fields..
+        private const int ROUND_COUNT = 15;
+        private const string DESKTOP_IMAGE_SIZE = "t_720p";
+
         private readonly ILogger<ScreenshotsController> _logger;
         private readonly ISessionService _sessionService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
@@ -43,8 +46,8 @@ namespace VideoGameGuy.Controllers
         {
             // Try load existing session data or create a new one
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            if (sessionData.ScreenshotsSessionItem.CurrentRound == null)
-                await StartNewRoundAsync(sessionData);
+            if (sessionData.ScreenshotsSessionItem.ScreenshotsRounds == null)
+                await StartNewGameAsync(sessionData);
 
             var screenshotsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
             return View(screenshotsViewModel);
@@ -53,7 +56,46 @@ namespace VideoGameGuy.Controllers
         [HttpPost]
         public async Task<IActionResult> GoNext()
         {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
+            
+            if (roundIndex < ROUND_COUNT)
+                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex + 1;
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GoToRound(int roundIndex)
+        {
+            try
+            {
+                var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex;
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Could not navigate user to round. RoundIndex: {roundIndex}. {ex.Message} - {ex.StackTrace}");
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Skip()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+
+            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
+            if (roundIndex < ROUND_COUNT)
+                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex + 1;
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
+            return Json(new { });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -65,39 +107,48 @@ namespace VideoGameGuy.Controllers
         {
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
 
+            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
             var screenshotsViewModel = new ScreenshotsViewModel()
             {
                 SessionId = sessionData.SessionId,
                 HighestScore = sessionData.ScreenshotsSessionItem.HighestScore,
                 CurrentScore = sessionData.ScreenshotsSessionItem.CurrentScore,
-                CurrentRound = sessionData.ScreenshotsSessionItem.CurrentRound,
+                ScreenshotsRounds = sessionData.ScreenshotsSessionItem.ScreenshotsRounds,
+                SelectedRound =  sessionData.ScreenshotsSessionItem.ScreenshotsRounds[roundIndex],
                 Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
             };
 
             return screenshotsViewModel;
         }
 
-        private async Task StartNewRoundAsync(SessionData sessionData)
+        private async Task StartNewGameAsync(SessionData sessionData)
         {
-            switch (_random.Next(0, 2))
+            sessionData.ScreenshotsSessionItem.ScreenshotsRounds = new List<ScreenshotsRound>();
+
+            for (int i = 0; i < ROUND_COUNT; i++)
             {
-                case 0:
-                    await StartArtworkRoundAsync(sessionData);
-                    break;
-                case 1:
-                    await StartScreenshotRoundAsync(sessionData);
-                    break;
+                switch (_random.Next(0, 2))
+                {
+                    case 0:
+                        await AddArtworkRoundAsync(sessionData);
+                        break;
+                    case 1:
+                        await AddScreenshotRoundAsync(sessionData);
+                        break;
+                }
             }
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
         }
 
-        private async Task StartArtworkRoundAsync(SessionData sessionData)
+        private async Task AddArtworkRoundAsync(SessionData sessionData)
         {
             _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(3);
             IgdbGame game = _gamesWithArtwork?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbArtwork> artwork = await _igdbGamesRepository.GetArtworkFromGameAsync(game);
-            List<ImageRecord> imageCollection = artwork.TakeRandom(3)
-                .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", "t_screenshot_huge") }).ToList();
+            List<ImageRecord> imageCollection = artwork.TakeRandom(5)
+                .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
             if (game != default)
             {
@@ -106,19 +157,17 @@ namespace VideoGameGuy.Controllers
                     GameTitle = game.Name,
                     ImageCollection = imageCollection
                 });
-
-                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
         }
 
-        private async Task StartScreenshotRoundAsync(SessionData sessionData)
+        private async Task AddScreenshotRoundAsync(SessionData sessionData)
         {
             _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(3);
             IgdbGame game = _gamesWithScreenshots?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbScreenshot> screenshots = await _igdbGamesRepository.GetScreenshotsFromGameAsync(game);
-            List<ImageRecord> imageCollection = screenshots.TakeRandom(3)
-                .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", "t_screenshot_huge") }).ToList();
+            List<ImageRecord> imageCollection = screenshots.TakeRandom(5)
+                .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
             if (game != default)
             {
@@ -127,9 +176,18 @@ namespace VideoGameGuy.Controllers
                     GameTitle = game.Name,
                     ImageCollection = imageCollection
                 });
-
-                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             }
+        }
+
+        public async Task<ActionResult> Validate()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+
+            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
+            sessionData.ScreenshotsSessionItem.ScreenshotsRounds[roundIndex].IsSolved = true;
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            return Json(new { sessionData.ScreenshotsSessionItem.CurrentScore });
         }
         #endregion Methods..
     }

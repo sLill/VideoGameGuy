@@ -22,17 +22,29 @@
             <div id="timer">--</div>
         </div> *@
 
-        @* Description *@
-       @*  <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
-        <div id="gameDescription">@Model.CurrentRound?.GameDescription</div> *@
+        @* Rounds Carousel *@
+        <div id="roundsCarousel_Container">
+            <ejs-carousel id="roundsCarousel"
+                          dataSource="@Model.ScreenshotsRounds"
+                          itemTemplate="<div></div>"
+                          nextButtonTemplate="<div></div>"
+                          previousButtonTemplate="<div></div>"
+                          autoPlay="false"
+                          partialVisible="false"
+                          EnableTouchSwipe="false"
+                          slideChanged="roundsCarousel_slideChanged">
+            </ejs-carousel>
+        </div>
 
-       
+        <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.SelectedRound?.GameTitle" />
+
         @* Screenshot Carousel *@
         <div id="screenshotCarousel_Container">
             <ejs-carousel id="screenshotCarousel"
-                          dataSource="@Model.CurrentRound.ImageCollection"
+                          dataSource="@Model.SelectedRound.ImageCollection"
                           itemTemplate="<div class='screenshot_slideContent' Style='background-image: url(&apos;${Value}&apos;);'></div>"
                           autoPlay="false"
+                          partialVisible="false"
                           EnableTouchSwipe="true"
                           slideChanged="screenshotCarousel_slideChanged">
             </ejs-carousel>
@@ -42,6 +54,13 @@
         <input id="userInput" type="text" placeholder="[Enter Title]" autofocus />
         <i id="correctIcon" class="fa-solid fa-square-check fa-2xl"></i>
         <i id="incorrectIcon" class="fa-solid fa-square-xmark fa-2xl" style="color: #db2a0a;"></i>
+
+           @* // Buttons *@
+        <form id="next_Form" asp-action="GoNext" method="post">
+            <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
+        </form>
+        
+        <button id="screenshotSkipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
     </div>
 
     @* Footer *@
@@ -64,9 +83,94 @@
     <script>
         const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
 
+        var gameTitle = $('#gameTitle').val();
+        var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');
+
+        $(document).ready(function () {
+            // User key press
+            $('#userInput').on('input', function () {
+
+                var inputValue = $(this).val().toLowerCase().replace(titleExpression, '');
+
+                if (gameTitleFormatted === inputValue) {
+                    validate();
+
+                    this.addEventListener('keydown', function (event) {
+                        if (event.key === 'Enter') {
+                            goNext();
+                        }
+                    });
+                }
+            });
+
+            // Skip button
+            $('#skipButton').click(function () {
+                skip();
+            });
+
+            $('roundsCarousel').prop('SelectedIndex', @Model.ScreenshotsRounds.IndexOf(@Model.SelectedRound));
+        });
+
 
         function screenshotCarousel_slideChanged(args) {
-            console.log("Carousel item changed:", args);
+            console.log("Screenshot carousel item changed:", args);
+        }
+
+        function roundsCarousel_slideChanged(args) {
+            goToRound(args.currentIndex);
+            console.log("Round carousel item changed:", args);
+        }
+
+        function goNext() {
+            window.location.href = '/Screenshots/Index';
+        }
+       
+        function goToRound(roundIndex) {
+            $.ajax({type: 'POST',
+                    url: '/Screenshots/GoToRound',
+                    data: { roundIndex: roundIndex },
+                    success: function (data) {
+                        window.location.href = '/Screenshots/Index';
+                    }
+            });
+        }
+
+        function skip() {
+            fetch('/Screenshots/Skip', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                window.location.href = '/Screenshots/Index';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function revealAnswer() {
+            $('#userInput').val(gameTitle);
+            $('#next_Form').css('display', 'block');
+            $('#skipButton').prop('disabled', true);
+            $('#userInput').attr('readonly', true);
+            $('#userInput').css('opacity', 0.6);
+        }
+
+        function validate() {
+            fetch('/Screenshots/Validate', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                revealAnswer();
+
+                $('#correctIcon').css('display', 'block');
+                $('#scoreDisplay').text('Score: ' + data.currentScore);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
         }
     </script>
 }
