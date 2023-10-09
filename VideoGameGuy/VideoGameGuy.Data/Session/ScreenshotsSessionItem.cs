@@ -3,9 +3,15 @@
     public class ScreenshotsSessionItem
     {
         #region Records..
+        public record ImageRecord
+        {
+            public string Value { get; set; }
+        }
+
         public record ScreenshotsRound
         {
             public string GameTitle { get; set; }
+            public List<ImageRecord> ImageCollection { get; set; }
             public bool IsSolved { get; set; }
         }
         #endregion Records..

@@ -771,9 +771,42 @@ main
     row-gap: 30px;
 
     display: grid;
-    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr;
 }
 
+#screenshotCarousel_Container 
+ {
+    grid-row: 1;
+    grid-column: 1;
 
+    align-self: center;
+    justify-self: center;
+    vertical-align: central;
+
+    height: 100%;
+    width: 100%;
+
+    /*background-color: none;*/
+}
+
+    .e-carousel .screenshot_slideContent
+    {
+        align-items: center;
+        display: flex;
+        font-size: 1.25rem;
+        height: 100%;
+        width: stretch;
+        justify-content: center;
+
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+        width: 100%;
+    }
+
+#screenshotCarousel
+{
+   
+}
 /*#endregion Screenshots*/

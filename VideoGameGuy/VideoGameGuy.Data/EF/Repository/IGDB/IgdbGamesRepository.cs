@@ -122,21 +122,71 @@ namespace VideoGameGuy.Data
             return games;
         }
 
-        public async Task<IgdbArtwork> GetArtworkFromGameAsync(IgdbGame game)
+        public async Task<List<IgdbGame>> GetGamesWithArtwork(int artworkCount)
         {
-            IgdbArtwork artwork = default;
+            List<IgdbGame> games = default;
 
             try
             {
-                if (_igdbDbContext.Screenshots.Any())
+                if (_igdbDbContext.Games.Any())
                 {
-                    var artworks = await (from g in _igdbDbContext.Games
-                                          join ga in _igdbDbContext.Games_Artworks on g.SourceId equals ga.Games_SourceId
-                                          join a in _igdbDbContext.Artworks on ga.Artworks_SourceId equals a.SourceId
-                                          select a).ToListAsync();
+                    var eligibleGames = await (from g in _igdbDbContext.Games
+                                               join ga in _igdbDbContext.Games_Artworks on g.SourceId equals ga.Games_SourceId
+                                               group ga by g into gaGroup
+                                               where gaGroup.Count() >= artworkCount
+                                               select gaGroup.Key)?.ToListAsync();
 
-                    if (artworks.Any())
-                        artwork = artworks.FirstOrDefault();
+                    if (eligibleGames.Any())
+                        games = eligibleGames;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return games;
+        }
+
+        public async Task<List<IgdbGame>> GetGamesWithScreenshots(int screenshotCount)
+        {
+            List<IgdbGame> games = default;
+
+            try
+            {
+                if (_igdbDbContext.Games.Any())
+                {
+                    var eligibleGames = await (from g in _igdbDbContext.Games
+                                               join gs in _igdbDbContext.Games_Screenshots on g.SourceId equals gs.Games_SourceId 
+                                               group gs by g into gsGroup
+                                               where gsGroup.Count() >= screenshotCount
+                                               select gsGroup.Key)?.ToListAsync();
+
+                    if (eligibleGames.Any())
+                        games = eligibleGames;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return games;
+        }
+
+        public async Task<List<IgdbArtwork>> GetArtworkFromGameAsync(IgdbGame game)
+        {
+            List<IgdbArtwork> artwork = default;
+
+            try
+            {
+                if (_igdbDbContext.Artworks.Any())
+                {
+                    artwork = await (from g in _igdbDbContext.Games
+                                     join ga in _igdbDbContext.Games_Artworks on g.SourceId equals ga.Games_SourceId
+                                     join a in _igdbDbContext.Artworks on ga.Artworks_SourceId equals a.SourceId
+                                     where g.IgdbGameId == game.IgdbGameId
+                                     select a)?.ToListAsync();
                 }
             }
             catch (Exception ex)
@@ -147,21 +197,19 @@ namespace VideoGameGuy.Data
             return artwork;
         }
 
-        public async Task<IgdbScreenshot> GetScreenshotFromGameAsync(IgdbGame game)
+        public async Task<List<IgdbScreenshot>> GetScreenshotsFromGameAsync(IgdbGame game)
         {
-            IgdbScreenshot screenshot = default;
+            List<IgdbScreenshot> screenshots = default;
 
             try
             {
                 if (_igdbDbContext.Screenshots.Any())
                 {
-                    var screenshots = await (from g in _igdbDbContext.Games
-                                             join gs in _igdbDbContext.Games_Screenshots on g.SourceId equals gs.Games_SourceId
-                                             join s in _igdbDbContext.Screenshots on gs.Screenshots_SourceId equals s.SourceId
-                                             select s).ToListAsync();
-
-                    if (screenshots.Any())
-                        screenshot = screenshots.FirstOrDefault();
+                    screenshots = await (from g in _igdbDbContext.Games
+                                         join gs in _igdbDbContext.Games_Screenshots on g.SourceId equals gs.Games_SourceId
+                                         join s in _igdbDbContext.Screenshots on gs.Screenshots_SourceId equals s.SourceId
+                                         where g.IgdbGameId == game.IgdbGameId
+                                         select s)?.ToListAsync();
                 }
             }
             catch (Exception ex)
@@ -169,7 +217,7 @@ namespace VideoGameGuy.Data
                 _logger.LogError($"{ex.Message} - {ex.StackTrace}");
             }
 
-            return screenshot;
+            return screenshots;
         }
         #endregion Methods..
     }

@@ -26,17 +26,22 @@
        @*  <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
         <div id="gameDescription">@Model.CurrentRound?.GameDescription</div> *@
 
+       
+        @* Screenshot Carousel *@
+        <div id="screenshotCarousel_Container">
+            <ejs-carousel id="screenshotCarousel"
+                          dataSource="@Model.CurrentRound.ImageCollection"
+                          itemTemplate="<div class='screenshot_slideContent' Style='background-image: url(&apos;${Value}&apos;);'></div>"
+                          autoPlay="false"
+                          EnableTouchSwipe="true"
+                          slideChanged="screenshotCarousel_slideChanged">
+            </ejs-carousel>
+        </div>
+
         @* // User Input *@
         <input id="userInput" type="text" placeholder="[Enter Title]" autofocus />
         <i id="correctIcon" class="fa-solid fa-square-check fa-2xl"></i>
         <i id="incorrectIcon" class="fa-solid fa-square-xmark fa-2xl" style="color: #db2a0a;"></i>
-
-        @* // Buttons *@
-      @*   <form id="next_Form" asp-action="GoNext" method="post">
-            <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
-        </form>
-
-        <button id="skipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button> *@
     </div>
 
     @* Footer *@
@@ -54,10 +59,14 @@
 
 @* JS *@
 @section Scripts
-    {
+{
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
-        
+
+
+        function screenshotCarousel_slideChanged(args) {
+            console.log("Carousel item changed:", args);
+        }
     </script>
 }
