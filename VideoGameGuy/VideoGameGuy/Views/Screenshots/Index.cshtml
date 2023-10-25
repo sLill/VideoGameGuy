@@ -4,6 +4,8 @@
     ViewData["Title"] = "Screenshots";
 }
 
+<link rel="stylesheet" href="~/css/screenshots.css" asp-append-version="true" />
+
 <div id="screenshots_OuterGrid">
 
     @* Content *@
@@ -64,7 +66,7 @@
     </div>
 
     @* Footer *@
-    <div id="descriptions_Footer">
+    <div id="screenshots_Footer">
         <div id="updatedOn">
             Last updated @Model.Igdb_UpdatedOnUtc.ToShortDateString()
         </div>

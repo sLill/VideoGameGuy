@@ -4,6 +4,8 @@
     ViewData["Title"] = "Review Scores";
 }
 
+<link rel="stylesheet" href="~/css/review_scores.css" asp-append-version="true" />
+
 <div id="reviewScores_Grid" class="non-highlightable">
 
     @* Games *@
@@ -111,31 +113,17 @@
             <div id="gameTwo_gridShadow"></div>
         </div>
 
-        @* Round Carousel *@
-        @* <div id="roundCarousel_Container"> *@
-@*             <ejs-carousel id="defaultCarousel" dataSource="@Model.GameRounds" itemTemplate='<div class="slide-content">${GameOne.Name}</div>'>
-            </ejs-carousel> *@
+        @* Footer *@
+        <div id="reviewScores_Footer">
+            <div id="updatedOn">
+                Last updated @Model.LastUpdateOn.ToShortDateString()
+            </div>
 
-@*             <ejs-carousel id="roundCarousel" 
-                          dataSource="@Model.GameRounds.Select(x => new { GameId = x.GameOne.GameId })" 
-                          itemTemplate='<div class="slide-content"></div>' 
-                          autoPlay="false"
-                          buttonsVisibility="Hidden"
-                          EnableTouchSwipe="true"
-                          slideChanged="roundCarousel_slideChanged">
-            </ejs-carousel> 
-        </div>
-    </div> *@
-
-    @* Footer *@
-    <div id="reviewScores_Footer">
-        <div id="updatedOn">
-            Last updated @Model.LastUpdateOn.ToShortDateString()
+            <div id="dataSource">
+                Data made available by <a href="http://Rawg.io">Rawg.io</a>
+            </div>
         </div>
 
-        <div id="dataSource">
-            Data made available by <a href="http://Rawg.io">Rawg.io</a>
-        </div>
     </div>
 </div>
 

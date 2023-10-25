@@ -1,0 +1,271 @@
+﻿#reviewScores_Grid
+{
+    display: grid;
+    grid-template-rows: 2% 1fr 6%;
+    grid-template-columns: 6% 1fr 1fr 1fr 1fr 1fr 6%;
+    
+    height: 100vh;
+    width: 100%;
+}
+
+#games_Grid
+{
+    grid-row: 2 / -2;
+    grid-column: 2 / -2;
+
+    display: grid;
+    grid-template-rows: 1fr 2%;
+    grid-template-columns: 1fr 1fr 6% 8px 6% 1fr 1fr;
+}
+
+#centerModule_Container
+{
+    grid-row: 1;
+    grid-column: 3 / 6;
+
+    display: grid;
+
+    width: 100%;
+    z-index: 30;
+
+    text-align: center;
+    align-self: center;
+
+    pointer-events: none;
+}
+
+#centerButton
+{
+    color: white;
+    font-family: "Inter";
+    font-size: 1.5vw;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 40px;
+    border: none;
+
+    shape-outside: circle();
+    clip-path: circle();
+}
+
+#streak_Container
+{
+    background-color:  #444;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 10px;
+    opacity: 0.6;
+}
+
+.currentStreak
+{
+    color: white;
+    font-family: "Inter";
+    font-size: 0.9vw;
+    font-weight: 400;
+}
+
+.highestStreak
+{
+    color: white;
+    font-family: "Inter";
+    font-size: 0.9vw;
+    font-weight: 400;
+}
+
+#centerButton:hover
+{
+    background:  linear-gradient(to bottom, rgba(40, 40, 55), rgba(102, 102, 136));
+}
+
+#centerButton:active
+{
+    background:   linear-gradient(to bottom, rgba(55, 55, 75), rgba(122, 122, 156));
+}
+
+#gameOne_Grid
+{
+    grid-row: 1;
+    grid-column: 1 / 4;
+
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#gameTwo_Grid
+{
+    grid-row: 1;
+    grid-column: 5 / 8;
+
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.gridShadow_Green
+{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+
+    z-index: 5;
+
+    box-shadow: inset 0 0 200px rgba(0, 255, 0, 0.8);
+}
+
+.gridShadow_Red
+{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+
+    z-index: 5;
+
+    box-shadow: inset 0 0 200px rgba(255, 0, 0, 0.8);
+}
+
+.gameSplash_Container
+{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+}
+
+.gameSplash_Button
+{
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+}
+
+.gameTitle
+{
+    grid-row: 2;
+    grid-column: 2;
+    z-index: 10;
+
+    text-align: center;
+    align-self: center;
+    pointer-events: none;
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    padding: 18px;
+    font-family: "Inter";
+    font-size: 1.1vw;
+    font-weight: 500;
+    box-shadow: rgba(0, 0, 0, 0.8) 0px 14px 28px, rgba(0, 0, 0, 0.65) 0px 10px 10px;
+}
+
+.gameScore
+{
+    grid-row: 3;
+    grid-column: 2;
+    
+    z-index: 10;
+    display: none;
+
+    text-align: center;
+    align-self: center;
+    pointer-events: none;
+    background: linear-gradient(to bottom, #333333, #307a2d);
+    color: #fff;
+    padding: 40px;
+
+    font-family: "Inter";
+    font-size: 2vw;
+    font-weight: 500;
+
+    shape-outside: circle();
+    clip-path: circle();
+}
+
+#gameOneOutletScores_Container
+{
+    grid-row: 5;
+    grid-column: 1;
+
+    z-index: 10;
+    display: none;
+
+    background-color:  #444;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    opacity: 0.7;
+
+    align-self: end;      
+    justify-self: start;
+}
+
+#gameTwoOutletScores_Container
+{
+    grid-row: 5;
+    grid-column: 3;
+
+    z-index: 10;
+    display: none;
+
+    background-color:  #444;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px;
+    opacity: 0.7;
+
+    align-self: end;      
+    justify-self: end;
+}
+
+.outletScore
+{
+    color: #fff;
+    font-family: "Inter";
+    font-size: 1vw;
+    font-weight: 500;
+    text-align:right;
+}
+
+.choiceResult_Container
+{
+    grid-row: 1;
+    grid-column: 2;
+    z-index: 10;
+
+    text-align: center;
+    align-self: center;
+}
+
+ #roundCarousel_Container 
+ {
+    grid-row: -2;
+    grid-column: 2 / 7;
+
+    align-self: center;
+    justify-self: center;
+    vertical-align: central;
+
+    height: 100%;
+    width: 100%;
+
+    background-color: none;
+}
+
+    .e-carousel .slide-content 
+    {
+        align-items: center;
+        display: flex;
+        font-size: 1.25rem;
+        height: 100%;
+        width: stretch;
+        justify-content: center;
+    }
+
+#roundCarousel
+{
+
+}
+
+#reviewScores_Footer
+{
+    grid-row: 3;
+    grid-column: 7;
+}

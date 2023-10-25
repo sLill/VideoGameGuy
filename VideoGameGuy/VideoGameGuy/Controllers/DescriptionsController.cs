@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using VideoGameGuy.Common;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
@@ -11,6 +12,7 @@ namespace VideoGameGuy.Controllers
     public class DescriptionsController : Controller
     {
         #region Fields..
+        private const string TITLE_EXPRESSION = @"(?:(?:\:.*)|[^a-z\u00C0-\u024F])|(?:\b[iivx]+\b)|(?:^the)";
         public const int ROUND_TIME_LIMIT_MINUTES = 2;
 
         private readonly ILogger<DescriptionsController> _logger;
@@ -20,6 +22,8 @@ namespace VideoGameGuy.Controllers
         private readonly ISystemStatusRepository _systemStatusRepository;
 
         private static List<IgdbGame> _games;
+        private static Regex _titleRegex; 
+        
         private Random _random = new Random();
         #endregion Fields..
 
@@ -47,7 +51,7 @@ namespace VideoGameGuy.Controllers
 
             bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
 
-            if (outOfTime || sessionData.DescriptionsSessionItem.CurrentRound == null)
+            if (outOfTime || sessionData.DescriptionsSessionItem == null|| sessionData.DescriptionsSessionItem.CurrentRound == null)
                 await StartNewRoundAsync(sessionData);
 
             var descriptionsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
@@ -58,6 +62,19 @@ namespace VideoGameGuy.Controllers
         public async Task<IActionResult> GoNext()
         {
             await UnpauseTimer();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Restart()
+        {
+            // Clear cache 
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            sessionData.DescriptionsSessionItem = null;
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            await _countdownTimerService.RemoveClientTimerAsync(sessionData.SessionId);
+
             return RedirectToAction("Index");
         }
 
@@ -141,18 +158,34 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(SessionData sessionData)
         {
-            _games = _games ?? await _igdbGamesRepository.GetGamesWithStorylines(200);
-            IgdbGame game = _games?.TakeRandom(1).FirstOrDefault();
-
-            if (game != default)
+            if (_games == null)
             {
-                sessionData.DescriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
+                _titleRegex = _titleRegex ?? new Regex(TITLE_EXPRESSION);
+                _games = await _igdbGamesRepository.GetGamesWithStorylines(150);
+                _games = _games.Where(x =>
                 {
-                    GameTitle = game.Name,
-                    GameDescription = game.Storyline,
-                });
+                    // Filter out games whose storyline contains the title
+                    string formattedStoryine = _titleRegex.Replace(x.Storyline.ToLower(), string.Empty);
+                    string formattedName = _titleRegex.Replace(x.Name.ToLower(), string.Empty);
+                    return !formattedStoryine.Contains(formattedName);
+                })?.ToList() ?? new List<IgdbGame>();
+            }
 
-                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            if (_games?.Any() ?? false)
+            {
+                IgdbGame game = _games.TakeRandom(1).FirstOrDefault();
+
+                if (game != default)
+                {
+                    sessionData.DescriptionsSessionItem = sessionData.DescriptionsSessionItem ?? new DescriptionsSessionItem();
+                    sessionData.DescriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
+                    {
+                        GameTitle = game.Name,
+                        GameDescription = game.Storyline,
+                    });
+
+                    await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+                }
             }
         }
         #endregion Methods..

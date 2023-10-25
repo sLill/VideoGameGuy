@@ -67,11 +67,15 @@ namespace VideoGameGuy.Core
             _clientCountdownTimers[sessionId] = (context, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
         }
 
-        private async Task RemoveClientTimerAsync(Guid sessionId)
+        public async Task RemoveClientTimerAsync(Guid sessionId)
         {
-            _clientCountdownTimers.Remove(sessionId, out var clientTimer);
-            await clientTimer.Timer.Timer.DisposeAsync();
-            clientTimer.Timer = default;
+            if (_clientCountdownTimers.ContainsKey(sessionId))
+            {
+                _clientCountdownTimers.Remove(sessionId, out (HubCallerContext Context, ClientCountdownTimer Timer) clientCountdownTimer);
+
+                await clientCountdownTimer.Timer.Timer.DisposeAsync();
+                clientCountdownTimer = default;
+            }
         }
 
         public void PauseClientTimer(Guid clientSessionId)

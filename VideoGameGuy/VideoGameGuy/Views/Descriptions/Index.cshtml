@@ -4,6 +4,8 @@
     ViewData["Title"] = "Descriptions";
 }
 
+<link rel="stylesheet" href="~/css/descriptions.css" asp-append-version="true" />
+
 <div id="descriptions_Grid">
 
     @* Content *@
@@ -32,6 +34,10 @@
         <i id="incorrectIcon" class="fa-solid fa-square-xmark fa-2xl" style="color: #db2a0a;"></i>
 
         @* // Buttons *@
+        <form id="restart_Form" asp-action="Restart" method="post">
+            <button id="restartButton" type="submit" role="button">Restart   <i class="fa-solid fa-refresh xl"></i></button>
+        </form>
+
         <form id="next_Form" asp-action="GoNext" method="post">
             <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
         </form>
@@ -60,7 +66,7 @@
     <script src="~/js/countdownTimer.js" asp-append-version="true"></script>
 
     <script>
-        const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
+        const titleExpression = /(?:(?:\:.*)|[^a-z\u00C0-\u024F])|(?:\b[iivx]+\b)|(?:^the)/g;
 
         var gameTitle = $('#gameTitle').val();
         var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');

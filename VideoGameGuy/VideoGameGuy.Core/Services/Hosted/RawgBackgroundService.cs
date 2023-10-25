@@ -60,7 +60,7 @@ namespace VideoGameGuy.Core
 
                     DateTime endDate = DateTime.UtcNow.Date;
 
-                    //await PollAndCacheAsync(startDate, endDate);
+                    await PollAndCacheAsync(startDate, endDate);
 
                     currentSystemStatus.Rawg_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
@@ -102,7 +102,7 @@ namespace VideoGameGuy.Core
 
                         // Filter by updated date
                         if (updatedOnStartDate != null)
-                            requestUrl = $"{requestUrl}&updated={updatedOnStartDate.Value.ToString("yyyy-MM-dd")},{updatedOnEndDate.ToString("yyyy-MM-dd")}";   
+                            requestUrl = $"{requestUrl}&updated={updatedOnStartDate.Value.ToString("yyyy-MM-dd")},{updatedOnEndDate.ToString("yyyy-MM-dd")}";
 
                         // Request and cache file if it is old or does not exist
                         var response = await httpClient.GetAsync(requestUrl);
@@ -143,7 +143,7 @@ namespace VideoGameGuy.Core
                         }
 
                         // End of data
-                        else if (response.StatusCode == HttpStatusCode.BadGateway)
+                        else if (response.StatusCode == HttpStatusCode.BadGateway || response.StatusCode == HttpStatusCode.NotFound)
                             break;
 
                         else
