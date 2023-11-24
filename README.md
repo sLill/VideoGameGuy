@@ -5,7 +5,6 @@ A *Higher or Lower* style web game based on video game review scores. Built with
 * Regulary updated data
 * Session tracking
 * Mobile friendly
-* Multiple game modes (COMING SOON)
 * Twitch integration (COMING SOON)
 
 ## To Run Locally
