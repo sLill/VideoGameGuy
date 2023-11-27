@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using VideoGameGuy.Configuration;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
+using System.Runtime.InteropServices;
 
 namespace VideoGameGuy
 {
@@ -15,6 +16,7 @@ namespace VideoGameGuy
 
             // Settings
             builder.Configuration.Sources.Clear();
+            builder.Configuration.AddEnvironmentVariables();
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Configuration.AddUserSecrets<Program>();
             builder.Services.Configure<AzureSecretSettings>(builder.Configuration.GetSection("SecretSettings").GetSection("Azure"));
@@ -24,7 +26,7 @@ namespace VideoGameGuy
             // Logging
             builder.Services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, builder.Configuration.GetConnectionString("ConnectionString_Main")));
+                loggingBuilder.AddProvider(new SqlLoggerProvider((category, level) => level >= LogLevel.Error, GetMainConnectionString(builder)));
             });
 
             // Services
@@ -41,14 +43,14 @@ namespace VideoGameGuy
             // Data
             builder.Services.AddDbContext<MainDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Main"));
+                options.UseSqlServer(GetMainConnectionString(builder));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
             });
 
             builder.Services.AddDbContext<RawgDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Rawg"));
+                options.UseSqlServer(GetRawgConnectionString(builder));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 
@@ -56,7 +58,7 @@ namespace VideoGameGuy
 
             builder.Services.AddDbContext<IgdbDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString_Igdb"));
+                options.UseSqlServer(GetIgdbConnectionString(builder));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
 
@@ -212,6 +214,42 @@ namespace VideoGameGuy
                 logger.LogInformation($"Performing db migrations for {igdbDbContext.Database.GetDbConnection().Database}");
                 igdbDbContext.Database.Migrate();
             }
+        }
+
+        private static string GetMainConnectionString(WebApplicationBuilder builder)
+        {
+            string connectionString = string.Empty;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                connectionString = builder.Configuration.GetConnectionString("ConnectionString_Main");
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                connectionString = builder.Configuration["ConnectionString_Main"];
+
+            return connectionString;
+        }
+
+        private static string GetRawgConnectionString(WebApplicationBuilder builder)
+        {
+            string connectionString = string.Empty;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                connectionString = builder.Configuration.GetConnectionString("ConnectionString_Rawg");
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                connectionString = builder.Configuration["ConnectionString_Rawg"];
+
+            return connectionString;
+        }
+
+        private static string GetIgdbConnectionString(WebApplicationBuilder builder)
+        {
+            string connectionString = string.Empty;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                connectionString = builder.Configuration.GetConnectionString("ConnectionString_Igdb");
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                connectionString = builder.Configuration["ConnectionString_Igdb"];
+
+            return connectionString;
         }
 
         private static void LogApplicationStarted(WebApplication app, IServiceScope serviceScope)
