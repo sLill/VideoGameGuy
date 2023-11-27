@@ -124,6 +124,22 @@ namespace VideoGameGuy.Controllers
             return Json(new { });
         }
 
+        [HttpPost]
+        public async Task<ActionResult> GameOver(string score)
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+
+            await _gameRepository.AddAsync(new Game()
+            {
+                ClientIp = HttpContext.Connection.RemoteIpAddress.ToString(),
+                GameType = GameType.Descriptions,
+                SessionId = sessionData.SessionId,
+                GameScore = sessionData.DescriptionsSessionItem.CurrentScore.ToString()
+            });
+
+            return Json(new { });
+        }
+
         public async Task<ActionResult> Validate()
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);

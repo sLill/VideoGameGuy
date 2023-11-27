@@ -79,7 +79,7 @@ namespace VideoGameGuy.Data
             if (existingGame == null)
                 await AddAsync(game);
             else
-                await UpdateAsync(game);
+                await UpdateAsync(existingGame);
         }
         #endregion Methods..
     }

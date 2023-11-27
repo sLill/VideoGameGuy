@@ -271,6 +271,7 @@
 
         display: none;
         justify-self: right;
+        margin-right:10px;
     }
 
         #nextButton

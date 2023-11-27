@@ -25,7 +25,7 @@
         </div> *@
 
         @* Rounds Carousel *@
-        <div id="roundsCarousel_Container">
+      @*   <div id="roundsCarousel_Container">
             <ejs-carousel id="roundsCarousel"
                           dataSource="@Model.ScreenshotsRounds"
                           itemTemplate="<div></div>"
@@ -36,7 +36,7 @@
                           EnableTouchSwipe="false"
                           slideChanged="roundsCarousel_slideChanged">
             </ejs-carousel>
-        </div>
+        </div> *@
 
         <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.SelectedRound?.GameTitle" />
 
@@ -62,7 +62,7 @@
             <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
         </form>
         
-        <button id="screenshotSkipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
+        <button id="skipButton" type="submit" role="button">Skip  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
     </div>
 
     @* Footer *@

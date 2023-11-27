@@ -28,6 +28,13 @@ timerConnection.on("UpdateTimer", (time) => {
 
     // Game Over
     if (time == '00:00') {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Descriptions/GameOver',
+            data: { score: scoreValue }
+        });
+
         highestScoreValue = highestScoreValue > scoreValue ? highestScoreValue : scoreValue;
 
         $('#userInput').val(gameTitle);
