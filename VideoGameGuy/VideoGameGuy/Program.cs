@@ -124,17 +124,17 @@ namespace VideoGameGuy
             var secretService = app.Services.GetService<ISecretService>();
             string syncfusionProductKey = null;
 
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 // User-Secrets
                 syncfusionProductKey = secretService.GetUserSecretSettings().SyncfusionProductKey;
-            }
-            else
-            {
-                // Azure
-                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
-                syncfusionProductKey = secretService.GetAzureSecret(azureSecretSettings.Value.SyncfusionProductKeyId);
-            }
+            //}
+            //else
+            //{
+            //    // Azure
+            //    var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+            //    syncfusionProductKey = secretService.GetAzureSecret(azureSecretSettings.Value.SyncfusionProductKeyId);
+            //}
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(syncfusionProductKey);
         }
@@ -146,17 +146,17 @@ namespace VideoGameGuy
 
             string apiKey = null;
 
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 // User-Secrets
                 apiKey = secretService.GetUserSecretSettings().RawgApiKey;
-            }
-            else
-            {
-                // Azure
-                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
-                apiKey = secretService.GetAzureSecret(azureSecretSettings.Value.RawgApiKeyId);
-            }
+            //}
+            //else
+            //{
+            //    // Azure
+            //    var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+            //    apiKey = secretService.GetAzureSecret(azureSecretSettings.Value.RawgApiKeyId);
+            //}
 
             rawgApiSettings.Value.ApiKey = apiKey;
         }
@@ -169,19 +169,19 @@ namespace VideoGameGuy
             string clientId = null;
             string clientSecret = null;
 
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 // User-Secrets
                 clientId = secretService.GetUserSecretSettings().IgdbClientId;
                 clientSecret = secretService.GetUserSecretSettings().IgdbClientSecret;
-            }
-            else
-            {
-                // Azure
-                var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
-                clientId = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientId);
-                clientSecret = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientSecret);
-            }
+            //}
+            //else
+            //{
+            //    // Azure
+            //    var azureSecretSettings = app.Services.GetRequiredService<IOptions<AzureSecretSettings>>();
+            //    clientId = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientId);
+            //    clientSecret = secretService.GetAzureSecret(azureSecretSettings.Value.IgdbClientSecret);
+            //}
 
             IgdbApiSettings.Value.ClientId = clientId;
             IgdbApiSettings.Value.ClientSecret = clientSecret;
