@@ -17,6 +17,7 @@ namespace VideoGameGuy.Controllers
         private readonly ISessionService _sessionService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
+        private readonly IGameRepository _gameRepository;
 
         private static List<IgdbGame> _gamesWithArtwork;
         private static List<IgdbGame> _gamesWithScreenshots;
@@ -31,12 +32,14 @@ namespace VideoGameGuy.Controllers
         public ScreenshotsController(ILogger<ScreenshotsController> logger,
                                      ISessionService sessionService,
                                      IIgdbGamesRepository igdbGamesRepository,
-                                     ISystemStatusRepository systemStatusRepository)
+                                     ISystemStatusRepository systemStatusRepository,
+                                     IGameRepository gameRepository)
         {
             _logger = logger;
             _sessionService = sessionService;
             _igdbGamesRepository = igdbGamesRepository;
             _systemStatusRepository = systemStatusRepository;
+            _gameRepository = gameRepository;
         }
         #endregion Constructors..
 

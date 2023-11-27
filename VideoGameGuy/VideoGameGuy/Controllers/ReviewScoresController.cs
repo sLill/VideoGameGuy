@@ -12,6 +12,7 @@ namespace VideoGameGuy.Controllers
         private readonly ISessionService _sessionService;
         private readonly IRawgGamesRepository _rawgGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
+        private readonly IGameRepository _gameRepository;
         #endregion Fields..
 
         #region Constructors..
@@ -19,13 +20,15 @@ namespace VideoGameGuy.Controllers
                                       IWebHostEnvironment webHostEnvironment,
                                       ISessionService sessionService,
                                       IRawgGamesRepository rawgGamesRepository,
-                                      ISystemStatusRepository systemStatusRepository)
+                                      ISystemStatusRepository systemStatusRepository,
+                                      IGameRepository gameRepository)
         {
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
             _sessionService = sessionService;
             _rawgGamesRepository = rawgGamesRepository;
             _systemStatusRepository = systemStatusRepository;
+            _gameRepository = gameRepository;
         }
         #endregion Constructors..
 
@@ -58,6 +61,14 @@ namespace VideoGameGuy.Controllers
                 if (!isCorrect)
                 {
                     // Reset on incorrect
+                    await _gameRepository.AddAsync(new Game() 
+                    {
+                        ClientIp = HttpContext.Connection.RemoteIpAddress.ToString(),
+                        GameType = GameType.ReviewScores,
+                        SessionId = sessionData.SessionId,
+                        GameScore = sessionData.ReviewScoresSessionItem.Streak.ToString()
+                    });
+
                     sessionData.ReviewScoresSessionItem.ReviewScoresRounds.Clear();
                 }
 

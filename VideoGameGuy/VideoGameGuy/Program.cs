@@ -53,7 +53,6 @@ namespace VideoGameGuy
                 options.UseSqlServer(GetRawgConnectionString(builder));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
-
             });
 
             builder.Services.AddDbContext<IgdbDbContext>(options =>
@@ -61,10 +60,10 @@ namespace VideoGameGuy
                 options.UseSqlServer(GetIgdbConnectionString(builder));
                 if (builder.Environment.IsDevelopment())
                     options.EnableSensitiveDataLogging();
-
             });
 
             builder.Services.AddScoped<ISystemStatusRepository, SystemStatusRepository>();
+            builder.Services.AddScoped<IGameRepository, GameRepository>();
             builder.Services.AddScoped<IRawgGamesRepository, RawgGamesRepository>();
             builder.Services.AddScoped<IIgdbArtworksRepository, IgdbArtworksRepository>();
             builder.Services.AddScoped<IIgdbGameModesRepository, IgdbGameModesRepository>();

@@ -20,6 +20,7 @@ namespace VideoGameGuy.Controllers
         private readonly ICountdownTimerService _countdownTimerService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
+        private readonly IGameRepository _gameRepository;
 
         private static List<IgdbGame> _games;
         private static Regex _titleRegex; 
@@ -32,13 +33,15 @@ namespace VideoGameGuy.Controllers
                                       ISessionService sessionService,
                                       ICountdownTimerService countdownTimerService,
                                       IIgdbGamesRepository igdbGamesRepository,
-                                      ISystemStatusRepository systemStatusRepository)
+                                      ISystemStatusRepository systemStatusRepository,
+                                      IGameRepository gameRepository)
         {
             _logger = logger;
             _sessionService = sessionService;
             _countdownTimerService = countdownTimerService;
             _igdbGamesRepository = igdbGamesRepository;
             _systemStatusRepository = systemStatusRepository;
+            _gameRepository = gameRepository;
         }
         #endregion Constructors..
 
