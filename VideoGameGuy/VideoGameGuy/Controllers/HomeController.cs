@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using VideoGameGuy.Data;
 
 namespace VideoGameGuy.Controllers
@@ -9,6 +10,8 @@ namespace VideoGameGuy.Controllers
         #region Fields..
         private readonly ILogger<HomeController> _logger;
         private readonly ITrafficLogRepository _trafficLogRepository;
+
+        private static Regex _refererRegex = new Regex(@"[Rr]eferer\=(?<Referer>[^$&]*)");
         #endregion Fields..
 
         #region Constructors..
@@ -35,8 +38,15 @@ namespace VideoGameGuy.Controllers
             string referer = string.Empty;
             string userAgent = string.Empty;
 
-            if (headers.ContainsKey("Referer"))
+            if (headers.ContainsKey("Referer") && !string.IsNullOrEmpty(headers["Referer"]))
                 referer = headers["Referer"];
+            else
+            {
+                var queryString = HttpContext.Request.QueryString.ToString();
+                var refererMatch = _refererRegex.Match(queryString);
+                if (refererMatch.Success) 
+                    referer = refererMatch.Groups["Referer"].Value;
+            }
 
             if (headers.ContainsKey("User-Agent"))
                 userAgent = headers["User-Agent"];
