@@ -13,12 +13,6 @@
                 {
                     var request = new HttpRequestMessage(HttpMethod.Head, url);
                     var response = client.Send(request);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        
-                    }
-
                     return response.IsSuccessStatusCode;
                 }
                 catch (HttpRequestException) { }

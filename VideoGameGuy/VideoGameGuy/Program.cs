@@ -4,6 +4,7 @@ using VideoGameGuy.Configuration;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace VideoGameGuy
 {
@@ -19,6 +20,7 @@ namespace VideoGameGuy
             builder.Configuration.AddEnvironmentVariables();
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Configuration.AddUserSecrets<Program>();
+            builder.Services.Configure<ForwardedHeadersOptions>(options => options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
             builder.Services.Configure<AzureSecretSettings>(builder.Configuration.GetSection("SecretSettings").GetSection("Azure"));
             builder.Services.Configure<RawgApiSettings>(builder.Configuration.GetSection("RawgApiSettings"));
             builder.Services.Configure<IgdbApiSettings>(builder.Configuration.GetSection("IgdbApiSettings"));
@@ -99,6 +101,7 @@ namespace VideoGameGuy
             if (!app.Environment.IsDevelopment())
                 app.UseExceptionHandler("/Home/Error");
 
+            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

@@ -72,11 +72,11 @@ namespace VideoGameGuy.Controllers
         {
             // Clear cache 
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            sessionData.DescriptionsSessionItem = null;
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             await _countdownTimerService.RemoveClientTimerAsync(sessionData.DescriptionsSessionItem.SessionItemId);
 
+            sessionData.DescriptionsSessionItem = new DescriptionsSessionItem();
             return RedirectToAction("Index");
         }
 
