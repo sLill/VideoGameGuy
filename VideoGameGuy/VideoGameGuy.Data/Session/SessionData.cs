@@ -9,7 +9,8 @@ namespace VideoGameGuy.Data
         public DescriptionsSessionItem DescriptionsSessionItem { get; set; } = new DescriptionsSessionItem();
         public ScreenshotsSessionItem ScreenshotsSessionItem { get; set; } = new ScreenshotsSessionItem();
 
-        public CountdownSessionItem CountdownSessionItem { get; set; } = new CountdownSessionItem();
+        public CountdownSessionItem DescriptionCountdownSessionItem { get; set; } = new CountdownSessionItem();
+        public CountdownSessionItem ScreenshotCountdownSessionItem { get; set; } = new CountdownSessionItem();
         #endregion Properties..
     }
 }

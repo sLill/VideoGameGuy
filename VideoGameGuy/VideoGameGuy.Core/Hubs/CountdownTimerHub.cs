@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace VideoGameGuy.Core
 {
@@ -44,13 +43,19 @@ namespace VideoGameGuy.Core
         public async Task StartCountdownForUser(object data)
         {
             var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
-            _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context, countdownData.Seconds);
+            await _countdownTimerService.StartCountdownForUser(countdownData.SessionId, Context, countdownData.Seconds);
+        }
+
+        public async Task RemoveCountdownForUser(object data)
+        {
+            var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
+            await _countdownTimerService.RemoveClientTimerAsync(countdownData.SessionId);
         }
 
         public async Task SubtractTimeForUser(object data)
         {
             var countdownData = JsonConvert.DeserializeObject<CountdownData>(data.ToString());
-            _countdownTimerService.SubtractTimeForUser(countdownData.SessionId, Context, countdownData.Seconds);
+            await _countdownTimerService.SubtractTimeForUser(countdownData.SessionId, Context, countdownData.Seconds);
         }
         #endregion Methods..
     }

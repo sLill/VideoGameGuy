@@ -55,7 +55,7 @@ namespace VideoGameGuy.Controllers
             // Try load existing session data or create a new one
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
-            bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
+            bool outOfTime = sessionData.ScreenshotCountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
             if (outOfTime || sessionData.ScreenshotsSessionItem == null || sessionData.ScreenshotsSessionItem.CurrentRound == null)
                 await StartNewGameAsync(sessionData);
 
@@ -119,7 +119,7 @@ namespace VideoGameGuy.Controllers
         {
             // Update session data
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            sessionData.CountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
+            sessionData.ScreenshotCountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
 
@@ -157,7 +157,7 @@ namespace VideoGameGuy.Controllers
                 HighestScore = sessionData.ScreenshotsSessionItem.HighestScore,
                 CurrentScore = sessionData.ScreenshotsSessionItem.CurrentScore,
                 CurrentRound = sessionData.ScreenshotsSessionItem.CurrentRound,
-                TimeRemaining = sessionData.CountdownSessionItem.TimeRemaining,
+                TimeRemaining = sessionData.ScreenshotCountdownSessionItem.TimeRemaining,
                 Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
             };
 
@@ -183,7 +183,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task AddArtworkRoundAsync(SessionData sessionData)
         {
-            _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(3);
+            _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(3, 200);
             IgdbGame game = _gamesWithArtwork?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbArtwork> artwork = await _igdbGamesRepository.GetArtworkFromGameAsync(game);
@@ -202,7 +202,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task AddScreenshotRoundAsync(SessionData sessionData)
         {
-            _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(3);
+            _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(3, 200);
             IgdbGame game = _gamesWithScreenshots?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbScreenshot> screenshots = await _igdbGamesRepository.GetScreenshotsFromGameAsync(game);

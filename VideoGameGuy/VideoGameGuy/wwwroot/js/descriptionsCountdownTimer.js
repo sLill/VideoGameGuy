@@ -1,4 +1,4 @@
-﻿var countdownSeconds = 300;
+﻿var countdownSeconds = 180;
 var sessionId = $('#sessionId').val();
 var scoreValue = $('#scoreValue').val();
 var highestScoreValue = $('#highestScoreValue').val();

@@ -52,7 +52,7 @@ namespace VideoGameGuy.Controllers
             // Try load existing session data or create a new one
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
-            bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
+            bool outOfTime = sessionData.DescriptionCountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
 
             if (outOfTime || sessionData.DescriptionsSessionItem == null|| sessionData.DescriptionsSessionItem.CurrentRound == null)
                 await StartNewRoundAsync(sessionData);
@@ -117,7 +117,7 @@ namespace VideoGameGuy.Controllers
         {
             // Update session data
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            sessionData.CountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
+            sessionData.DescriptionCountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
 
@@ -168,7 +168,7 @@ namespace VideoGameGuy.Controllers
                 HighestScore = sessionData.DescriptionsSessionItem.HighestScore,
                 CurrentScore = sessionData.DescriptionsSessionItem.CurrentScore,
                 CurrentRound = sessionData.DescriptionsSessionItem.CurrentRound,
-                TimeRemaining = sessionData.CountdownSessionItem.TimeRemaining,
+                TimeRemaining = sessionData.DescriptionCountdownSessionItem.TimeRemaining,
                 Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
             };
 

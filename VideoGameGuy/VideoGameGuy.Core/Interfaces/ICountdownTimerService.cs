@@ -7,9 +7,9 @@ namespace VideoGameGuy.Core
         #region Methods..
         void PauseClientTimer(Guid clientSessionId);
         void UnpauseClientTimer(Guid clientSessionId);
-        Task RemoveClientTimerAsync(Guid sessionId);
-        Task StartCountdownForUser(Guid sessionId, HubCallerContext context, int countdownSeconds);
-        Task SubtractTimeForUser(Guid sessionId, HubCallerContext context, int seconds);
+        Task RemoveClientTimerAsync(Guid clientSessionId);
+        Task StartCountdownForUser(Guid clientSessionId, HubCallerContext context, int countdownSeconds);
+        Task SubtractTimeForUser(Guid clientSessionId, HubCallerContext context, int seconds);
         #endregion Methods..
     }
 }

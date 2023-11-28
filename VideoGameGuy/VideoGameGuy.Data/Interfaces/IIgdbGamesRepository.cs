@@ -7,8 +7,8 @@ namespace VideoGameGuy.Data
         Task<bool> AddOrUpdateRangeAsync(IEnumerable<IgdbApiGame> apiGames, bool suspendSaveChanges = false);
 
         Task<List<IgdbGame>> GetGamesWithStorylines(int minimumNumberOfRatings);
-        Task<List<IgdbGame>> GetGamesWithArtwork(int artworkCount);
-        Task<List<IgdbGame>> GetGamesWithScreenshots(int screenshotCount);
+        Task<List<IgdbGame>> GetGamesWithArtwork(int artworkCount, int minTotalRatingCount = 0);
+        Task<List<IgdbGame>> GetGamesWithScreenshots(int screenshotCount, int minTotalRatingCount = 0);
         Task<List<IgdbArtwork>> GetArtworkFromGameAsync(IgdbGame game);
         Task<List<IgdbScreenshot>> GetScreenshotsFromGameAsync(IgdbGame game);
         #endregion Methods..
