@@ -178,22 +178,22 @@ namespace VideoGameGuy.Controllers
             switch (_random.Next(0, 2))
             {
                 case 0:
-                    await AddArtworkRoundAsync(sessionData);
+                    AddArtworkRound(sessionData);
                     break;
                 case 1:
-                    await AddScreenshotRoundAsync(sessionData);
+                    AddScreenshotRound(sessionData);
                     break;
             }
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
         }
 
-        private async Task AddArtworkRoundAsync(SessionData sessionData)
+        private void AddArtworkRound(SessionData sessionData)
         {
-            _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(5, 200);
+            _gamesWithArtwork = _gamesWithArtwork ?? _igdbGamesRepository.GetGamesWithArtwork(5, 200);
             IgdbGame game = _gamesWithArtwork?.TakeRandom(1).FirstOrDefault();
 
-            List<IgdbArtwork> artwork = await _igdbGamesRepository.GetArtworkFromGameAsync(game);
+            List<IgdbArtwork> artwork = _igdbGamesRepository.GetArtworkFromGame(game);
             List<ImageRecord> imageCollection = artwork.TakeRandom(5)
                 .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
@@ -207,12 +207,12 @@ namespace VideoGameGuy.Controllers
             }
         }
 
-        private async Task AddScreenshotRoundAsync(SessionData sessionData)
+        private void AddScreenshotRound(SessionData sessionData)
         {
-            _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(5, 200);
+            _gamesWithScreenshots = _gamesWithScreenshots ?? _igdbGamesRepository.GetGamesWithScreenshots(5, 200);
             IgdbGame game = _gamesWithScreenshots?.TakeRandom(1).FirstOrDefault();
 
-            List<IgdbScreenshot> screenshots = await _igdbGamesRepository.GetScreenshotsFromGameAsync(game);
+            List<IgdbScreenshot> screenshots = _igdbGamesRepository.GetScreenshotsFromGame(game);
             List<ImageRecord> imageCollection = screenshots.TakeRandom(5)
                 .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
