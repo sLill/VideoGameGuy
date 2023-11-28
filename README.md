@@ -1,5 +1,6 @@
 # VideoGameGuy
 Web games based on video game trivia. Built with ASP.NET Core and EF Core.
+
 [Visit Video Game Guy](http://videogameguy.io/)
 
 ## Features
