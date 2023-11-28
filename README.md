@@ -1,11 +1,12 @@
 # VideoGameGuy
-A *Higher or Lower* style web game based on video game review scores. Built with ASP.NET Core and EF Core.
+Web games based on video game trivia. Built with ASP.NET Core and EF Core.
+[Visit Video Game Guy](http://videogameguy.io/)
 
 ## Features
-* Regulary updated data
+* Regulary updated game data
 * Session tracking
 * Mobile friendly
-* Twitch integration (COMING SOON)
+* Twitch integration (Coming Soon)
 
 ## To Run Locally
 To build and run this application locally, the following are required:
