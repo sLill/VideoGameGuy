@@ -6,13 +6,13 @@
 
 <link rel="stylesheet" href="~/css/screenshots.css" asp-append-version="true" />
 
-<div id="screenshots_OuterGrid">
+<div id="screenshots_Grid">
 
     @* Content *@
-    <div id="screenshots_InnerGrid">
+    <div id="content_Grid">
 
         @* Status *@
-       @*  <div id="status_Grid">
+        <div id="status_Grid">
             <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
             <input id="scoreValue" type="hidden" name="scoreValue" value="@Model.CurrentScore" />
             <input id="highestScoreValue" type="hidden" name="highestScoreValue" value="@Model.HighestScore" />
@@ -22,28 +22,14 @@
                 <div id="scoreDisplay" class="scoreText">Score: @Model.CurrentScore</div>
             </div>
             <div id="timer">--</div>
-        </div> *@
+        </div>
 
-        @* Rounds Carousel *@
-      @*   <div id="roundsCarousel_Container">
-            <ejs-carousel id="roundsCarousel"
-                          dataSource="@Model.ScreenshotsRounds"
-                          itemTemplate="<div></div>"
-                          nextButtonTemplate="<div></div>"
-                          previousButtonTemplate="<div></div>"
-                          autoPlay="false"
-                          partialVisible="false"
-                          EnableTouchSwipe="false"
-                          slideChanged="roundsCarousel_slideChanged">
-            </ejs-carousel>
-        </div> *@
-
-        <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.SelectedRound?.GameTitle" />
+        <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
 
         @* Screenshot Carousel *@
         <div id="screenshotCarousel_Container">
             <ejs-carousel id="screenshotCarousel"
-                          dataSource="@Model.SelectedRound.ImageCollection"
+                          dataSource="@Model.CurrentRound.ImageCollection"
                           itemTemplate="<div class='screenshot_slideContent' Style='background-image: url(&apos;${Value}&apos;);'></div>"
                           autoPlay="false"
                           partialVisible="false"
@@ -58,6 +44,10 @@
         <i id="incorrectIcon" class="fa-solid fa-square-xmark fa-2xl" style="color: #db2a0a;"></i>
 
            @* // Buttons *@
+        <form id="restart_Form" asp-action="Restart" method="post">
+            <button id="restartButton" type="submit" role="button">Restart   <i class="fa-solid fa-refresh xl"></i></button>
+        </form>
+
         <form id="next_Form" asp-action="GoNext" method="post">
             <button id="nextButton" type="submit" role="button">Next  <i class="fa-solid fa-circle-chevron-right xl"></i></button>
         </form>
@@ -82,6 +72,9 @@
 @section Scripts
 {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/screenshotsCountdownTimer.js" asp-append-version="true"></script>
+
     <script>
         const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
 
@@ -109,22 +102,11 @@
             $('#skipButton').click(function () {
                 skip();
             });
-
-            $('roundsCarousel').prop('SelectedIndex', @Model.ScreenshotsRounds.IndexOf(@Model.SelectedRound));
         });
 
 
         function screenshotCarousel_slideChanged(args) {
             console.log("Screenshot carousel item changed:", args);
-        }
-
-        function roundsCarousel_slideChanged(args) {
-            goToRound(args.currentIndex);
-            console.log("Round carousel item changed:", args);
-        }
-
-        function goNext() {
-            window.location.href = '/Screenshots/Index';
         }
        
         function goToRound(roundIndex) {
@@ -138,12 +120,29 @@
         }
 
         function skip() {
+            // Pause timer
+            $.ajax({
+                type: 'POST',
+                url: '/Screenshots/PauseTimer'
+            });
+
             fetch('/Screenshots/Skip', {
                 method: 'POST',
             })
             .then(response => response.json())
             .then(data => {
-                window.location.href = '/Screenshots/Index';
+                $('#incorrectIcon').css('display', 'block');
+
+                // Briefly flash red
+                $('#timer').addClass('color_red');
+
+                // Remove 20 seconds from timer
+                countdownTimer_SubtractTime(20);
+                revealAnswer();
+
+                setTimeout(function () {
+                    $('#timer').removeClass('color_red');
+                }, 500);
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -165,6 +164,12 @@
             .then(response => response.json())
             .then(data => {
 
+                // Pause timer
+                $.ajax({
+                    type: 'POST',
+                        url: '/Screenshots/PauseTimer'
+                });
+
                 revealAnswer();
 
                 $('#correctIcon').css('display', 'block');
@@ -172,6 +177,25 @@
             })
             .catch((error) => {
                 console.error('Error:', error);
+            });
+        }
+
+        function revealAnswer() {
+            $('#userInput').val(gameTitle);
+            $('#next_Form').css('display', 'block');
+            $('#skipButton').prop('disabled', true);
+            $('#userInput').attr('readonly', true);
+            $('#userInput').css('opacity', 0.6);
+        }
+
+        function goNext() {
+            // Unpause timer
+            $.ajax({
+                type: 'POST',
+                url: '/Screenshots/UnpauseTimer',
+                success: function (data) {
+                    window.location.href = '/Screenshots/Index';
+                }
             });
         }
     </script>

@@ -6,13 +6,11 @@ namespace VideoGameGuy.Data
     {
         #region Properties..
         public Guid SessionId { get; set; } = Guid.NewGuid();
-
-        public List<ScreenshotsRound> ScreenshotsRounds { get; set; } = new List<ScreenshotsRound>();
-        public ScreenshotsRound SelectedRound { get; set; }
-
         public DateTime Igdb_UpdatedOnUtc { get; set; } = DateTime.MinValue;
+        public TimeSpan TimeRemaining { get; set; }
         public int HighestScore { get; set; }
         public int CurrentScore { get; set; } = 0;
+        public ScreenshotsRound CurrentRound { get; set; }
         #endregion Properties..
     }
 }

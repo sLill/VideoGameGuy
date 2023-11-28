@@ -184,9 +184,9 @@ namespace VideoGameGuy.Controllers
                 _games = _games.Where(x =>
                 {
                     // Filter out games whose storyline contains the title
-                    string formattedStoryine = _titleRegex.Replace(x.Storyline.ToLower(), string.Empty);
+                    string formattedStoryline = _titleRegex.Replace(x.Storyline.ToLower(), string.Empty);
                     string formattedName = _titleRegex.Replace(x.Name.ToLower(), string.Empty);
-                    return !formattedStoryine.Contains(formattedName);
+                    return !formattedStoryline.Contains(formattedName);
                 })?.ToList() ?? new List<IgdbGame>();
             }
 

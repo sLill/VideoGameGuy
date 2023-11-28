@@ -17,11 +17,11 @@
             <input id="scoreValue" type="hidden" name="scoreValue" value="@Model.CurrentScore" />
             <input id="highestScoreValue" type="hidden" name="highestScoreValue" value="@Model.HighestScore" />
 
-        <div id="score_Container">
-            <div id="highestScoreDisplay" class="scoreText">Highest Score: @Model.HighestScore</div>
-            <div id="scoreDisplay" class="scoreText">Score: @Model.CurrentScore</div>
-        </div>
-        <div id="timer">--</div>
+            <div id="score_Container">
+                <div id="highestScoreDisplay" class="scoreText">Highest Score: @Model.HighestScore</div>
+                <div id="scoreDisplay" class="scoreText">Score: @Model.CurrentScore</div>
+            </div>
+            <div id="timer">--</div>
         </div>
 
         @* Description *@
@@ -63,7 +63,7 @@
 {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
-    <script src="~/js/countdownTimer.js" asp-append-version="true"></script>
+    <script src="~/js/descriptionsCountdownTimer.js" asp-append-version="true"></script>
 
     <script>
         const titleExpression = /(?:(?:\:.*)|[^a-z\u00C0-\u024F])|(?:\b[iivx]+\b)|(?:^the)/g;

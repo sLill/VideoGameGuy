@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using VideoGameGuy.Common;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
+using static Azure.Core.HttpHeader;
 using static VideoGameGuy.Data.ScreenshotsSessionItem;
 
 namespace VideoGameGuy.Controllers
@@ -10,11 +13,11 @@ namespace VideoGameGuy.Controllers
     public class ScreenshotsController : Controller
     {
         #region Fields..
-        private const int ROUND_COUNT = 15;
         private const string DESKTOP_IMAGE_SIZE = "t_720p";
 
         private readonly ILogger<ScreenshotsController> _logger;
         private readonly ISessionService _sessionService;
+        private readonly ICountdownTimerService _countdownTimerService;
         private readonly IIgdbGamesRepository _igdbGamesRepository;
         private readonly ISystemStatusRepository _systemStatusRepository;
         private readonly IGameRepository _gameRepository;
@@ -31,12 +34,14 @@ namespace VideoGameGuy.Controllers
         #region Constructors..
         public ScreenshotsController(ILogger<ScreenshotsController> logger,
                                      ISessionService sessionService,
+                                     ICountdownTimerService countdownTimerService,
                                      IIgdbGamesRepository igdbGamesRepository,
                                      ISystemStatusRepository systemStatusRepository,
                                      IGameRepository gameRepository)
         {
             _logger = logger;
             _sessionService = sessionService;
+            _countdownTimerService = countdownTimerService;
             _igdbGamesRepository = igdbGamesRepository;
             _systemStatusRepository = systemStatusRepository;
             _gameRepository = gameRepository;
@@ -49,7 +54,9 @@ namespace VideoGameGuy.Controllers
         {
             // Try load existing session data or create a new one
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            if (sessionData.ScreenshotsSessionItem.ScreenshotsRounds == null)
+
+            bool outOfTime = sessionData.CountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
+            if (outOfTime || sessionData.ScreenshotsSessionItem == null || sessionData.ScreenshotsSessionItem.CurrentRound == null)
                 await StartNewGameAsync(sessionData);
 
             var screenshotsViewModel = await GetViewModelFromSessionDataAsync(sessionData);
@@ -59,30 +66,19 @@ namespace VideoGameGuy.Controllers
         [HttpPost]
         public async Task<IActionResult> GoNext()
         {
-            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
-            
-            if (roundIndex < ROUND_COUNT)
-                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex + 1;
-
-            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
-
+            await UnpauseTimer();
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<ActionResult> GoToRound(int roundIndex)
+        public async Task<IActionResult> Restart()
         {
-            try
-            {
-                var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex;
-                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Could not navigate user to round. RoundIndex: {roundIndex}. {ex.Message} - {ex.StackTrace}");
-            }
+            // Clear cache 
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            sessionData.ScreenshotsSessionItem = new ScreenshotsSessionItem();
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            await _countdownTimerService.RemoveClientTimerAsync(sessionData.SessionId);
 
             return RedirectToAction("Index");
         }
@@ -92,11 +88,56 @@ namespace VideoGameGuy.Controllers
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
-            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
-            if (roundIndex < ROUND_COUNT)
-                sessionData.ScreenshotsSessionItem.SelectedRoundIndex = roundIndex + 1;
+            if (sessionData.ScreenshotsSessionItem.CurrentRound != null)
+                sessionData.ScreenshotsSessionItem.CurrentRound.IsSkipped = true;
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> PauseTimer()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            _countdownTimerService.PauseClientTimer(sessionData.SessionId);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UnpauseTimer()
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            _countdownTimerService.UnpauseClientTimer(sessionData.SessionId);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> UpdateTimer(string timeRemaining)
+        {
+            // Update session data
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+            sessionData.CountdownSessionItem.TimeRemaining = TimeSpan.ParseExact(timeRemaining, @"mm\:ss", CultureInfo.InvariantCulture);
+
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
+            return Json(new { });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GameOver(string score)
+        {
+            var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
+
+            await _gameRepository.AddAsync(new Game()
+            {
+                ClientIp = HttpContext.Connection.RemoteIpAddress.ToString(),
+                GameType = GameType.Screenshots,
+                SessionId = sessionData.SessionId,
+                GameScore = sessionData.ScreenshotsSessionItem.CurrentScore.ToString()
+            });
 
             return Json(new { });
         }
@@ -110,14 +151,13 @@ namespace VideoGameGuy.Controllers
         {
             var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
 
-            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
             var screenshotsViewModel = new ScreenshotsViewModel()
             {
                 SessionId = sessionData.SessionId,
                 HighestScore = sessionData.ScreenshotsSessionItem.HighestScore,
                 CurrentScore = sessionData.ScreenshotsSessionItem.CurrentScore,
-                ScreenshotsRounds = sessionData.ScreenshotsSessionItem.ScreenshotsRounds,
-                SelectedRound =  sessionData.ScreenshotsSessionItem.ScreenshotsRounds[roundIndex],
+                CurrentRound = sessionData.ScreenshotsSessionItem.CurrentRound,
+                TimeRemaining = sessionData.CountdownSessionItem.TimeRemaining,
                 Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
             };
 
@@ -128,17 +168,14 @@ namespace VideoGameGuy.Controllers
         {
             sessionData.ScreenshotsSessionItem.ScreenshotsRounds = new List<ScreenshotsRound>();
 
-            for (int i = 0; i < ROUND_COUNT; i++)
+            switch (_random.Next(0, 2))
             {
-                switch (_random.Next(0, 2))
-                {
-                    case 0:
-                        await AddArtworkRoundAsync(sessionData);
-                        break;
-                    case 1:
-                        await AddScreenshotRoundAsync(sessionData);
-                        break;
-                }
+                case 0:
+                    await AddArtworkRoundAsync(sessionData);
+                    break;
+                case 1:
+                    await AddScreenshotRoundAsync(sessionData);
+                    break;
             }
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
@@ -186,10 +223,12 @@ namespace VideoGameGuy.Controllers
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
-            int roundIndex = sessionData.ScreenshotsSessionItem.SelectedRoundIndex;
-            sessionData.ScreenshotsSessionItem.ScreenshotsRounds[roundIndex].IsSolved = true;
+            if (sessionData.ScreenshotsSessionItem.CurrentRound != null)
+            {
+                sessionData.ScreenshotsSessionItem.CurrentRound.IsSolved = true;
+                await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+            }
 
-            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             return Json(new { sessionData.ScreenshotsSessionItem.CurrentScore });
         }
         #endregion Methods..
