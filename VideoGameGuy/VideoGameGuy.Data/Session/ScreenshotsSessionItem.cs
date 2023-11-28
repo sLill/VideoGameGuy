@@ -1,6 +1,6 @@
 ﻿namespace VideoGameGuy.Data
 {
-    public class ScreenshotsSessionItem
+    public class ScreenshotsSessionItem : SessionItemBase
     {
         #region Records..
         public record ImageRecord

@@ -122,7 +122,7 @@ namespace VideoGameGuy.Data
             return games;
         }
 
-        public async Task<List<IgdbGame>> GetGamesWithArtwork(int artworkCount, int minTotalRatingCount = 0)
+        public List<IgdbGame> GetGamesWithArtwork(int artworkCount, int minTotalRatingCount = 0)
         {
             List<IgdbGame> games = default;
 
@@ -130,12 +130,12 @@ namespace VideoGameGuy.Data
             {
                 if (_igdbDbContext.Games.Any())
                 {
-                    var eligibleGames = await (from g in _igdbDbContext.Games
+                    var eligibleGames = (from g in _igdbDbContext.Games
                                                where g.TotalRating_Count >= minTotalRatingCount
                                                join ga in _igdbDbContext.Games_Artworks on g.SourceId equals ga.Games_SourceId
                                                group ga by g into gaGroup
                                                where gaGroup.Count() >= artworkCount
-                                               select gaGroup.Key)?.ToListAsync();
+                                               select gaGroup.Key)?.ToList();
 
                     if (eligibleGames.Any())
                         games = eligibleGames;

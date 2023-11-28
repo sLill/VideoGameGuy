@@ -1,5 +1,5 @@
 ﻿var countdownSeconds = 180;
-var sessionId = $('#sessionId').val();
+var sessionItemId = $('#sessionItemId').val();
 var scoreValue = $('#scoreValue').val();
 var highestScoreValue = $('#highestScoreValue').val();
 var timerConnection = new signalR.HubConnectionBuilder()
@@ -10,7 +10,7 @@ var timerConnection = new signalR.HubConnectionBuilder()
 
 function start_fulfilled() {
     console.log("connection accepted");
-    timerConnection.invoke("StartCountdownForUser", { sessionId: sessionId, seconds: countdownSeconds });
+    timerConnection.invoke("StartCountdownForUser", { sessionItemId: sessionItemId, seconds: countdownSeconds });
 }
 
 function start_rejected() {
@@ -55,7 +55,7 @@ timerConnection.on("UpdateTimer", (time) => {
 
 timerConnection.onreconnecting(error => {
     console.log("reconnecting");
-    timerConnection.invoke("StartCountdownForUser", { sessionId: sessionId, seconds: countdownSeconds });
+    timerConnection.invoke("StartCountdownForUser", { sessionItemId: sessionItemId, seconds: countdownSeconds });
 });
 
 timerConnection.onclose(error => {
@@ -63,7 +63,7 @@ timerConnection.onclose(error => {
 });
 
 function countdownTimer_SubtractTime(amountSeconds) {
-    timerConnection.invoke("SubtractTimeForUser", { sessionId: sessionId, seconds: amountSeconds });
+    timerConnection.invoke("SubtractTimeForUser", { sessionItemId: sessionItemId, seconds: amountSeconds });
 }
 
 timerConnection

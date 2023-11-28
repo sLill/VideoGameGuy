@@ -40,9 +40,9 @@ namespace VideoGameGuy.Core
         #region Event Handlers..
         private async void clientCountdownTimer_Elapsed(object sender)
         {
-            Guid clientSessionId = (Guid)sender;
+            Guid sessionItemId = (Guid)sender;
 
-            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
+            if (!_clientCountdownTimers.TryGetValue(sessionItemId, out var clientTimer))
                 return;
 
             if (!clientTimer.Timer.IsPaused)
@@ -52,7 +52,7 @@ namespace VideoGameGuy.Core
                 if (clientTimer.Timer.TimeRemaining <= TimeSpan.Zero)
                 {
                     clientTimer.Timer.TimeRemaining = TimeSpan.Zero;
-                    await RemoveClientTimerAsync(clientSessionId);
+                    await RemoveClientTimerAsync(sessionItemId);
                 }
 
                 // Message client
@@ -61,61 +61,61 @@ namespace VideoGameGuy.Core
         }
         #endregion Event Handlers..
 
-        private void AddClientTimer(Guid clientSessionId, HubCallerContext context, TimeSpan countdownTime)
+        private void AddClientTimer(Guid sessionItemId, HubCallerContext context, TimeSpan countdownTime)
         {
-            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, clientSessionId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
-            _clientCountdownTimers[clientSessionId] = (context, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
+            var countdownTimer = new Timer(clientCountdownTimer_Elapsed, sessionItemId, TimeSpan.Zero, TimeSpan.FromSeconds(TIMER_INTERVAL_SECONDS));
+            _clientCountdownTimers[sessionItemId] = (context, new ClientCountdownTimer() { TimeRemaining = countdownTime, Timer = countdownTimer });
         }
 
-        public async Task RemoveClientTimerAsync(Guid clientSessionId)
+        public async Task RemoveClientTimerAsync(Guid sessionItemId)
         {
-            if (_clientCountdownTimers.ContainsKey(clientSessionId))
+            if (_clientCountdownTimers.ContainsKey(sessionItemId))
             {
-                _clientCountdownTimers.Remove(clientSessionId, out (HubCallerContext Context, ClientCountdownTimer Timer) clientCountdownTimer);
+                _clientCountdownTimers.Remove(sessionItemId, out (HubCallerContext Context, ClientCountdownTimer Timer) clientCountdownTimer);
 
                 await clientCountdownTimer.Timer.Timer.DisposeAsync();
                 clientCountdownTimer = default;
             }
         }
 
-        public void PauseClientTimer(Guid clientSessionId)
+        public void PauseClientTimer(Guid sessionItemId)
         {
-            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
+            if (!_clientCountdownTimers.TryGetValue(sessionItemId, out var clientTimer))
                 return;
 
             clientTimer.Timer.IsPaused = true;
         }
 
-        public void UnpauseClientTimer(Guid clientSessionId)
+        public void UnpauseClientTimer(Guid sessionItemId)
         {
-            if (!_clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer))
+            if (!_clientCountdownTimers.TryGetValue(sessionItemId, out var clientTimer))
                 return;
 
             clientTimer.Timer.IsPaused = false;
         }
 
-        public async Task StartCountdownForUser(Guid clientSessionId, HubCallerContext context, int countdownSeconds)
+        public async Task StartCountdownForUser(Guid sessionItemId, HubCallerContext context, int countdownSeconds)
         {
             // If a timer already exists for this sessionId, just update the associated connectionId
-            _clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer);
+            _clientCountdownTimers.TryGetValue(sessionItemId, out var clientTimer);
             if (clientTimer != default)
             {
                 clientTimer.Context = context;
-                _clientCountdownTimers[clientSessionId] = clientTimer;
+                _clientCountdownTimers[sessionItemId] = clientTimer;
             }
             else
-                AddClientTimer(clientSessionId, context, TimeSpan.FromSeconds(countdownSeconds));
+                AddClientTimer(sessionItemId, context, TimeSpan.FromSeconds(countdownSeconds));
         }
 
-        public async Task SubtractTimeForUser(Guid clientSessionId, HubCallerContext context, int seconds)
+        public async Task SubtractTimeForUser(Guid sessionItemId, HubCallerContext context, int seconds)
         {
             // If a timer already exists for this sessionId, just update the associated connectionId
-            _clientCountdownTimers.TryGetValue(clientSessionId, out var clientTimer);
+            _clientCountdownTimers.TryGetValue(sessionItemId, out var clientTimer);
             if (clientTimer != default)
             {
                 clientTimer.Context = context;
                 clientTimer.Timer.TimeRemaining = clientTimer.Timer.TimeRemaining - TimeSpan.FromSeconds(seconds);
-                _clientCountdownTimers[clientSessionId] = clientTimer;
+                _clientCountdownTimers[sessionItemId] = clientTimer;
             }
         }
         #endregion Methods..

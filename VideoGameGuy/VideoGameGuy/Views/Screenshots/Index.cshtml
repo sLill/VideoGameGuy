@@ -13,7 +13,7 @@
 
         @* Status *@
         <div id="status_Grid">
-            <input id="sessionId" type="hidden" name="sessionId" value="@Model.SessionId" />
+            <input id="sessionItemId" type="hidden" name="sessionId" value="@Model.SessionItemId" />
             <input id="scoreValue" type="hidden" name="scoreValue" value="@Model.CurrentScore" />
             <input id="highestScoreValue" type="hidden" name="highestScoreValue" value="@Model.HighestScore" />
 
@@ -29,7 +29,7 @@
         @* Screenshot Carousel *@
         <div id="screenshotCarousel_Container">
             <ejs-carousel id="screenshotCarousel"
-                          dataSource="@Model.CurrentRound.ImageCollection"
+                          dataSource="@Model.CurrentRound?.ImageCollection"
                           itemTemplate="<div class='screenshot_slideContent' Style='background-image: url(&apos;${Value}&apos;);'></div>"
                           autoPlay="false"
                           partialVisible="false"
@@ -108,16 +108,6 @@
         function screenshotCarousel_slideChanged(args) {
             console.log("Screenshot carousel item changed:", args);
         }
-       
-        function goToRound(roundIndex) {
-            $.ajax({type: 'POST',
-                    url: '/Screenshots/GoToRound',
-                    data: { roundIndex: roundIndex },
-                    success: function (data) {
-                        window.location.href = '/Screenshots/Index';
-                    }
-            });
-        }
 
         function skip() {
             // Pause timer
@@ -167,7 +157,7 @@
                 // Pause timer
                 $.ajax({
                     type: 'POST',
-                        url: '/Screenshots/PauseTimer'
+                    url: '/Screenshots/PauseTimer'
                 });
 
                 revealAnswer();

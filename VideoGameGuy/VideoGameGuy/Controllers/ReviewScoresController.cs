@@ -125,7 +125,7 @@ namespace VideoGameGuy.Controllers
 
             ReviewScoresViewModel reviewScoresViewModel = new ReviewScoresViewModel()
             {
-                SessionId = sessionData.SessionId,
+                SessionItemId = sessionData.ReviewScoresSessionItem.SessionItemId,
                 LastUpdateOn = systemStatus.Rawg_UpdatedOnUtc ?? DateTime.MinValue,
                 HighestStreak = sessionData.ReviewScoresSessionItem.HighestStreak,
                 Streak = sessionData.ReviewScoresSessionItem.Streak,

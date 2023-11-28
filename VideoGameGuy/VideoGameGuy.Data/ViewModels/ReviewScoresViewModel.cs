@@ -5,7 +5,7 @@ namespace VideoGameGuy.Data
     public class ReviewScoresViewModel
     {
         #region Properties..
-        public Guid SessionId { get; set; } = Guid.NewGuid();
+        public Guid SessionItemId { get; set; } = Guid.NewGuid();
         public DateTime LastUpdateOn { get; set; }
         public int HighestStreak { get; set; }
         public int Streak { get; set; }

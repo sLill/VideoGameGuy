@@ -78,7 +78,7 @@ namespace VideoGameGuy.Controllers
             sessionData.ScreenshotsSessionItem = new ScreenshotsSessionItem();
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
-            await _countdownTimerService.RemoveClientTimerAsync(sessionData.SessionId);
+            await _countdownTimerService.RemoveClientTimerAsync(sessionData.ScreenshotsSessionItem.SessionItemId);
 
             return RedirectToAction("Index");
         }
@@ -100,7 +100,7 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> PauseTimer()
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            _countdownTimerService.PauseClientTimer(sessionData.SessionId);
+            _countdownTimerService.PauseClientTimer(sessionData.ScreenshotsSessionItem.SessionItemId);
 
             return Json(new { });
         }
@@ -109,7 +109,7 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> UnpauseTimer()
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            _countdownTimerService.UnpauseClientTimer(sessionData.SessionId);
+            _countdownTimerService.UnpauseClientTimer(sessionData.ScreenshotsSessionItem.SessionItemId);
 
             return Json(new { });
         }
@@ -149,25 +149,32 @@ namespace VideoGameGuy.Controllers
 
         public async Task<ScreenshotsViewModel> GetViewModelFromSessionDataAsync(SessionData sessionData)
         {
-            var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+            ScreenshotsViewModel screenshotsViewModel = null;
 
-            var screenshotsViewModel = new ScreenshotsViewModel()
+            try
             {
-                SessionId = sessionData.SessionId,
-                HighestScore = sessionData.ScreenshotsSessionItem.HighestScore,
-                CurrentScore = sessionData.ScreenshotsSessionItem.CurrentScore,
-                CurrentRound = sessionData.ScreenshotsSessionItem.CurrentRound,
-                TimeRemaining = sessionData.ScreenshotCountdownSessionItem.TimeRemaining,
-                Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
-            };
+                var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+                screenshotsViewModel = new ScreenshotsViewModel()
+                {
+                    SessionItemId = sessionData.ScreenshotsSessionItem.SessionItemId,
+                    HighestScore = sessionData.ScreenshotsSessionItem.HighestScore,
+                    CurrentScore = sessionData.ScreenshotsSessionItem.CurrentScore,
+                    CurrentRound = sessionData.ScreenshotsSessionItem.CurrentRound,
+                    TimeRemaining = sessionData.ScreenshotCountdownSessionItem.TimeRemaining,
+                    Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
 
             return screenshotsViewModel;
         }
 
         private async Task StartNewGameAsync(SessionData sessionData)
         {
-            sessionData.ScreenshotsSessionItem.ScreenshotsRounds = new List<ScreenshotsRound>();
-
             switch (_random.Next(0, 2))
             {
                 case 0:
@@ -183,7 +190,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task AddArtworkRoundAsync(SessionData sessionData)
         {
-            _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(3, 200);
+            _gamesWithArtwork = _gamesWithArtwork ?? await _igdbGamesRepository.GetGamesWithArtwork(5, 200);
             IgdbGame game = _gamesWithArtwork?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbArtwork> artwork = await _igdbGamesRepository.GetArtworkFromGameAsync(game);
@@ -202,7 +209,7 @@ namespace VideoGameGuy.Controllers
 
         private async Task AddScreenshotRoundAsync(SessionData sessionData)
         {
-            _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(3, 200);
+            _gamesWithScreenshots = _gamesWithScreenshots ?? await _igdbGamesRepository.GetGamesWithScreenshots(5, 200);
             IgdbGame game = _gamesWithScreenshots?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbScreenshot> screenshots = await _igdbGamesRepository.GetScreenshotsFromGameAsync(game);

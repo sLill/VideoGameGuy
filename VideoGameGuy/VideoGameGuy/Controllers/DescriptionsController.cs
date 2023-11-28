@@ -53,7 +53,6 @@ namespace VideoGameGuy.Controllers
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
             bool outOfTime = sessionData.DescriptionCountdownSessionItem.TimeRemaining <= TimeSpan.Zero;
-
             if (outOfTime || sessionData.DescriptionsSessionItem == null|| sessionData.DescriptionsSessionItem.CurrentRound == null)
                 await StartNewRoundAsync(sessionData);
 
@@ -76,7 +75,7 @@ namespace VideoGameGuy.Controllers
             sessionData.DescriptionsSessionItem = null;
 
             await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
-            await _countdownTimerService.RemoveClientTimerAsync(sessionData.SessionId);
+            await _countdownTimerService.RemoveClientTimerAsync(sessionData.DescriptionsSessionItem.SessionItemId);
 
             return RedirectToAction("Index");
         }
@@ -98,7 +97,7 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> PauseTimer()
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            _countdownTimerService.PauseClientTimer(sessionData.SessionId);
+            _countdownTimerService.PauseClientTimer(sessionData.DescriptionsSessionItem.SessionItemId);
 
             return Json(new { });
         }
@@ -107,7 +106,7 @@ namespace VideoGameGuy.Controllers
         public async Task<ActionResult> UnpauseTimer()
         {
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
-            _countdownTimerService.UnpauseClientTimer(sessionData.SessionId);
+            _countdownTimerService.UnpauseClientTimer(sessionData.DescriptionsSessionItem.SessionItemId);
 
             return Json(new { });
         }
@@ -160,17 +159,25 @@ namespace VideoGameGuy.Controllers
 
         public async Task<DescriptionsViewModel> GetViewModelFromSessionDataAsync(SessionData sessionData)
         {
-            var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+            DescriptionsViewModel descriptionsViewModel = null;
 
-            var descriptionsViewModel = new DescriptionsViewModel()
+            try
             {
-                SessionId = sessionData.SessionId,
-                HighestScore = sessionData.DescriptionsSessionItem.HighestScore,
-                CurrentScore = sessionData.DescriptionsSessionItem.CurrentScore,
-                CurrentRound = sessionData.DescriptionsSessionItem.CurrentRound,
-                TimeRemaining = sessionData.DescriptionCountdownSessionItem.TimeRemaining,
-                Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
-            };
+                var systemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
+                descriptionsViewModel = new DescriptionsViewModel()
+                {
+                    SessionItemId = sessionData.DescriptionsSessionItem.SessionItemId,
+                    HighestScore = sessionData.DescriptionsSessionItem.HighestScore,
+                    CurrentScore = sessionData.DescriptionsSessionItem.CurrentScore,
+                    CurrentRound = sessionData.DescriptionsSessionItem.CurrentRound,
+                    TimeRemaining = sessionData.DescriptionCountdownSessionItem.TimeRemaining,
+                    Igdb_UpdatedOnUtc = systemStatus.Igdb_UpdatedOnUtc ?? DateTime.MinValue
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
 
             return descriptionsViewModel;
         }
