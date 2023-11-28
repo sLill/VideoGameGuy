@@ -65,6 +65,7 @@ namespace VideoGameGuy
             });
 
             builder.Services.AddScoped<ISystemStatusRepository, SystemStatusRepository>();
+            builder.Services.AddScoped<ITrafficLogRepository, TrafficLogRepository>();
             builder.Services.AddScoped<IGameRepository, GameRepository>();
             builder.Services.AddScoped<IRawgGamesRepository, RawgGamesRepository>();
             builder.Services.AddScoped<IIgdbArtworksRepository, IgdbArtworksRepository>();

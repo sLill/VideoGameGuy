@@ -10,7 +10,7 @@ namespace VideoGameGuy.Data
         #endregion Properties..
 
         #region Constructors..
-        public SystemStatusRepository(ILogger<RawgGamesRepository> logger, 
+        public SystemStatusRepository(ILogger<SystemStatusRepository> logger, 
                                       MainDbContext mainDbContext)
             : base(logger, mainDbContext)
         {
