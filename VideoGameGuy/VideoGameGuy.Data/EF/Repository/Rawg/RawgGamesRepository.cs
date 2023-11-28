@@ -82,6 +82,22 @@ namespace VideoGameGuy.Data
             return games;
         }
 
+        public bool HasGames()
+        {
+            bool result = false;
+            
+            try
+            {
+                result = _rawgDbContext.Games.Any();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message} - {ex.StackTrace}");
+            }
+
+            return result;
+        }
+
         private async Task<bool> AddAsync(RawgApiGame rawgGame)
         {
             bool success = true;

@@ -144,14 +144,32 @@ namespace VideoGameGuy.Controllers
 
         private async Task StartNewRoundAsync(ReviewScoresSessionItem reviewScoresSessionData)
         {
-            List<RawgGame> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
+            Guid? gameOneId = null;
+            Guid? gameTwoId = null;
 
-            if (games?.Any() ?? false)
+            if (_rawgGamesRepository.HasGames())
             {
+                if (reviewScoresSessionData.ReviewScoresRounds.Any())
+                {
+                    var previousRound = reviewScoresSessionData.ReviewScoresRounds.LastOrDefault();
+                    gameOneId = previousRound.WinningGameId == previousRound.GameOneId ? previousRound.GameOneId : null;
+                    gameTwoId = gameOneId == null ? previousRound.GameTwoId : null;
+
+                    var randomGame = await _rawgGamesRepository.GetRandomGamesAsync(1);
+                    gameOneId = gameOneId == null ? randomGame.FirstOrDefault().RawgGameId : gameOneId;
+                    gameTwoId = gameTwoId == null ? randomGame.FirstOrDefault().RawgGameId : gameTwoId;
+                }
+                else
+                {
+                    List<RawgGame> games = await _rawgGamesRepository.GetRandomGamesAsync(2);
+                    gameOneId = games[0].RawgGameId;
+                    gameTwoId = games[1].RawgGameId;
+                }
+
                 reviewScoresSessionData.ReviewScoresRounds.Add(new ReviewScoresSessionItem.ReviewScoresRound()
                 {
-                    GameOneId = games[0].RawgGameId,
-                    GameTwoId = games[1].RawgGameId
+                    GameOneId = gameOneId.Value,
+                    GameTwoId = gameTwoId.Value
                 });
 
                 // Update session data

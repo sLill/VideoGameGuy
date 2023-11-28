@@ -29,7 +29,7 @@
         @* Screenshot Carousel *@
         <div id="screenshotCarousel_Container">
             <ejs-carousel id="screenshotCarousel"
-                          dataSource="@Model.CurrentRound?.ImageCollection"
+                          dataSource="@Model.CurrentRound.ImageCollection"
                           itemTemplate="<div class='screenshot_slideContent' Style='background-image: url(&apos;${Value}&apos;);'></div>"
                           autoPlay="false"
                           partialVisible="false"
