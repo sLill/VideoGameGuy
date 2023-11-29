@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using VideoGameGuy.Common;
 using VideoGameGuy.Core;
 using VideoGameGuy.Data;
-using static Azure.Core.HttpHeader;
 using static VideoGameGuy.Data.ScreenshotsSessionItem;
 
 namespace VideoGameGuy.Controllers
@@ -80,10 +78,11 @@ namespace VideoGameGuy.Controllers
             // Clear cache 
             var sessionData = await _sessionService.GetSessionDataAsync(HttpContext);
 
-            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
             await _countdownTimerService.RemoveClientTimerAsync(sessionData.ScreenshotsSessionItem.SessionItemId);
 
             sessionData.ScreenshotsSessionItem = new ScreenshotsSessionItem();
+            await _sessionService.SetSessionDataAsync(sessionData, HttpContext);
+
             return RedirectToAction("Index");
         }
 

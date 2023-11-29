@@ -47,8 +47,8 @@ namespace VideoGameGuy.Data
             PlayerbaseProgress = rawgApiGame.added_by_status != null
                    ? new RawgPlayerbaseProgress() { OwnTheGame = rawgApiGame.added_by_status.owned, BeatTheGame = rawgApiGame.added_by_status.beaten } : null;
 
-            Ratings = rawgApiGame.ratings.Select(x => new RawgRating() { Score = x.id, Description = x.title, Count = x.count })?.ToList();
-            Screenshots = rawgApiGame.short_screenshots.Select(x => new RawgScreenshot() { Source = "RAWG", SourceId = x.id, Uri = x.image })?.ToList();
+            Ratings = rawgApiGame.ratings?.Select(x => new RawgRating() { Score = x.id, Description = x.title, Count = x.count })?.ToList();
+            Screenshots = rawgApiGame.short_screenshots?.Select(x => new RawgScreenshot() { Source = "RAWG", SourceId = x.id, Uri = x.image })?.ToList();
 
             // Calculated
             AverageUserScore = GetAverageUserRating();
