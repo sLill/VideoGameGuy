@@ -201,12 +201,13 @@ namespace VideoGameGuy.Controllers
 
         private void QueueRandomRound() 
         {
-            switch (_random.Next(0, 2))
+            switch (_random.Next(0, 3))
             {
                 case 0:
                     AddArtworkRound();
                     break;
                 case 1:
+                case 2:
                     AddScreenshotRound();
                     break;
             }
@@ -214,11 +215,11 @@ namespace VideoGameGuy.Controllers
 
         private void AddArtworkRound()
         {
-            _gamesWithArtwork = _gamesWithArtwork ?? _igdbGamesRepository.GetGamesWithArtwork(5, 200);
+            _gamesWithArtwork = _gamesWithArtwork ?? _igdbGamesRepository.GetGamesWithArtwork(3, 200);
             IgdbGame game = _gamesWithArtwork?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbArtwork> artwork = _igdbGamesRepository.GetArtworkFromGame(game);
-            List<ImageRecord> imageCollection = artwork.TakeRandom(5)
+            List<ImageRecord> imageCollection = artwork.TakeRandom(3)
                 .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
             _gameQueue.Enqueue((game, imageCollection));
@@ -226,11 +227,11 @@ namespace VideoGameGuy.Controllers
 
         private void AddScreenshotRound()
         {
-            _gamesWithScreenshots = _gamesWithScreenshots ?? _igdbGamesRepository.GetGamesWithScreenshots(5, 200);
+            _gamesWithScreenshots = _gamesWithScreenshots ?? _igdbGamesRepository.GetGamesWithScreenshots(3, 200);
             IgdbGame game = _gamesWithScreenshots?.TakeRandom(1).FirstOrDefault();
 
             List<IgdbScreenshot> screenshots = _igdbGamesRepository.GetScreenshotsFromGame(game);
-            List<ImageRecord> imageCollection = screenshots.TakeRandom(5)
+            List<ImageRecord> imageCollection = screenshots.TakeRandom(3)
                 .Select(x => new ImageRecord() { Value = x.Url.Replace("t_thumb", DESKTOP_IMAGE_SIZE) }).ToList();
 
             _gameQueue.Enqueue((game, imageCollection));
