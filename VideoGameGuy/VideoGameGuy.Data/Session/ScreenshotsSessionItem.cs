@@ -15,6 +15,7 @@ namespace VideoGameGuy.Data
         public record ScreenshotsRound
         {
             public string GameTitle { get; set; }
+            public string GameSlug { get; set; }
             public List<ImageRecord> ImageCollection { get; set; }
             public bool IsSolved { get; set; }
             public bool IsSkipped { get; set; }
@@ -43,56 +44,54 @@ namespace VideoGameGuy.Data
             if (screenshotsRound == null)
                 throw new ArgumentException("Expected ScreenshotsRound object value");
 
-            // Start writing the JSON
             writer.WriteStartObject();
 
-            // Serialize GameTitle
             writer.WritePropertyName("GameTitle");
             serializer.Serialize(writer, screenshotsRound.GameTitle);
 
-            // Serialize ImageCollection
+            writer.WritePropertyName("GameSlug");
+            serializer.Serialize(writer, screenshotsRound.GameSlug);
+
             writer.WritePropertyName("ImageCollection");
             writer.WriteStartArray();
+
             foreach (var image in screenshotsRound.ImageCollection)
-            {
                 serializer.Serialize(writer, image);
-            }
+
             writer.WriteEndArray();
 
-            // Serialize IsSolved
             writer.WritePropertyName("IsSolved");
             serializer.Serialize(writer, screenshotsRound.IsSolved);
 
-            // Serialize IsSkipped
             writer.WritePropertyName("IsSkipped");
             serializer.Serialize(writer, screenshotsRound.IsSkipped);
 
-            // End writing the JSON
             writer.WriteEndObject();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            // Ensure the token type is correct (StartObject indicates the beginning of an object)
             if (reader.TokenType != JsonToken.StartObject)
                 throw new JsonSerializationException("Expected StartObject token.");
 
             var screenshotsRound = new ScreenshotsRound();
-            reader.Read(); // Read the next token
+            reader.Read(); 
 
-            while (reader.TokenType != JsonToken.EndObject) // Read until the end of the object
+            while (reader.TokenType != JsonToken.EndObject)
             {
-                // Make sure the token is a property name
                 if (reader.TokenType != JsonToken.PropertyName)
                     throw new JsonSerializationException("Expected PropertyName token.");
 
                 string propertyName = reader.Value.ToString();
-                reader.Read(); // Move to the property value
+                reader.Read();
 
                 switch (propertyName)
                 {
                     case "GameTitle":
                         screenshotsRound.GameTitle = serializer.Deserialize<string>(reader);
+                        break;
+                    case "GameSlug":
+                        screenshotsRound.GameSlug = serializer.Deserialize<string>(reader);
                         break;
                     case "ImageCollection":
                         screenshotsRound.ImageCollection = serializer.Deserialize<List<ImageRecord>>(reader);
@@ -107,7 +106,7 @@ namespace VideoGameGuy.Data
                         throw new JsonSerializationException($"Unexpected property: {propertyName}");
                 }
 
-                reader.Read(); // Read the next token (either the next property name or the end object)
+                reader.Read(); 
             }
 
             return screenshotsRound;

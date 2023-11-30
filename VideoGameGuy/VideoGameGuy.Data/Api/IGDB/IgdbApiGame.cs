@@ -111,6 +111,7 @@ namespace VideoGameGuy.Data
         public List<IgdbApiGameMode> game_modes { get; set; } = new List<IgdbApiGameMode>();
         public List<IgdbApiMultiplayerMode> multiplayer_modes { get; set; } = new List<IgdbApiMultiplayerMode>();
         public string name { get; set; }
+        public string slug { get; set; }
         public int parent_game { get; set; }
         public List<IgdbApiPlatform> platforms { get; set; } = new List<IgdbApiPlatform>();
         public double rating { get; set; }

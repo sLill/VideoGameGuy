@@ -26,6 +26,7 @@
 
         @* Description *@
         <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
+        <input id="gameSlug" type="hidden" name="gameSlug" value="@Model.CurrentRound?.GameSlug" />
         <div id="gameDescription">@Model.CurrentRound?.GameDescription</div>
 
         @* // User Input *@
@@ -69,7 +70,9 @@
         const titleExpression = /(?:(?:\:.*)|[^a-z\u00C0-\u024F])|(?:\b[iivx]+\b)|(?:^the)/g;
 
         var gameTitle = $('#gameTitle').val();
+        var gameSlug = $('#gameSlug').val();
         var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');
+        var gameSlugFormatted = gameSlug.replace(titleExpression, '');
 
         $(document).ready(function () {
             // User key press
@@ -77,7 +80,7 @@
 
                 var inputValue = $(this).val().toLowerCase().replace(titleExpression, '');
 
-                if (gameTitleFormatted === inputValue) {
+                if (gameTitleFormatted === inputValue || gameSlugFormatted === inputValue) {
                     validate();
 
                     this.addEventListener('keydown', function (event) {

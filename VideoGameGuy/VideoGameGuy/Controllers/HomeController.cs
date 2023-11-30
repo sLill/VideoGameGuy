@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using VideoGameGuy.Common;
 using VideoGameGuy.Data;
 
 namespace VideoGameGuy.Controllers
@@ -54,8 +55,8 @@ namespace VideoGameGuy.Controllers
             await _trafficLogRepository.AddAsync(new TrafficLog()
             {
                 Ip = ip,
-                Referer = referer,
-                UserAgent = userAgent
+                Referer = referer?.Truncate(500),
+                UserAgent = userAgent?.Truncate(250)
             });
         }
 

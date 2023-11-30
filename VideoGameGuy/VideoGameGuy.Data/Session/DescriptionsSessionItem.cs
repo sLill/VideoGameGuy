@@ -6,6 +6,7 @@
         public record DescriptionsRound
         {
             public string GameTitle { get; set; }
+            public string GameSlug { get; set; }
             public string GameDescription { get; set; }
             public bool IsSolved { get; set; }
             public bool IsSkipped { get; set; }

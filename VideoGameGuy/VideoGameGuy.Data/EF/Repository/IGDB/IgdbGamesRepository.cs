@@ -104,7 +104,7 @@ namespace VideoGameGuy.Data
                 {
                     var eligibleGames = await (from g in _igdbDbContext.Games
                                                where g.Storyline != null
-                                                  && (g.Name == null || !g.Storyline.Contains(g.Name))
+                                                  && (g.Name == null || !g.Storyline.Contains(g.Name, StringComparison.OrdinalIgnoreCase))
                                                   && (g.Category == "main_game" || g.Category == "remake")
                                                   && g.TotalRating_Count != null
                                                   && g.TotalRating_Count >= minimumNumberOfRatings

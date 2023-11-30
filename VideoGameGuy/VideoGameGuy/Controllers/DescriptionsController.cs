@@ -207,6 +207,7 @@ namespace VideoGameGuy.Controllers
                     sessionData.DescriptionsSessionItem.DescriptionsRounds.Add(new DescriptionsSessionItem.DescriptionsRound()
                     {
                         GameTitle = game.Name,
+                        GameSlug = game.Slug,
                         GameDescription = game.Storyline,
                     });
 

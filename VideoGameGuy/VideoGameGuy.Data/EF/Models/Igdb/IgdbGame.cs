@@ -1,6 +1,4 @@
-﻿using Syncfusion.Licensing;
-
-namespace VideoGameGuy.Data
+﻿namespace VideoGameGuy.Data
 {
     public class IgdbGame : ModelBase
     {
@@ -11,6 +9,7 @@ namespace VideoGameGuy.Data
         public Guid? Checksum { get; set; }
 
         public string? Name { get; set; }
+        public string? Slug { get; set; }
 
         // Rating based on external critic scores
         public double? AggregateRating { get; set; }
@@ -48,6 +47,7 @@ namespace VideoGameGuy.Data
             Checksum = game.checksum;
 
             Name = game.name;
+            Slug = game.slug;
 
             AggregateRating = game.aggregated_rating;
             AggregateRating_Count = game.aggregated_rating_count;

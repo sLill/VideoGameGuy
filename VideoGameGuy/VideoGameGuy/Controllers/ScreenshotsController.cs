@@ -184,6 +184,7 @@ namespace VideoGameGuy.Controllers
             sessionData.ScreenshotsSessionItem.ScreenshotsRounds.Add(new ScreenshotsRound()
             {
                 GameTitle = game.Game.Name,
+                GameSlug = game.Game.Slug,
                 ImageCollection = game.Images
             });
 

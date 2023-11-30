@@ -25,6 +25,7 @@
         </div>
 
         <input id="gameTitle" type="hidden" name="gameTitle" value="@Model.CurrentRound?.GameTitle" />
+        <input id="gameSlug" type="hidden" name="gameSlug" value="@Model.CurrentRound?.GameSlug" />
 
         @* Screenshot Carousel *@
         <div id="screenshotCarousel_Container">
@@ -79,7 +80,9 @@
         const titleExpression = /(?:(?:\:.*)|[^a-z])|(?:\b[iivx]+\b)|(?:^the)/g;
 
         var gameTitle = $('#gameTitle').val();
+        var gameSlug = $('#gameSlug').val();
         var gameTitleFormatted = gameTitle.toLowerCase().replace(titleExpression, '');
+        var gameSlugFormatted = gameSlug.replace(titleExpression, '');
 
         $(document).ready(function () {
             // User key press
@@ -87,7 +90,7 @@
 
                 var inputValue = $(this).val().toLowerCase().replace(titleExpression, '');
 
-                if (gameTitleFormatted === inputValue) {
+                if (gameTitleFormatted === inputValue || gameSlugFormatted === inputValue) {
                     validate();
 
                     this.addEventListener('keydown', function (event) {

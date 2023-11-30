@@ -64,6 +64,10 @@ namespace VideoGameGuy.Data
                 .HasColumnType("NVARCHAR(255)");
 
             modelBuilder.Entity<IgdbGame>()
+                .Property(g => g.Slug)
+                .HasColumnType("NVARCHAR(255)");
+
+            modelBuilder.Entity<IgdbGame>()
                 .Property(g => g.Category)
                 .HasColumnType("NVARCHAR(255)");
 
