@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,6 +20,7 @@ namespace VideoGameGuy.Core
         private readonly IOptions<IgdbApiSettings> _settings;
         private readonly IHttpClientFactory _httpClientFactory;
 
+        private IServiceScope? _serviceScope;
         private IgdbDbContext _idgbDbContext;
 
         private ISystemStatusRepository _systemStatusRepository;
@@ -53,41 +55,42 @@ namespace VideoGameGuy.Core
             _logger = logger;
             _settings = settings;
             _httpClientFactory = httpClientFactory;
-
-            Initialize();
         }
         #endregion Constructors..
 
         #region Methods..
         private void Initialize()
         {
-            var serviceScope = _serviceProvider.CreateScope();
+            _serviceScope?.Dispose();
+            _serviceScope = _serviceProvider.CreateScope();
 
-            _idgbDbContext = serviceScope.ServiceProvider.GetRequiredService<IgdbDbContext>();
+            _idgbDbContext = _serviceScope.ServiceProvider.GetRequiredService<IgdbDbContext>();
 
-            _systemStatusRepository = serviceScope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
-            _igdbArtworksRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbArtworksRepository>();
-            _igdbGameModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGameModesRepository>();
-            _igdbGamesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGamesRepository>();
-            _igdbMultiplayerModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbMultiplayerModesRepository>();
-            _igdbPlatformFamiliesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformFamiliesRepository>();
-            _igdbPlatformLogosRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformLogosRepository>();
-            _igdbPlatformsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformsRepository>();
-            _igdbScreenshotsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbScreenshotsRepository>();
-            _igdbThemesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbThemesRepository>();
+            _systemStatusRepository = _serviceScope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
+            _igdbArtworksRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbArtworksRepository>();
+            _igdbGameModesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGameModesRepository>();
+            _igdbGamesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGamesRepository>();
+            _igdbMultiplayerModesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbMultiplayerModesRepository>();
+            _igdbPlatformFamiliesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformFamiliesRepository>();
+            _igdbPlatformLogosRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformLogosRepository>();
+            _igdbPlatformsRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbPlatformsRepository>();
+            _igdbScreenshotsRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbScreenshotsRepository>();
+            _igdbThemesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbThemesRepository>();
 
-            _igdbGames_GameModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_GameModesRepository>();
-            _igdbGames_MultiplayerModesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_MultiplayerModesRepository>();
-            _igdbGames_PlatformsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_PlatformsRepository>();
-            _igdbGames_ThemesRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ThemesRepository>();
-            _igdbGames_ArtworksRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ArtworksRepository>();
-            _igdbGames_ScreenshotsRepository = serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ScreenshotsRepository>();
+            _igdbGames_GameModesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_GameModesRepository>();
+            _igdbGames_MultiplayerModesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_MultiplayerModesRepository>();
+            _igdbGames_PlatformsRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_PlatformsRepository>();
+            _igdbGames_ThemesRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ThemesRepository>();
+            _igdbGames_ArtworksRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ArtworksRepository>();
+            _igdbGames_ScreenshotsRepository = _serviceScope.ServiceProvider.GetRequiredService<IIgdbGames_ScreenshotsRepository>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
+                Initialize();
+
                 var currentSystemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
 
                 // Pull and cache data if it has never been done before or if the polling period has elapsed
@@ -103,6 +106,8 @@ namespace VideoGameGuy.Core
                     currentSystemStatus.Igdb_UpdatedOnUtc = DateTime.UtcNow;
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
                 }
+                
+                _serviceScope?.Dispose();
 
                 await Task.Delay(TimeSpan.FromHours(6), cancellationToken);
             }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,8 +17,9 @@ namespace VideoGameGuy.Core
         private readonly IOptions<RawgApiSettings> _settings;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly ISystemStatusRepository _systemStatusRepository;
-        private readonly IRawgGamesRepository _rawgGamesRepository;
+        private IServiceScope _serviceScope;
+        private ISystemStatusRepository _systemStatusRepository;
+        private IRawgGamesRepository _rawgGamesRepository;
         #endregion Fields..
 
         #region Properties..
@@ -35,19 +37,25 @@ namespace VideoGameGuy.Core
             _logger = logger;
             _settings = settings;
             _httpClientFactory = httpClientFactory;
-
-            var serviceScrope = _serviceProvider.CreateScope();
-            _systemStatusRepository = serviceScrope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
-            _rawgGamesRepository = serviceScrope.ServiceProvider.GetRequiredService<IRawgGamesRepository>();
-
         }
         #endregion Constructors..
 
         #region Methods..
+        private void Initialize()
+        {
+            _serviceScope?.Dispose();
+            _serviceScope = _serviceProvider.CreateScope();
+            
+            _systemStatusRepository = _serviceScope.ServiceProvider.GetRequiredService<ISystemStatusRepository>();
+            _rawgGamesRepository = _serviceScope.ServiceProvider.GetRequiredService<IRawgGamesRepository>();
+        }
+
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
+                Initialize();
+
                 var currentSystemStatus = await _systemStatusRepository.GetCurrentStatusAsync();
                 
                 // Pull and cache data if it has never been done before or if the polling period has elapsed
@@ -66,6 +74,7 @@ namespace VideoGameGuy.Core
                     await _systemStatusRepository.UpdateAsync(currentSystemStatus);
                 }
 
+                _serviceScope?.Dispose();
                 await Task.Delay(TimeSpan.FromHours(6), cancellationToken);
             }
         }
